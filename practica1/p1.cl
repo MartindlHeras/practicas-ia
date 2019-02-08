@@ -1,6 +1,29 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Santiago Valderrabano Zamorano santiago.valderrabano@estudiante.uam.es
+;; Martin de las Heras Moreno matin.delasheras@estudiante.uam.es
+;; Pareja 4
+;; Grupo 230
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EJERCICIO 1
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; producto-escalar-rec (x y)
+;;; Calcula el producto escalar de dos vectores
+;;; Se asume que los dos vectores de entrada tienen la misma longitud.
+;;;
+;;; INPUT: x: vector, representado como una lista
+;;;        y: vector, representado como una lista
+;;; OUTPUT: producto escalar de x e y
+;;;
+
+(defun producto-escalar-rec (x y)
+  (if (or (null x) (null y))
+    0
+    (+ (* (first x) (first y)) (producto-escalar-rec (rest x) (rest y))))
+  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; cosine-distance-rec (x y)
@@ -11,7 +34,11 @@
 ;;;         y: vector, representado como una lista
 ;;; OUTPUT: distancia coseno entre x e y
 ;;;
+
 (defun cosine-distance-rec (x y)
+  (if (or (null x) (null y) (= 0 (* (producto-escalar-rec x x) (producto-escalar-rec y y))))
+    0
+    (- 1 (/ (producto-escalar-rec x y) (* (sqrt (producto-escalar-rec x x)) (sqrt (producto-escalar-rec y y))))))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -24,6 +51,9 @@
 ;;; OUTPUT: distancia coseno entre x e y
 ;;;
 (defun cosine-distance-mapcar (x y)
+  (if (or (null x) (null y) (= 0 (* (apply #'+ (mapcar #'* x x)) (apply #'+ (mapcar #'* y y)))))
+    0
+    (- 1 (/ (apply #'+ (mapcar #'* x y)) (* (sqrt (apply #'+ (mapcar #'* x x))) (sqrt (apply #'+ (mapcar #'* y y)))))))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -162,7 +192,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; combine-list-of-lsts
 ;;; Calcula todas las posibles disposiciones de elementos
-;;; pertenecientes a N listas de forma que en cada disposicion 
+;;; pertenecientes a N listas de forma que en cada disposicion
 ;;; aparezca unicamente un elemento de cada lista
 ;;;
 ;;; INPUT: lstolsts: lista de listas
@@ -228,7 +258,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; truth-tree
-;;; Recibe una expresion y construye su arbol de verdad para 
+;;; Recibe una expresion y construye su arbol de verdad para
 ;;; determinar si es SAT o UNSAT
 ;;;
 ;;; INPUT  : fbf - Formula bien formada (FBF) a analizar.
