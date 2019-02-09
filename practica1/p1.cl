@@ -57,6 +57,45 @@
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; order-list-cosine-distance
+;;; Inserta en orden segun la semejanza un vector en una lista
+;;; INPUT:  reference: vector de referencia para la semejanza
+;;;         vector: vector a insertar
+;;;         lst-of-vectors: lista de vectores donde se va a insertar el nuevo
+;;; OUTPUT: Lista de vectores con el nuevo dentro
+;;;
+
+(defun insert-ordered-cosine-distance (reference vector lst-of-vectors)
+  (cond ((null vector)
+         lst-of-vectors)
+        ((null lst-of-vectors)
+         (cons vector lst-of-vectors))
+        ((< (cosine-distance-mapcar reference vector) (cosine-distance-mapcar reference (first lst-of-vectors)))
+         (cons vector lst-of-vectors))
+        (t
+         (cons (first lst-of-vectors) (insert-ordered-cosine-distance reference vector (rest lst-of-vectors)))))
+  )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; order-vectors-cosine-distance-rec
+;;; Parte recursiva de order-vectors-cosine-distance-rec
+;;; INPUT:  vector: vector que representa a una categoria,
+;;;                 representado como una lista
+;;;         lst-of-vectors vector de vectores
+;;;         confidence-level: Nivel de confianza (parametro opcional)
+;;; OUTPUT: Vectores cuya semejanza con respecto a la
+;;;         categoria es superior al nivel de confianza ,
+;;;         ordenados
+;;;
+
+(defun order-vectors-cosine-distance-rec (vector lst-of-vectors &optional (confidence-level 0))
+  (cond ((null lst-of-vectors)
+         nil)
+        (t
+         (insert-ordered-cosine-distance vector (first lst-of-vectors) (order-vectors-cosine-distance-rec vector (rest lst-of-vectors) confidence-level))))
+  )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; order-vectors-cosine-distance
 ;;; Devuelve aquellos vectores similares a una categoria
 ;;; INPUT:  vector: vector que representa a una categoria,
@@ -67,7 +106,9 @@
 ;;;         categoria es superior al nivel de confianza ,
 ;;;         ordenados
 ;;;
+
 (defun order-vectors-cosine-distance (vector lst-of-vectors &optional (confidence-level 0))
+  (order-vectors-cosine-distance-rec vector (remove-if (lambda (v) (< (- 1 confidence-level) (cosine-distance-mapcar vector v))) lst-of-vectors) confidence-level)
   )
 
 
@@ -83,7 +124,23 @@
 ;;; OUTPUT: Pares formados por el vector que identifica la categoria
 ;;;         de menor distancia , junto con el valor de dicha distancia
 ;;;
+
+(defun get-category (categories text distance-measure minimum)
+  (cond ((null categories)
+         minimum)
+        ((null minimum)
+         (get-category (rest categories) text distance-measure (cons (first (first categories)) (funcall distance-measure text (first categories)))))
+        (t
+         (if (< (funcall distance-measure text (first categories)) (rest minimum))
+           (get-category (rest categories) text distance-measure (cons (first (first categories)) (funcall distance-measure text (first categories))))
+           (get-category (rest categories) text distance-measure minimum))))
+  )
+
 ( defun get-vectors-category (categories texts distance-measure)
+  (cond ((null texts)
+         nil)
+        (t
+         (cons (get-category categories (first texts) distance-measure nil) (get-vectors-category categories (rest texts) distance-measure))))
   )
 
 
