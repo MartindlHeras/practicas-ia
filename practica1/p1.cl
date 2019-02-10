@@ -113,15 +113,14 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; get-vectors-category (categories vectors distance-measure)
-;;; Clasifica a los textos en categorias .
+;;; get-category (categories text distance-measure)
+;;; Clasifica al texto en su categoria
 ;;;
 ;;; INPUT : categories: vector de vectores, representado como
 ;;;                     una lista de listas
-;;;         texts:      vector de vectores, representado como
-;;;                     una lista de listas
+;;;         texts:      vector
 ;;;         distance-measure: funcion de distancia
-;;; OUTPUT: Pares formados por el vector que identifica la categoria
+;;; OUTPUT: Par formado por el vector que identifica la categoria
 ;;;         de menor distancia , junto con el valor de dicha distancia
 ;;;
 
@@ -133,8 +132,21 @@
         (t
          (if (< (funcall distance-measure text (first categories)) (rest minimum))
            (get-category (rest categories) text distance-measure (cons (first (first categories)) (funcall distance-measure text (first categories))))
-           (get-category (rest categories) text distance-measure minimum))))
+          (get-category (rest categories) text distance-measure minimum))))
   )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; get-vectors-category (categories vectors distance-measure)
+;;; Clasifica a los textos en categorias .
+;;;
+;;; INPUT : categories: vector de vectores, representado como
+;;;                     una lista de listas
+;;;         texts:      vector de vectores, representado como
+;;;                     una lista de listas
+;;;         distance-measure: funcion de distancia
+;;; OUTPUT: Pares formados por el vector que identifica la categoria
+;;;         de menor distancia , junto con el valor de dicha distancia
+;;;
 
 ( defun get-vectors-category (categories texts distance-measure)
   (cond ((null texts)
@@ -160,7 +172,15 @@
 ;;;         tol: tolerancia para convergencia (parametro opcional)
 ;;; OUTPUT: estimacion del cero de f o NIL si no converge
 ;;;
+;;; (newton #'(lambda(x) (* (- x 4) (- x 1) (+ x 3))) #'(lambda(x) (- (* x (- (* x 3) 4)) 11)) 20 3.0)
+
 ( defun newton (f df max-iter x0 &optional (tol 0.001))
+  (cond ((= max-iter 0)
+         nil)
+        ((< (abs (funcall f x0)) tol)
+         x0)
+        (t
+         (newton f df (- max-iter 1) (- x0 (/ (funcall f x0) (funcall df x0))) tol)))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -177,25 +197,14 @@
 ;;; OUTPUT: el primer cero de f que se encuentre , o NIL si se diverge
 ;;;          para todas las semillas
 ;;;
+
 (defun one-root-newton (f df max-iter semillas &optional (tol 0.001))
-  )
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; one-root-newton
-;;; Prueba con distintas semillas iniciales hasta que Newton
-;;; converge
-;;;
-;;; INPUT: f: funcion de la que se desea encontrar un cero
-;;;        df: derivada de f
-;;;        max-iter: maximo numero de iteraciones
-;;;        semillas : semillas con las que invocar a Newton
-;;;        tol : tolerancia para convergencia ( parametro opcional )
-;;;
-;;; OUTPUT: el primer cero de f que se encuentre, o NIL si se diverge
-;;;         para todas las semillas
-;;;
-(defun one-root-newton (f df max-iter semillas &optional ( tol 0.001))
+  (cond ((null semillas)
+         nil)
+        ((null (newton f df max-iter (first semillas) tol))
+         (one-root-newton f df max-iter (rest semillas) tol))
+        (t
+         (newton f df max-iter (first semillas) tol)))
   )
 
 
@@ -213,10 +222,17 @@
 ;;; OUTPUT: las raices que se encuentren para cada semilla o nil
 ;;;          si para esa semilla el metodo no converge
 ;;;
-(defun all-roots-newton (f df tol-abs max-iter semillas &optional ( tol 0.001))
+
+(defun all-roots-newton (f df max-iter semillas &optional ( tol 0.001))
+  (cond ((null semillas)
+         nil)
+        (t
+         (cons (newton f df max-iter (first semillas) tol) (all-roots-newton f df max-iter (rest semillas) tol))))
   )
 
-
+(defun list-not-nil-roots-newton (f df max-iter semillas &optional ( tol 0.001))
+   (mapcan #'(lambda (x) (if (null x) nil (list x))) (all-roots-newton f df max-iter semillas tol))
+  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EJERCICIO 3
@@ -231,7 +247,12 @@
 ;;;
 ;;; OUTPUT: lista con las combinacion del elemento con cada uno de los
 ;;;         de la lista
+
 (defun combine-elt-lst (elt lst)
+  (cond ((or (null lst) (null elt))
+         nil)
+        (t
+         (mapcar #'(lambda (x) (list elt x)) lst)))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -242,7 +263,9 @@
 ;;;        lst2: segunda lista
 ;;;
 ;;; OUTPUT: producto cartesiano de las dos listas
+
 (defun combine-lst-lst (lst1 lst2)
+  (mapcan #'(lambda (x) (combine-elt-lst x lst2)) lst1)
   )
 
 
@@ -255,7 +278,42 @@
 ;;; INPUT: lstolsts: lista de listas
 ;;;
 ;;; OUTPUT: lista con todas las posibles combinaciones de elementos
+
 (defun combine-list-of-lsts (lstolsts)
+  (if (null lstolsts)
+    (list nil)
+    (combine-lst-lst-cons (first lstolsts) (combine-list-of-lsts (rest lstolsts))))
+  )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; combine-elt-lst-cons
+;;; Combina un elemento dado con todos los elementos de una lista usando cons
+;;;
+;;; INPUT: elem: elemento a combinar
+;;;        lst: lista con la que se quiere combinar el elemento
+;;;
+;;; OUTPUT: lista con las combinacion del elemento con cada uno de los
+;;;         de la lista
+
+
+(defun combine-elt-lst-cons (elt lst)
+  (cond ((or (null lst) (null elt))
+         nil)
+        (t
+         (mapcar #'(lambda (x) (cons elt x)) lst)))
+  )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; combine-lst-lst-cons
+;;; Calcula el producto cartesiano de dos listas usando cons
+;;;
+;;; INPUT: lst1: primera lista
+;;;        lst2: segunda lista
+;;;
+;;; OUTPUT: producto cartesiano de las dos listas
+
+(defun combine-lst-lst-cons (lst1 lst2)
+  (mapcan #'(lambda (x) (combine-elt-lst-cons x lst2)) lst1)
   )
 
 
