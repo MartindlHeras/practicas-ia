@@ -108,7 +108,9 @@
 ;;;
 
 (defun order-vectors-cosine-distance (vector lst-of-vectors &optional (confidence-level 0))
-  (order-vectors-cosine-distance-rec vector (remove-if (lambda (v) (< (- 1 confidence-level) (cosine-distance-mapcar vector v))) lst-of-vectors) confidence-level)
+  (order-vectors-cosine-distance-rec vector
+                                     (remove-if (lambda (v) (< (- 1 confidence-level) (cosine-distance-mapcar vector v))) lst-of-vectors)
+                                     confidence-level)
   )
 
 
@@ -148,7 +150,7 @@
 ;;;         de menor distancia , junto con el valor de dicha distancia
 ;;;
 
-( defun get-vectors-category (categories texts distance-measure)
+(defun get-vectors-category (categories texts distance-measure)
   (cond ((null texts)
          nil)
         (t
@@ -174,7 +176,7 @@
 ;;;
 ;;; (newton #'(lambda(x) (* (- x 4) (- x 1) (+ x 3))) #'(lambda(x) (- (* x (- (* x 3) 4)) 11)) 20 3.0)
 
-( defun newton (f df max-iter x0 &optional (tol 0.001))
+(defun newton (f df max-iter x0 &optional (tol 0.001))
   (cond ((= max-iter 0)
          nil)
         ((< (abs (funcall f x0)) tol)
