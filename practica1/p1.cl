@@ -121,17 +121,17 @@
 ;;;         texts:      vector
 ;;;         distance-measure: funcion de distancia
 ;;; OUTPUT: Par formado por el vector que identifica la categoria
-;;;         de menor distancia , junto con el valor de dicha distancia
+;;;         de menor distancia , junto con el valor de dicha distanciaNUMBER
 ;;;
 
 (defun get-category (categories text distance-measure minimum)
   (cond ((null categories)
-         minimum)
+         (list (first minimum) (funcall distance-measure text minimum)))
         ((null minimum)
-         (get-category (rest categories) text distance-measure (cons (first (first categories)) (funcall distance-measure text (first categories)))))
+         (get-category (rest categories) text distance-measure (first categories)))
         (t
-         (if (< (funcall distance-measure text (first categories)) (rest minimum))
-           (get-category (rest categories) text distance-measure (cons (first (first categories)) (funcall distance-measure text (first categories))))
+         (if (< (funcall distance-measure text (first categories)) (funcall distance-measure text minimum))
+           (get-category (rest categories) text distance-measure (first categories))
           (get-category (rest categories) text distance-measure minimum))))
   )
 
