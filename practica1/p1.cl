@@ -247,8 +247,8 @@
 ;;; INPUT: elem: elemento a combinar
 ;;;        lst: lista con la que se quiere combinar el elemento
 ;;;
-;;; OUTPUT: lista con las combinacion del elemento con cada uno de los
-;;;         de la lista
+;;; OUTPUT: lista con las combinacion del elemento con cada uno de 
+;;;         los de la lista
 
 (defun combine-elt-lst (elt lst)
   (cond ((or (null lst) (null elt))
