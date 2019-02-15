@@ -373,6 +373,53 @@
       (negative-literal-p x)))
 
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; evaluar-bicond
+;;; Recibe una expresion y la evalua
+;;;
+;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
+;;;                conector es <=>
+;;; OUTPUT : list - Lista con los argumentos atomicos
+;;;          NIL  - En caso de que los elementos sean vacios o NIL
+;;;
+
+(defun evaluar-bicond (fbf)
+  (list +and+ (evaluar-cond (fbf)) (evaluar-cond (list (second fbf) (first fbf)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; evaluar-cond
+;;; Recibe una expresion y la evalua
+;;;
+;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
+;;;                conector es =>
+;;; OUTPUT : list - Lista con los argumentos atomicos
+;;;          NIL  - En caso de que los elementos sean vacios o NIL
+;;;
+
+(defun evaluar-cond (fbf)
+  (if (null fbf)
+    nil)
+  (list +or+ (list +not+ (first fbf)) (second fbf)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; evaluar
+;;; Recibe una expresion y la evalua
+;;;
+;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
+;;;                conector es =>
+;;; OUTPUT : list - Lista con los argumentos atomicos
+;;;          NIL  - En caso de que los elementos sean vacios o NIL
+;;;
+
+(defun evaluar (fbf)
+(cond (() ;; Bicond
+       nil)
+       (() ;; Cond 
+        )))
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; truth-tree
 ;;; Recibe una expresion y construye su arbol de verdad para

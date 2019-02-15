@@ -22,5 +22,4 @@
 
   - No usar mapcan que recorre muchas veces las listas
 
-
   METER MAS EJEMPLOS EN LA MEMORIA
