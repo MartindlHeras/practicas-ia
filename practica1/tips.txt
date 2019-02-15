@@ -1,5 +1,4 @@
- - No hace falta comprobar si una lista es vacia con mapcar porque si se aplica
-   la operación sobre la lista vacia devuelve 0 que es lo que queremos.
+
 
  - Usar el let para ahorrar llamadas repetidas.
 
@@ -7,21 +6,27 @@
  Ejercicio 4:
   - Si tengo un or me genera dos ramas.
   - Si tengo un and me quedo en la misma rama.
-  - Cuidao con los and y or que pueden tener n argumentos
+  - Cuidado con los and y or que pueden tener n argumentos
   - Repasar las cabeceras de las funciones nuevas (ej4)
 
 ----------------------- A MEJORAR ---------------------------------------------
   EJERCICIO 1:
 
-  - No comprobar 2 veces que las listas esten vacias
-  - Devilver nil si el denom es 0
-  - Funcion generica para no repertir la formula
-  - Lista de pares vector distancia para ahorrar calculos
+  - No comprobar 2 veces que las listas esten vacias ------ (OK)
+  - Devilver nil si el denom es 0 ------------------------- (OK)
+  - Funcion generica para no repertir la formula ---------- (OK)
+  - Lista de pares vector distancia para ahorrar calculos - ()
   - Remove?
-  - Meter el primer valor en vez de nil
+  - Meter el primer valor en vez de nil ------------------- ()
 
   EJERCICIO 3:
 
   - No usar mapcan que recorre muchas veces las listas
 
-  METER MAS EJEMPLOS EN LA MEMORIA
+  - No hace falta comprobar si una lista es vacia con mapcar porque si se aplica
+    la operación sobre la lista vacia devuelve 0 que es lo que queremos.
+
+  METER MAS EJEMPLOS EN LA MEMORIA Y ACTUALIZAR LOS CODIGOS
+
+
+-------------------------------------------------------------------------------

@@ -26,6 +26,20 @@
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; cosine-distance (x y)
+;;; Aplica la formula de distancia coseno dados numerador y denominador
+;;; de la fórmula
+;;;
+;;; INPUT:  x: numerador
+;;;         y: denominador
+;;; OUTPUT: distancia coseno entre x e y
+;;;
+
+(defun cosine-distance (x y)
+    (- 1 (/ x y))
+  )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; cosine-distance-rec (x y)
 ;;; Calcula la distancia coseno de un vector de forma recursiva
 ;;; Se asume que los dos vectores de entrada tienen la misma longitud.
@@ -36,9 +50,9 @@
 ;;;
 
 (defun cosine-distance-rec (x y)
-  (if (or (null x) (null y) (= 0 (* (producto-escalar-rec x x) (producto-escalar-rec y y))))
-    0
-    (- 1 (/ (producto-escalar-rec x y) (* (sqrt (producto-escalar-rec x x)) (sqrt (producto-escalar-rec y y))))))
+  (if (= 0 (* (producto-escalar-rec x x) (producto-escalar-rec y y)))
+    nil
+    (cosine-distance (producto-escalar-rec x y) (* (sqrt (producto-escalar-rec x x)) (sqrt (producto-escalar-rec y y)))))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -51,9 +65,9 @@
 ;;; OUTPUT: distancia coseno entre x e y
 ;;;
 (defun cosine-distance-mapcar (x y)
-  (if (or (null x) (null y) (= 0 (* (apply #'+ (mapcar #'* x x)) (apply #'+ (mapcar #'* y y)))))
-    0
-    (- 1 (/ (apply #'+ (mapcar #'* x y)) (* (sqrt (apply #'+ (mapcar #'* x x))) (sqrt (apply #'+ (mapcar #'* y y)))))))
+  (if (= 0 (* (apply #'+ (mapcar #'* x x)) (apply #'+ (mapcar #'* y y))))
+    nil
+    (cosine-distance (apply #'+ (mapcar #'* x y)) (* (sqrt (apply #'+ (mapcar #'* x x))) (sqrt (apply #'+ (mapcar #'* y y))))))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -415,7 +429,7 @@
 (defun evaluar (fbf)
 (cond (() ;; Bicond
        nil)
-       (() ;; Cond 
+       (() ;; Cond
         )))
 
 
