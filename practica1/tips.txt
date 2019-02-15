@@ -7,6 +7,8 @@
  Ejercicio 4:
   - Si tengo un or me genera dos ramas.
   - Si tengo un and me quedo en la misma rama.
+  - Cuidao con los and y or que pueden tener n argumentos
+  - Repasar las cabeceras de las funciones nuevas (ej4)
 
 ----------------------- A MEJORAR ---------------------------------------------
   EJERCICIO 1:
