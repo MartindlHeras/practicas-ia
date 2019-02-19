@@ -392,9 +392,7 @@
 ;;;
 
 (defun evaluar-not (fbf)
-  (cond ((positive-literal-p fbf)
-     (list +not+ fbf))
-   (unary-connector-p (first fbf)
+  (cond (unary-connector-p (first fbf)
     (rest fbf))
    (n-ary-connector-p (first fbf)
      (evaluar-n-ary-neg fbf))
@@ -403,7 +401,7 @@
    (cond-connector-p (first fbf)
      (evaluar-neg-cond (rest fbf)))
    (t
-    nil)))
+    fbf)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; evaluar-neg-and
@@ -416,9 +414,9 @@
 ;;;
 
 (defun evaluar-neg-and (fbf)
-  (if (null fbf)
-    nil)
-  (list +or+ (list +not+ (first fbf)) +not+ (second fbf)))
+  (if (null (rest fbf))
+    (list (list +not+ (first fbf)))
+    (append (list (list +not+ (first fbf))) (evaluar-neg-and (rest fbf)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; evaluar-neg-or
@@ -431,9 +429,9 @@
 ;;;
 
 (defun evaluar-neg-or (fbf)
-  (if (null fbf)
-    nil)
-  (list +and+ (list +not+ (first fbf)) +not+ (second fbf)))
+  (if (null (rest fbf))
+    (list (list +not+ (first fbf)))
+    (append (list (list +not+ (first fbf))) (evaluar-neg-or (rest fbf)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; evaluar-n-ary-neg
@@ -446,11 +444,10 @@
 ;;;
 
 (defun evaluar-n-ary-neg (fbf)
-  (cond (equal (first fbf) +not+)
-    (evaluar-neg-or (rest fbf))
-   (equal (first fbf) +and+)
-    (evaluar-neg-and (rest fbf))))
-
+  (cond ((eql (first fbf) +or+)
+    (append (list +and+) (evaluar-neg-or (rest fbf))))
+   ((eql (first fbf) +and+)
+    (append (list +or+) (evaluar-neg-and (rest fbf))))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; evaluar-cond
 ;;; Recibe una expresion y la evalua
@@ -521,7 +518,7 @@
 (defun evaluar (fbf)
   (cond ((literal-p fbf)
          (list fbf))
-    (and (unary-connector-p (first fbf) (not negative-literal-p fbf))  ;; !(expresion)
+    (and (unary-connector-p (first fbf))  ;; !(expresion)
       (evaluar (evaluar-not (rest fbf))))
     (n-ary-connector-p (first fbf)
       (evaluar-n-ary-neg fbf))
