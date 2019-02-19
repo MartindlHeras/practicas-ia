@@ -516,18 +516,16 @@
 ;;;
 
 (defun evaluar (fbf)
-  (cond ((literal-p fbf)
-         fbf)
-    ((unary-connector-p (first fbf))  ;; !(expresion)
+  (cond ((unary-connector-p (first fbf))  ;; !(expresion)
       (evaluar (evaluar-not (rest fbf))))
-    ((n-ary-connector-p (first fbf))
-      (evaluar-n-ary-neg fbf))
+    ((or (n-ary-connector-p (first fbf)) (and (positive-literal-p (first fbf)) (rest fbf)))
+      (append (list (first fbf)) (evaluar (rest fbf))))
     ((bicond-connector-p (first fbf))           ;; Bicond
       (evaluar (evaluar-bicond (rest fbf))))
     ((cond-connector-p (first fbf))            ;; Cond
       (evaluar (evaluar-cond (rest fbf))))
-    (t
-     nil)))
+    ((literal-p (first fbf))
+     fbf)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
