@@ -143,8 +143,6 @@
 (defun get-category (categories text distance-measure minimum)
   (cond ((null categories)
          (list (first minimum) (funcall distance-measure text minimum)))
-        ((null minimum)
-         (get-category (rest categories) text distance-measure (first categories)))
         (t
          (if (< (funcall distance-measure text (first categories)) (funcall distance-measure text minimum))
            (get-category (rest categories) text distance-measure (first categories))
@@ -168,7 +166,7 @@
   (cond ((null texts)
          nil)
         (t
-         (cons (get-category categories (first texts) distance-measure nil) (get-vectors-category categories (rest texts) distance-measure))))
+         (cons (get-category (rest categories) (first texts) distance-measure (first categories)) (get-vectors-category categories (rest texts) distance-measure))))
   )
 
 
@@ -265,10 +263,7 @@
 ;;;         los de la lista
 
 (defun combine-elt-lst (elt lst)
-  (cond ((or (null lst) (null elt))
-         nil)
-        (t
-         (mapcar #'(lambda (x) (list elt x)) lst)))
+  (mapcar #'(lambda (x) (list elt x)) lst)
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -399,7 +394,7 @@
 ;;;
 
 (defun evaluar-bicond (fbf)
-  (list +and+ (evaluar-cond (fbf)) (evaluar-cond (list (second fbf) (first fbf)))))
+  (list +and+ (evaluar-cond fbf) (evaluar-cond (list (second fbf) (first fbf)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; evaluar-cond
@@ -427,10 +422,11 @@
 ;;;
 
 (defun evaluar (fbf)
-(cond (() ;; Bicond
-       nil)
-       (() ;; Cond
-        )))
+(cond ((bicond-connector-p (first fbf)) ;; Bicond
+        (evaluar-bicond (rest fbf)))
+       ((cond-connector-p (first fbf)) ;; Cond
+        (evaluar-cond (rest fbf)))
+       ()))
 
 
 

@@ -16,8 +16,8 @@
   - Devilver nil si el denom es 0 ------------------------- (OK)
   - Funcion generica para no repertir la formula ---------- (OK)
   - Lista de pares vector distancia para ahorrar calculos - ()
+  - Meter el primer valor en vez de nil ------------------- (OK)
   - Remove?
-  - Meter el primer valor en vez de nil ------------------- ()
 
   EJERCICIO 3:
 
