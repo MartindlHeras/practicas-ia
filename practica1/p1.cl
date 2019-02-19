@@ -382,28 +382,6 @@
       (negative-literal-p x)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; evaluar-not
-;;; Recibe una expresion y la evalua
-;;;
-;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
-;;;                conector es ! v
-;;; OUTPUT : list - Lista con los argumentos atomicos
-;;;          NIL  - En caso de que los elementos sean vacios o NIL
-;;;
-
-(defun evaluar-not (fbf)
-  (cond (unary-connector-p (first fbf)
-    (rest fbf))
-   (n-ary-connector-p (first fbf)
-     (evaluar-n-ary-neg fbf))
-   (bicond-connector-p (first fbf)
-     (evaluar-neg-bicond (rest fbf)))
-   (cond-connector-p (first fbf)
-     (evaluar-neg-cond (rest fbf)))
-   (t
-    fbf)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; evaluar-neg-and
 ;;; Recibe una expresion y la evalua
 ;;;
@@ -448,34 +426,6 @@
     (append (list +and+) (evaluar-neg-or (rest fbf))))
    ((eql (first fbf) +and+)
     (append (list +or+) (evaluar-neg-and (rest fbf))))))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; evaluar-cond
-;;; Recibe una expresion y la evalua
-;;;
-;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
-;;;                conector es =>
-;;; OUTPUT : list - Lista con los argumentos atomicos
-;;;          NIL  - En caso de que los elementos sean vacios o NIL
-;;;
-
-(defun evaluar-cond (fbf)
-  (if (null fbf)
-    nil)
-  (list +or+ (list +not+ (first fbf)) (second fbf)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; evaluar-bicond
-;;; Recibe una expresion y la evalua
-;;;
-;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
-;;;                conector es <=>
-;;; OUTPUT : list - Lista con los argumentos atomicos
-;;;          NIL  - En caso de que los elementos sean vacios o NIL
-;;;
-
-(defun evaluar-bicond (fbf)
-  (list +and+ (evaluar-cond fbf) (evaluar-cond (list (second fbf) (first fbf)))))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; evaluar-neg-cond
@@ -506,6 +456,56 @@
   (list +or+ (evaluar-neg-cond fbf) (evaluar-neg-cond (list (second fbf) (first fbf)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; evaluar-not
+;;; Recibe una expresion y la evalua
+;;;
+;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
+;;;                conector es ! v
+;;; OUTPUT : list - Lista con los argumentos atomicos
+;;;          NIL  - En caso de que los elementos sean vacios o NIL
+;;;
+
+(defun evaluar-not (fbf)
+  (cond ((unary-connector-p (first fbf))
+         (rest fbf))
+    ((n-ary-connector-p (first fbf))
+         (evaluar-n-ary-neg fbf))
+    ((bicond-connector-p (first fbf))
+         (evaluar-neg-bicond (rest fbf)))
+    ((cond-connector-p (first fbf))
+         (evaluar-neg-cond (rest fbf)))
+    (t
+     fbf)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; evaluar-cond
+;;; Recibe una expresion y la evalua
+;;;
+;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
+;;;                conector es =>
+;;; OUTPUT : list - Lista con los argumentos atomicos
+;;;          NIL  - En caso de que los elementos sean vacios o NIL
+;;;
+
+(defun evaluar-cond (fbf)
+  (if (null fbf)
+    nil)
+  (list +or+ (list +not+ (first fbf)) (second fbf)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; evaluar-bicond
+;;; Recibe una expresion y la evalua
+;;;
+;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
+;;;                conector es <=>
+;;; OUTPUT : list - Lista con los argumentos atomicos
+;;;          NIL  - En caso de que los elementos sean vacios o NIL
+;;;
+
+(defun evaluar-bicond (fbf)
+  (list +and+ (evaluar-cond fbf) (evaluar-cond (list (second fbf) (first fbf)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; evaluar
 ;;; Recibe una expresion y la evalua
 ;;;
@@ -517,14 +517,14 @@
 
 (defun evaluar (fbf)
   (cond ((literal-p fbf)
-         (list fbf))
-    (and (unary-connector-p (first fbf))  ;; !(expresion)
+         fbf)
+    ((unary-connector-p (first fbf))  ;; !(expresion)
       (evaluar (evaluar-not (rest fbf))))
-    (n-ary-connector-p (first fbf)
+    ((n-ary-connector-p (first fbf))
       (evaluar-n-ary-neg fbf))
-    (bicond-connector-p (first fbf)           ;; Bicond
+    ((bicond-connector-p (first fbf))           ;; Bicond
       (evaluar (evaluar-bicond (rest fbf))))
-    (cond-connector-p (first fbf)             ;; Cond
+    ((cond-connector-p (first fbf))            ;; Cond
       (evaluar (evaluar-cond (rest fbf))))
     (t
      nil)))
