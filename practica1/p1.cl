@@ -535,6 +535,42 @@
   )
 
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; compare
+;;; Recibe una expresion y construye su arbol de verdad para
+;;; determinar si es SAT o UNSAT
+;;;
+;;; INPUT  : fbf - Formula bien formada (FBF) a analizar.
+;;; OUTPUT : T   - FBF es SAT
+;;;          N   - FBF es UNSAT
+;;;
+(defun compare (fbf)
+  fbf
+  )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; truth-tree-aux
+;;; Recibe una expresion y construye su arbol de verdad para
+;;; determinar si es SAT o UNSAT
+;;;
+;;; INPUT  : fbf - Formula bien formada (FBF) a analizar.
+;;; OUTPUT : T   - FBF es SAT
+;;;          N   - FBF es UNSAT
+;;;
+(defun truth-tree-aux (fbf)
+  (cond ((literal-p fbf)
+         fbf)
+        ((eql +or+ (first fbf))
+         (mapcar #'(lambda(x) (truth-tree-aux x)) (rest fbf)))
+        ((eql +and+ (first fbf))
+          (combine-list-of-lsts (mapcar #'(lambda(x) (list (truth-tree-aux x))) (rest fbf))))
+        (t
+          fbf)
+    ))
+
+;;; (or (mapcar #'(lambda(x) (compare x))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; truth-tree
 ;;; Recibe una expresion y construye su arbol de verdad para
@@ -545,16 +581,8 @@
 ;;;          N   - FBF es UNSAT
 ;;;
 (defun truth-tree (fbf)
-(cond ((not (n-ary-connector-p (first fbf)))
-        (truth-tree (evaluar fbf)))
-      ((eql (first fbf) +and+)
-       (append (list +and+ (truth-tree (second fbf))) (truth-tree (list +and+ (cddr fbf)))))
-      ((eql (first fbf) +or+)
-       )
-      ;((and (literal-p (first fbf)) (not (null (rest fbf))))
-      ;  (truth-tree (rest fbf)))
-      (t
-       fbf)))
+  (truth-tree-aux (evaluar fbf))
+  )
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
