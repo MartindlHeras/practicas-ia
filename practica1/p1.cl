@@ -515,19 +515,24 @@
 ;;;          NIL  - En caso de que los elementos sean vacios o NIL
 ;;;
 
+(evaluar '(=> (V (<=> (! C) A) (^ B (=> C (! A)))) (^ B (! C))))
+
+(! (V (<=> (! C) A) (^ B (=> C (! A)))))
+
 (defun evaluar (fbf)
-  (cond ((unary-connector-p (first fbf))  ;; !(expresion)
-      (evaluar (evaluar-not (rest fbf))))
+  (cond ((literal-p fbf)
+         fbf)
+    ((unary-connector-p (first fbf))  ;; !(expresion)
+      (evaluar (evaluar-not (second fbf))))
     ((bicond-connector-p (first fbf))           ;; Bicond
       (evaluar (evaluar-bicond (rest fbf))))
     ((cond-connector-p (first fbf))            ;; Cond
       (evaluar (evaluar-cond (rest fbf))))
     ((or (literal-p (first fbf)) (n-ary-connector-p (first fbf)))
      (cons (first fbf) (mapcar #'(lambda(x) (evaluar x)) (rest fbf))))
-    ((and (atom (first fbf)) (listp fbf))
-     (first fbf))
     (t
-     fbf)))
+     fbf))
+  )
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
