@@ -475,7 +475,7 @@
     ((cond-connector-p (first fbf))
          (evaluar-neg-cond (rest fbf)))
     (t
-     fbf)))
+     (list +not+ (first fbf)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; evaluar-cond
@@ -518,13 +518,15 @@
 (defun evaluar (fbf)
   (cond ((unary-connector-p (first fbf))  ;; !(expresion)
       (evaluar (evaluar-not (rest fbf))))
-    ((or (n-ary-connector-p (first fbf)) (and (positive-literal-p (first fbf)) (rest fbf)))
-      (append (list (first fbf)) (evaluar (rest fbf))))
     ((bicond-connector-p (first fbf))           ;; Bicond
       (evaluar (evaluar-bicond (rest fbf))))
     ((cond-connector-p (first fbf))            ;; Cond
       (evaluar (evaluar-cond (rest fbf))))
-    ((literal-p (first fbf))
+    ((or (literal-p (first fbf)) (n-ary-connector-p (first fbf)))
+     (cons (first fbf) (mapcar #'(lambda(x) (evaluar x)) (rest fbf))))
+    ((and (atom (first fbf)) (listp fbf))
+     (first fbf))
+    (t
      fbf)))
 
 
@@ -538,10 +540,16 @@
 ;;;          N   - FBF es UNSAT
 ;;;
 (defun truth-tree (fbf)
-(cond ((literal-p fbf)
-        T)
-       ()
-  ))
+(cond ((not (n-ary-connector-p (first fbf)))
+        (truth-tree (evaluar fbf)))
+      ((eql (first fbf) +and+)
+       (append (list +and+ (truth-tree (second fbf))) (truth-tree (list +and+ (cddr fbf)))))
+      ((eql (first fbf) +or+)
+       )
+      ;((and (literal-p (first fbf)) (not (null (rest fbf))))
+      ;  (truth-tree (rest fbf)))
+      (t
+       fbf)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
