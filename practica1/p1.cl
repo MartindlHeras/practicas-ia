@@ -564,7 +564,7 @@
         ((eql +or+ (first fbf))
          (mapcar #'(lambda(x) (truth-tree-aux x)) (rest fbf)))
         ((eql +and+ (first fbf))
-          (combine-list-of-lsts (mapcar #'(lambda(x) (list (truth-tree-aux x))) (rest fbf))))
+          (mapcar #'(lambda(x) (truth-tree-aux x)) (rest fbf)))
         (t
           fbf)
     ))
@@ -581,7 +581,7 @@
 ;;;          N   - FBF es UNSAT
 ;;;
 (defun truth-tree (fbf)
-  (truth-tree-aux (evaluar fbf))
+  (combine-list-of-lsts (truth-tree-aux (evaluar fbf)))
   )
 
 
