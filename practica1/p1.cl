@@ -558,11 +558,13 @@
 ;;; OUTPUT : T   - FBF es SAT
 ;;;          N   - FBF es UNSAT
 ;;;
+
+;;;(mapcar #'(lambda(x) (truth-tree-aux x)) (rest fbf))
 (defun truth-tree-aux (fbf)
   (cond ((literal-p fbf)
          fbf)
         ((eql +or+ (first fbf))
-         (mapcar #'(lambda(x) (truth-tree-aux x)) (rest fbf)))
+         (cons (truth-tree-aux (second fbf)) (truth-tree-aux (list +or+ (cddr fbf)))))
         ((eql +and+ (first fbf))
           (mapcar #'(lambda(x) (truth-tree-aux x)) (rest fbf)))
         (t
