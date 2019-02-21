@@ -560,9 +560,15 @@
 ;;;
 
 ;;;(mapcar #'(lambda(x) (truth-tree-aux x)) (rest fbf))
+(truth-tree-aux '(^ (V A !B) (^ C A)))
+
 (defun truth-tree-aux (fbf)
   (cond ((literal-p fbf)
          fbf)
+        ((literal-p (first fbf))
+         (first fbf))
+        ((null (second fbf))
+         nil)
         ((eql +or+ (first fbf))
          (cons (truth-tree-aux (second fbf)) (truth-tree-aux (list +or+ (cddr fbf)))))
         ((eql +and+ (first fbf))
