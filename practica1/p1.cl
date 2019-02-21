@@ -560,7 +560,8 @@
 ;;;
 
 ;;;(mapcar #'(lambda(x) (truth-tree-aux x)) (rest fbf))
-(truth-tree-aux '(^ (V A !B) (^ C A)))
+(truth-tree-aux '(^ (V A !B) (^ C D)))
+(^ (^ (V (^ (V A (! B)) (^ C D)) (V (! E) (! F))) G) H)
 
 (defun truth-tree-aux (fbf)
   (cond ((literal-p fbf)
@@ -570,7 +571,7 @@
         ((null (second fbf))
          nil)
         ((eql +or+ (first fbf))
-         (cons (truth-tree-aux (second fbf)) (truth-tree-aux (list +or+ (cddr fbf)))))
+         (cons (truth-tree-aux (second fbf)) (truth-tree-aux (append (list +or+) (cddr fbf)))))
         ((eql +and+ (first fbf))
           (mapcar #'(lambda(x) (truth-tree-aux x)) (rest fbf)))
         (t
