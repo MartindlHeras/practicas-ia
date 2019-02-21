@@ -550,6 +550,34 @@
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; rama
+;;; Recibe una expresion y desarrolla la rama
+;;;
+;;; INPUT  : fbf - Formula bien formada (FBF) a analizar.
+;;; OUTPUT : T   - FBF es SAT
+;;;          N   - FBF es UNSAT
+;;;
+
+;;;(mapcar #'(lambda(x) (truth-tree-aux x)) (rest fbf))
+
+(defun rama (fbf)
+(cond ((literal-p fbf)
+       (list fbf))
+      ((literal-p (first fbf))
+       (list (first fbf)))
+      ((null (second fbf))
+       nil)
+      ((eql +and+ (first fbf))
+       ;(cons (truth-tree-aux ramas (second fbf)) (truth-tree-aux ramas (append (list +and+) (cddr fbf)))))
+       (append (rama (second fbf)) (rama (cddr fbf))))
+       ;;(mapcar #'(lambda (x) (rama x)) (rest fbf))
+      ((eql +or+ (first fbf))
+       (combine-list-of-lsts (mapcar #'(lambda (x) (rama x)) (rest fbf))))
+      (t
+        fbf)
+  ))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; truth-tree-aux
 ;;; Recibe una expresion y construye su arbol de verdad para
 ;;; determinar si es SAT o UNSAT
@@ -563,17 +591,17 @@
 (truth-tree-aux '(^ (V A !B) (^ C D)))
 (^ (^ (V (^ (V A (! B)) (^ C D)) (V (! E) (! F))) G) H)
 
-(defun truth-tree-aux (fbf)
+(defun truth-tree-aux (ramas fbf)
   (cond ((literal-p fbf)
          fbf)
         ((literal-p (first fbf))
          (first fbf))
         ((null (second fbf))
          nil)
-        ((eql +or+ (first fbf))
-         (cons (truth-tree-aux (second fbf)) (truth-tree-aux (append (list +or+) (cddr fbf)))))
         ((eql +and+ (first fbf))
-          (mapcar #'(lambda(x) (truth-tree-aux x)) (rest fbf)))
+         (cons (truth-tree-aux ramas (second fbf)) (truth-tree-aux ramas (append (list +and+) (cddr fbf)))))
+        ((eql +or+ (first fbf))
+          (mapcar #'(lambda(x) (append ramas (rama x))) (rest fbf)))
         (t
           fbf)
     ))
@@ -590,10 +618,10 @@
 ;;;          N   - FBF es UNSAT
 ;;;
 (defun truth-tree (fbf)
-  (combine-list-of-lsts (truth-tree-aux (evaluar fbf)))
+  (combine-list-of-lsts (truth-tree-aux '() fbf))
   )
 
-
+;;evaluar
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EJERCICIO 5
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
