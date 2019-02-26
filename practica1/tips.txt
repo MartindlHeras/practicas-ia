@@ -1,5 +1,3 @@
-
-
  - Usar el let para ahorrar llamadas repetidas.
 
 
@@ -15,16 +13,16 @@
   - No comprobar 2 veces que las listas esten vacias ------ (OK)
   - Devilver nil si el denom es 0 ------------------------- (OK)
   - Funcion generica para no repertir la formula ---------- (OK)
-  - Lista de pares vector distancia para ahorrar calculos - ()
+  - Lista de pares vector distancia para ahorrar calculos - (OK)
   - Meter el primer valor en vez de nil ------------------- (OK)
   - Remove?
 
   EJERCICIO 3:
 
-  - No usar mapcan que recorre muchas veces las listas
+  - No usar mapcan que recorre muchas veces las listas --------------------------- (OK)
 
   - No hace falta comprobar si una lista es vacia con mapcar porque si se aplica
-    la operación sobre la lista vacia devuelve 0 que es lo que queremos.
+    la operación sobre la lista vacia devuelve 0 que es lo que queremos. --------- (OK)
 
   METER MAS EJEMPLOS EN LA MEMORIA Y ACTUALIZAR LOS CODIGOS
 

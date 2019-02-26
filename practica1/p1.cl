@@ -142,10 +142,10 @@
 
 (defun get-category (categories text distance-measure minimum)
   (cond ((null categories)
-         (list (first minimum) (funcall distance-measure text minimum)))
+         (list (first (first minimum)) (second minimum)))
         (t
-         (if (< (funcall distance-measure text (first categories)) (funcall distance-measure text minimum))
-           (get-category (rest categories) text distance-measure (first categories))
+         (if (< (funcall distance-measure text (first categories)) (second minimum))
+           (get-category (rest categories) text distance-measure (list (first categories) (funcall distance-measure text (first categories))))
           (get-category (rest categories) text distance-measure minimum))))
   )
 
@@ -161,12 +161,13 @@
 ;;; OUTPUT: Pares formados por el vector que identifica la categoria
 ;;;         de menor distancia , junto con el valor de dicha distancia
 ;;;
+;;; (get-vectors-category '((1 43 23 12) (2 33 54 24)) '((1 3 22 134) (2 43 26 58)) #'cosine-distance-mapcar)
 
 (defun get-vectors-category (categories texts distance-measure)
   (cond ((null texts)
          nil)
         (t
-         (cons (get-category (rest categories) (first texts) distance-measure (first categories)) (get-vectors-category categories (rest texts) distance-measure))))
+         (cons (get-category (rest categories) (first texts) distance-measure (list (first categories) (funcall distance-measure (first texts) (first categories)))) (get-vectors-category categories (rest texts) distance-measure))))
   )
 
 
@@ -276,7 +277,9 @@
 ;;; OUTPUT: producto cartesiano de las dos listas
 
 (defun combine-lst-lst (lst1 lst2)
-  (mapcan #'(lambda (x) (combine-elt-lst x lst2)) lst1)
+  (if (null lst1)
+    nil
+      (append (combine-elt-lst (first lst1) lst2) (combine-lst-lst (rest lst1) lst2)))
   )
 
 
@@ -308,10 +311,7 @@
 
 
 (defun combine-elt-lst-cons (elt lst)
-  (cond ((or (null lst) (null elt))
-         nil)
-        (t
-         (mapcar #'(lambda (x) (cons elt x)) lst)))
+  (mapcar #'(lambda (x) (cons elt x)) lst)
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -324,7 +324,9 @@
 ;;; OUTPUT: producto cartesiano de las dos listas
 
 (defun combine-lst-lst-cons (lst1 lst2)
-  (mapcan #'(lambda (x) (combine-elt-lst-cons x lst2)) lst1)
+(if (null lst1)
+  nil
+    (append (combine-elt-lst-cons (first lst1) lst2) (combine-lst-lst-cons (rest lst1) lst2)))
   )
 
 
