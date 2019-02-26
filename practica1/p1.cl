@@ -388,7 +388,7 @@
 ;;; Recibe una expresion y la evalua
 ;;;
 ;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
-;;;                conector es ! v
+;;;                conector es ! ^
 ;;; OUTPUT : list - Lista con los argumentos atomicos
 ;;;          NIL  - En caso de que los elementos sean vacios o NIL
 ;;;
@@ -403,7 +403,7 @@
 ;;; Recibe una expresion y la evalua
 ;;;
 ;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
-;;;                conector es ! ^
+;;;                conector es ! v
 ;;; OUTPUT : list - Lista con los argumentos atomicos
 ;;;          NIL  - En caso de que los elementos sean vacios o NIL
 ;;;
@@ -517,10 +517,6 @@
 ;;;          NIL  - En caso de que los elementos sean vacios o NIL
 ;;;
 
-(evaluar '(=> (V (<=> (! C) A) (^ B (=> C (! A)))) (^ B (! C))))
-
-(! (V (<=> (! C) A) (^ B (=> C (! A)))))
-
 (defun evaluar (fbf)
   (cond ((literal-p fbf)
          fbf)
@@ -535,8 +531,6 @@
     (t
      fbf))
   )
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; compare
@@ -559,8 +553,6 @@
 ;;; OUTPUT : T   - FBF es SAT
 ;;;          N   - FBF es UNSAT
 ;;;
-
-;;;(mapcar #'(lambda(x) (truth-tree-aux x)) (rest fbf))
 
 (defun rama (fbf)
 (cond ((literal-p fbf)
@@ -589,10 +581,6 @@
 ;;;          N   - FBF es UNSAT
 ;;;
 
-;;;(mapcar #'(lambda(x) (truth-tree-aux x)) (rest fbf))
-(truth-tree-aux '(^ (V A !B) (^ C D)))
-(^ (^ (V (^ (V A (! B)) (^ C D)) (V (! E) (! F))) G) H)
-
 (defun truth-tree-aux (ramas fbf)
   (cond ((literal-p fbf)
          fbf)
@@ -608,8 +596,6 @@
           fbf)
     ))
 
-;;; (or (mapcar #'(lambda(x) (compare x))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; truth-tree
 ;;; Recibe una expresion y construye su arbol de verdad para
@@ -623,7 +609,6 @@
   (combine-list-of-lsts (truth-tree-aux '() fbf))
   )
 
-;;evaluar
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EJERCICIO 5
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
