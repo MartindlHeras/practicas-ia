@@ -403,8 +403,7 @@
 ;;;
 ;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
 ;;;                conector es ! v
-;;; OUTPUT : list - Lista con los argumentos atomicos
-;;;          NIL  - En caso de que los elementos sean vacios o NIL
+;;; OUTPUT : fbf - Lista con los argumentos atomicos negados
 ;;;
 
 (defun evaluar-neg-or (fbf)
@@ -414,43 +413,44 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; evaluar-n-ary-neg
-;;; Recibe una expresion y la evalua
+;;; Recibe una expresion y evalua a que función
+;;; mandar el resto de la fbf dependiendo del
+;;; conector que preceda
 ;;;
-;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
-;;;                conector es ! ^
-;;; OUTPUT : list - Lista con los argumentos atomicos
-;;;          NIL  - En caso de que los elementos sean vacios o NIL
+;;; INPUT  : fbf - Formula bien formada (FBF) a analizar
+;;; OUTPUT : fbf - Lista con los argumentos atomicos
 ;;;
 
 (defun evaluar-n-ary-neg (fbf)
   (cond ((eql (first fbf) +or+)
     (append (list +and+) (evaluar-neg-or (rest fbf))))
    ((eql (first fbf) +and+)
-    (append (list +or+) (evaluar-neg-and (rest fbf))))))
+    (append (list +or+) (evaluar-neg-and (rest fbf)))))
+   nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; evaluar-neg-cond
-;;; Recibe una expresion y la evalua
+;;; Recibe una expresion y la niega sabiendo que el conector que la
+;;  precedia era ! =>
 ;;;
 ;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
 ;;;                conector es ! =>
-;;; OUTPUT : list - Lista con los argumentos atomicos
-;;;          NIL  - En caso de que los elementos sean vacios o NIL
+;;; OUTPUT : fbf - Lista con la fbf negada
 ;;;
 
 (defun evaluar-neg-cond (fbf)
 (if (null fbf)
-  nil)
-  (list +and+ (list +not+ (second fbf)) (first fbf)))
+  nil
+  (list +and+ (list +not+ (second fbf)) (first fbf))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; evaluar-neg-bicond
-;;; Recibe una expresion y la evalua
+;;; Recibe una expresion y la niega sabiendo que el conector que la
+;;  precedia era ! <=>
 ;;;
 ;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
 ;;;                conector es ! <=>
-;;; OUTPUT : list - Lista con los argumentos atomicos
-;;;          NIL  - En caso de que los elementos sean vacios o NIL
+;;; OUTPUT : fbf - Lista con la fbf negada
 ;;;
 
 (defun evaluar-neg-bicond (fbf)
@@ -461,9 +461,9 @@
 ;;; Recibe una expresion y la evalua
 ;;;
 ;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
-;;;                conector es ! v
-;;; OUTPUT : list - Lista con los argumentos atomicos
-;;;          NIL  - En caso de que los elementos sean vacios o NIL
+;;;                conector es ! y evalua a que funcion la tiene que
+;;;                mandar dependiendo del siguiente conector.
+;;; OUTPUT : list - Lista con la fbf negada
 ;;;
 
 (defun evaluar-not (fbf)
@@ -484,7 +484,7 @@
 ;;;
 ;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
 ;;;                conector es =>
-;;; OUTPUT : list - Lista con los argumentos atomicos
+;;; OUTPUT : fbf - Lista con la expresion con solo conectores n-arios
 ;;;          NIL  - En caso de que los elementos sean vacios o NIL
 ;;;
 
@@ -499,8 +499,7 @@
 ;;;
 ;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
 ;;;                conector es <=>
-;;; OUTPUT : list - Lista con los argumentos atomicos
-;;;          NIL  - En caso de que los elementos sean vacios o NIL
+;;; OUTPUT : fbf - Lista con la expresion con solo conectores n-arios
 ;;;
 
 (defun evaluar-bicond (fbf)
@@ -510,10 +509,9 @@
 ;;; evaluar
 ;;; Recibe una expresion y la evalua
 ;;;
-;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
-;;;                conector es =>
-;;; OUTPUT : list - Lista con los argumentos atomicos
-;;;          NIL  - En caso de que los elementos sean vacios o NIL
+;;; INPUT  : fbf - Formula bien formada (FBF) a analizar
+;;; OUTPUT : fbf - Lista la formula bien formada con solo conectores
+;;;                 n-arios.
 ;;;
 
 (defun evaluar (fbf)
