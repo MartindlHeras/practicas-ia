@@ -533,7 +533,7 @@
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; compare
+;;; contradiccion-literales
 ;;; Recibe una expresion y construye su arbol de verdad para
 ;;; determinar si es SAT o UNSAT
 ;;;
@@ -541,35 +541,50 @@
 ;;; OUTPUT : T   - FBF es SAT
 ;;;          N   - FBF es UNSAT
 ;;;
-(defun compare (fbf)
-  fbf
-  )
+
+(defun contradiccion-literales (x y)
+  (if (positive-literal-p x)
+      (if (positive-literal-p y)
+        nil
+        (equal x (second y)))
+      (if (negative-literal-p y)
+        nil
+        (equal (second x) y))
+    ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; rama
-;;; Recibe una expresion y desarrolla la rama
+;;; contradiccion
+;;; Recibe una expresion y construye su arbol de verdad para
+;;; determinar si es SAT o UNSAT
 ;;;
 ;;; INPUT  : fbf - Formula bien formada (FBF) a analizar.
 ;;; OUTPUT : T   - FBF es SAT
 ;;;          N   - FBF es UNSAT
 ;;;
 
-(defun rama (fbf)
-(cond ((literal-p fbf)
-       (list fbf))
-      ((literal-p (first fbf))
-       (list (first fbf)))
-      ((null (second fbf))
-       nil)
-      ((eql +and+ (first fbf))
-       ;(cons (truth-tree-aux ramas (second fbf)) (truth-tree-aux ramas (append (list +and+) (cddr fbf)))))
-       (append (rama (second fbf)) (rama (cddr fbf))))
-       ;;(mapcar #'(lambda (x) (rama x)) (rest fbf))
-      ((eql +or+ (first fbf))
-       (combine-list-of-lsts (mapcar #'(lambda (x) (rama x)) (rest fbf))))
-      (t
-        fbf)
-  ))
+(defun contradiccion (fbf)
+    (if (null (rest fbf))
+       T
+      (if (find T (mapcar #'(lambda (x) (contradiccion-literales x (first fbf))) (rest fbf)))
+        nil
+        (contradiccion (rest fbf))))
+  )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; comparar
+;;; Recibe una expresion y construye su arbol de verdad para
+;;; determinar si es SAT o UNSAT
+;;;
+;;; INPUT  : fbf - Formula bien formada (FBF) a analizar.
+;;; OUTPUT : T   - FBF es SAT
+;;;          N   - FBF es UNSAT
+;;;
+(defun comparar (fbf)
+  (if (literal-p (first fbf))
+         (if (null (rest fbf))
+           T
+           (contradiccion fbf))
+       (or (comparar (first fbf)) (comparar (rest fbf)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; truth-tree-aux
@@ -582,16 +597,18 @@
 ;;;
 
 (defun truth-tree-aux (ramas fbf)
-  (cond ((literal-p fbf)
-         fbf)
-        ((literal-p (first fbf))
-         (first fbf))
-        ((null (second fbf))
-         nil)
-        ((eql +and+ (first fbf))
-         (cons (truth-tree-aux ramas (second fbf)) (truth-tree-aux ramas (append (list +and+) (cddr fbf)))))
+  (cond ((eql +and+ fbf)
+         ramas)
+        ((literal-p fbf)
+          (if (null ramas)
+            (list fbf)
+            (append ramas (list fbf))))
         ((eql +or+ (first fbf))
-          (mapcar #'(lambda(x) (append ramas (rama x))) (rest fbf)))
+         (mapcar #'(lambda(x) (truth-tree-aux ramas x)) (rest fbf)))
+        ((eql +and+ (first fbf))
+         (if (null (second fbf))
+           ramas
+           (truth-tree-aux (truth-tree-aux ramas (second fbf)) (append (list +and+) (cddr fbf)))))
         (t
           fbf)
     ))
@@ -606,7 +623,7 @@
 ;;;          N   - FBF es UNSAT
 ;;;
 (defun truth-tree (fbf)
-  (combine-list-of-lsts (truth-tree-aux '() fbf))
+  (comparar (truth-tree-aux '() (evaluar fbf)))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
