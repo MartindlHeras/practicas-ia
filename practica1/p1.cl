@@ -385,12 +385,11 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; evaluar-neg-and
-;;; Recibe una expresion y la evalua
+;;; Recibe una expresion y niega sus términos.s
 ;;;
 ;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
 ;;;                conector es ! ^
-;;; OUTPUT : list - Lista con los argumentos atomicos
-;;;          NIL  - En caso de que los elementos sean vacios o NIL
+;;; OUTPUT : fbf - Lista con los argumentos atomicos negados
 ;;;
 
 (defun evaluar-neg-and (fbf)
@@ -400,7 +399,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; evaluar-neg-or
-;;; Recibe una expresion y la evalua
+;;; Recibe una expresion y niega sus términos
 ;;;
 ;;; INPUT  : fbf - Formula bien formada (FBF) a analizar cuyo primer
 ;;;                conector es ! v
