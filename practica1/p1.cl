@@ -437,8 +437,9 @@
   (cond ((eql (first fbf) +or+)
     (append (list +and+) (evaluar-neg-or (rest fbf))))
    ((eql (first fbf) +and+)
-    (append (list +or+) (evaluar-neg-and (rest fbf)))))
-   nil)
+    (append (list +or+) (evaluar-neg-and (rest fbf))))
+    (t
+     nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; evaluar-neg-cond
