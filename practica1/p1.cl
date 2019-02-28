@@ -650,6 +650,18 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; new-paths
+;;; Actualiza los caminos nuevos con los nodos vecinos
+;;; INPUT:   path: camino actual
+;;;          node: nodo a explorar
+;;;          net: grafo
+;;; OUTPUT: Todos los posibles caminos desde el nodo
+
+(defun new-paths (path node net)
+  (mapcar #'(lambda (n) (cons n path)) (rest (assoc node net)))
+  )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; bfs
 ;;; Busqueda en anchura
 ;;; INPUT:   end: nodo final
@@ -665,18 +677,6 @@
     (if (eql node end)
       (reverse path)
       (bfs end (append (rest queue) (new-paths path node net))net))))
-  )
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; new-paths
-;;; Actualiza los caminos nuevos con los nodos vecinos
-;;; INPUT:   path: camino actual
-;;;          node: nodo a explorar
-;;;          net: grafo
-;;; OUTPUT: Todos los posibles caminos desde el nodo
-
-(defun new-paths (path node net)
-  (mapcar #'(lambda (n) (cons n path)) (rest (assoc node net)))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
