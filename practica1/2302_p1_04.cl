@@ -642,7 +642,9 @@
 ;;;          N   - FBF es UNSAT
 ;;;
 (defun truth-tree (fbf)
-  (comparar (truth-tree-aux '() (evaluar fbf)))
+  (if (null fbf)
+    nil
+    (comparar (truth-tree-aux '() (evaluar fbf))))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
