@@ -20,7 +20,7 @@
   - No hace falta comprobar si una lista es vacia con mapcar porque si se aplica
     la operación sobre la lista vacia devuelve 0 que es lo que queremos. --------- (OK)
 
-  METER MAS EJEMPLOS EN LA MEMORIA Y ACTUALIZAR LOS CODIGOS
+  METER MAS EJEMPLOS EN LA MEMORIA Y ACTUALIZAR LOS CODIGOS ---------------------- (OK)
 
 
 -------------------------------------------------------------------------------
