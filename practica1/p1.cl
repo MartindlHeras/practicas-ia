@@ -1,6 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Santiago Valderrabano Zamorano santiago.valderrabano@estudiante.uam.es
-;; Martin de las Heras Moreno matin.delasheras@estudiante.uam.es
+;; Martin de las Heras Moreno martin.delasheras@estudiante.uam.es
 ;; Pareja 4
 ;; Grupo 230
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -543,12 +543,14 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; contradiccion-literales
-;;; Recibe una expresion y construye su arbol de verdad para
-;;; determinar si es SAT o UNSAT
 ;;;
-;;; INPUT  : fbf - Formula bien formada (FBF) a analizar.
-;;; OUTPUT : T   - FBF es SAT
-;;;          N   - FBF es UNSAT
+;;; Recibe 2 elementos de tipo literal y determina si se contradicen
+;;; o no.
+;;;
+;;; INPUT  : x - Literal
+;;;          y - literal
+;;; OUTPUT : T -  Si se contradicen
+;;;          nil - Si no se contradicen
 ;;;
 
 (defun contradiccion-literales (x y)
@@ -563,12 +565,14 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; contradiccion
-;;; Recibe una expresion y construye su arbol de verdad para
-;;; determinar si es SAT o UNSAT
 ;;;
-;;; INPUT  : fbf - Formula bien formada (FBF) a analizar.
-;;; OUTPUT : T   - FBF es SAT
-;;;          N   - FBF es UNSAT
+;;; Recibe una lista con los literales de una rama y los va comparando
+;;; haciendo uso de la función contradiccion-literales y si encuentra
+;;; alguna contradiccion devuelve nil, en otro caso devuelve T
+;;;
+;;; INPUT  : fbf - Lista de atomos a analizar
+;;; OUTPUT : T   - Si no encuentra una contradiccion
+;;;          N   - Si encuentra alguna contradiccion
 ;;;
 
 (defun contradiccion (fbf)
@@ -581,13 +585,16 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; comparar
-;;; Recibe una expresion y construye su arbol de verdad para
-;;; determinar si es SAT o UNSAT
 ;;;
-;;; INPUT  : fbf - Formula bien formada (FBF) a analizar.
+;;; Recibe la lista de las listas de cada una de las rama y a partir
+;;; de mandar cada rama a contradiccion, decide si el arbol es SAT o
+;;; UNSAT
+;;;
+;;; INPUT  : fbf - Lista de listas de cada rama
 ;;; OUTPUT : T   - FBF es SAT
 ;;;          N   - FBF es UNSAT
 ;;;
+
 (defun comparar (fbf)
   (if (literal-p (first fbf))
          (if (null (rest fbf))
@@ -595,14 +602,16 @@
            (contradiccion fbf))
        (or (comparar (first fbf)) (comparar (rest fbf)))))
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; truth-tree-aux
-;;; Recibe una expresion y construye su arbol de verdad para
-;;; determinar si es SAT o UNSAT
+;;;
+;;; Recibe una expresion y construye su arbol de verdad dividiendolo en
+;;; ramas las cuales devuelve en forma de lista para ser analizadas.
 ;;;
 ;;; INPUT  : fbf - Formula bien formada (FBF) a analizar.
-;;; OUTPUT : T   - FBF es SAT
-;;;          N   - FBF es UNSAT
+;;;          ramas - lista de ramas
+;;; OUTPUT : lista - Lista que contiene cada lista de cada rama.
 ;;;
 
 (defun truth-tree-aux (ramas fbf)
