@@ -657,13 +657,13 @@
 ;;; OUTPUT: camino mas corto entre dos nodos
 ;;;         nil si no lo encuentra
 
-(defun bfs (end queue net) ;; Net es el grafo
-  (if (null queue) '() ;; Si no quedan elementos en la cola devuelve una lista vacia para cuando haga append
+(defun bfs (end queue net)
+  (if (null queue) '()
     (let* ((path (first queue))
           (node (first path)))
     (if (eql node end)
-      (reverse path) ;; Si el nodo actual es el final se invierte el camino seguido para llegar hasta ahi y se devuelve
-      (bfs end (append (rest queue) (new-paths path node net))net)))) ;; Si no lo es se actualiza con todos los vecinos del nodo actual
+      (reverse path)
+      (bfs end (append (rest queue) (new-paths path node net))net))))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -672,11 +672,10 @@
 ;;; INPUT:   path: camino actual
 ;;;          node: nodo a explorar
 ;;;          net: grafo
-;;; OUTPUT: camino mas corto entre dos nodos
-;;;         nil si no lo encuentra
+;;; OUTPUT: Todos los posibles caminos desde el nodo
 
 (defun new-paths (path node net)
-  (mapcar #'(lambda (n) (cons n path)) (rest (assoc node net))) ;; Saca todos los nodos vecinos del nodo inicial y los combina con la lista acutal para tener todas las posibles trayectorias
+  (mapcar #'(lambda (n) (cons n path)) (rest (assoc node net)))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -690,7 +689,7 @@
 
 (defun shortest-path (start end net)
   (bfs end (list (list start)) net)
-  ) ;; Porque al utilizar bfs y no tener peso en los enlaces te garantiza que el camino con menos enlaces es el mas corto y ese camino es el primer resultado del algoritmo
+  )
 
 ;; (shortest-path 'a 'f '((a b c e d) (b a d e f) (c a g) (d a b g h) (e a b g h) (f b h) (g c d e h) (h d e f g)))
 
