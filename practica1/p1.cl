@@ -66,7 +66,7 @@
 ;;;
 (defun cosine-distance-mapcar (x y)
   (if (= 0 (* (apply #'+ (mapcar #'* x x)) (apply #'+ (mapcar #'* y y))))
-    nil
+    0
     (cosine-distance (apply #'+ (mapcar #'* x y)) (* (sqrt (apply #'+ (mapcar #'* x x))) (sqrt (apply #'+ (mapcar #'* y y))))))
   )
 
@@ -649,7 +649,53 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; shortest-path-improved
+;;; bfs
+;;; Busqueda en anchura
+;;; INPUT:   end: nodo final
+;;;          queue: cola de nodos por explorar
+;;;          net: grafo
+;;; OUTPUT: camino mas corto entre dos nodos
+;;;         nil si no lo encuentra
+
+(defun bfs (end queue net) ;; Net es el grafo
+  (if (null queue) '() ;; Si no quedan elementos en la cola devuelve una lista vacia para cuando haga append
+    (let* ((path (first queue))
+          (node (first path)))
+    (if (eql node end)
+      (reverse path) ;; Si el nodo actual es el final se invierte el camino seguido para llegar hasta ahi y se devuelve
+      (bfs end (append (rest queue) (new-paths path node net))net)))) ;; Si no lo es se actualiza con todos los vecinos del nodo actual
+  )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; new-paths
+;;; Actualiza los caminos nuevos con los nodos vecinos
+;;; INPUT:   path: camino actual
+;;;          node: nodo a explorar
+;;;          net: grafo
+;;; OUTPUT: camino mas corto entre dos nodos
+;;;         nil si no lo encuentra
+
+(defun new-paths (path node net)
+  (mapcar #'(lambda (n) (cons n path)) (rest (assoc node net))) ;; Saca todos los nodos vecinos del nodo inicial y los combina con la lista acutal para tener todas las posibles trayectorias
+  )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; shortest-path
+;;; Devuelve el camino mas corto entre dos nodos en un grafo
+;;; INPUT:   start: nodo inicial
+;;;          end: nodo final
+;;;          net: grafo
+;;; OUTPUT: camino mas corto entre dos nodos
+;;;         nil si no lo encuentra
+
+(defun shortest-path (start end net)
+  (bfs end (list (list start)) net)
+  ) ;; Porque al utilizar bfs y no tener peso en los enlaces te garantiza que el camino con menos enlaces es el mas corto y ese camino es el primer resultado del algoritmo
+
+;; (shortest-path 'a 'f '((a b c e d) (b a d e f) (c a g) (d a b g h) (e a b g h) (f b h) (g c d e h) (h d e f g)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; bfs-improved
 ;;; Version de busqueda en anchura que no entra en recursion
 ;;; infinita cuando el grafo tiene ciclos
 ;;; INPUT:   end: nodo final
@@ -659,7 +705,26 @@
 ;;;         nil si no lo encuentra
 
 (defun bfs-improved (end queue net)
+  (if (null queue) '() ;; Si no quedan elementos en la cola devuelve una lista vacia para cuando haga append
+    (let* ((path (first queue))
+          (node (first path)))
+    (if (eql node end)
+      (reverse path) ;; Si el nodo actual es el final se invierte el camino seguido para llegar hasta ahi y se devuelve
+      (if (null (find node (rest path)))
+        (bfs-improved end (append (rest queue) (new-paths path node net))net)
+        nil))))
   )
 
-(defun shortest-path-improved (end queue net)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; shortest-path-improved
+;;; Version de busqueda en anchura que no entra en recursion
+;;; infinita cuando el grafo tiene ciclos
+;;; INPUT:   start: nodo inicial
+;;;          end: nodo final
+;;;          net: grafo
+;;; OUTPUT: camino mas corto entre dos nodos
+;;;         nil si no lo encuentra
+
+(defun shortest-path-improved (start end net)
+  (bfs-improved end (list (list start)) net)
   )
