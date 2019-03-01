@@ -36,7 +36,9 @@
 ;;;
 
 (defun cosine-distance (x y)
-    (- 1 (/ x y))
+    (if (equal y 0)
+      0
+      (- 1 (/ x y)))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -51,7 +53,7 @@
 
 (defun cosine-distance-rec (x y)
   (if (= 0 (* (producto-escalar-rec x x) (producto-escalar-rec y y)))
-    nil
+    0
     (cosine-distance (producto-escalar-rec x y) (* (sqrt (producto-escalar-rec x x)) (sqrt (producto-escalar-rec y y)))))
   )
 
