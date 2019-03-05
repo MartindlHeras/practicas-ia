@@ -9,9 +9,9 @@
   #### Pareja 4 Grupo 2302
 
     Santiago Valderrábano Zamorano | Martín de las Heras Moreno
-  ------------ | -------------
+  -------------------------------- | --------------------------
   santiago.valderrabano@estudiante.uam.es | martin.delasheras@estudiante.uam.es
-  @akovalde98 | @MartindlHeras
+  @ akovalde98 | @ MartindlHeras
 
   - [x] Práctica 1
   - [ ] Práctica 2
