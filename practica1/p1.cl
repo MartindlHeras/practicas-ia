@@ -692,8 +692,6 @@
   (bfs end (list (list start)) net)
   )
 
-;; (shortest-path 'a 'f '((a b c e d) (b a d e f) (c a g) (d a b g h) (e a b g h) (f b h) (g c d e h) (h d e f g)))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; bfs-improved
 ;;; Version de busqueda en anchura que no entra en recursion
