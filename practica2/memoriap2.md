@@ -325,7 +325,7 @@ En este ejercicio se pide inicializar el valor de dos estructuras que representa
 
 
 ---
-### Ejercicio 6
+#### Ejercicio 6
 
 En este ejercicio se pide que se expanda un nodo, es decir, crear una lista de nodos a los que se puede acceder desde el nodo origen.
 
@@ -380,7 +380,7 @@ La función *expand-node* crea un nodo con cada acción que se pueda realizar de
 ```
 
 ---
-### Ejercicio 7
+#### Ejercicio 7
 
 ```lisp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
