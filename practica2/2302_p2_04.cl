@@ -149,11 +149,11 @@
 ;;  the cost of travel
 
 (defun f-h-time (state sensors)
-  (first (cadr (assoc state sensors)))
+  (first (second (assoc state sensors)))
   )
 
 (defun f-h-price (state sensors)
-  (second (cadr (assoc state sensors)))
+  (second (second (assoc state sensors)))
   )
 ;;
 ;; END: Exercise 1 -- Evaluation of the heuristic
@@ -186,7 +186,13 @@
 ;;    A list of action structures with the origin in the current state and
 ;;    the destination in the states to which the current one is connected
 ;;
-(defun navigate (state lst-edges cfun  name &optional forbidden )
+(defun navigate (state lst-edges cfun name &optional forbidden)
+  (remove nil (mapcar #'(lambda (x)
+    (if (equal state (first x))
+      (if (find (cadr x) forbidden)
+        nil
+        (make-action :name name :origin state :final (cadr x) :cost (funcall cfun (caddr x))))
+      nil)) lst-edges))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -198,9 +204,11 @@
 ;; from the current city to the cities reachable from it by canal navigation.
 ;;
 (defun navigate-canal-time (state canals)
+  (navigate state canals #'first 'canal-time)
   )
 
 (defun navigate-canal-price (state canals)
+  (navigate state canals #'second 'canal-price)
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -214,9 +222,11 @@
 ;; Note that this function takes as a parameter a list of forbidden cities.
 ;;
 (defun navigate-train-time (state trains forbidden)
+  (navigate state trains #'first 'train-time forbidden)
   )
 
 (defun navigate-train-price (state trains forbidden)
+  (navigate state trains #'second 'train-price forbidden)
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -235,7 +245,7 @@
 ;;    node:       node structure that contains, in the chain of parent-nodes,
 ;;                a path starting at the initial state
 ;;    destinations: list with the names of the destination cities
-;;    mandatory:  list with the names of the cities that is mandatoryu to visit
+;;    mandatory:  list with the names of the cities that is mandatory to visit
 ;;
 ;;  Returns
 ;;    T: the path is a valid path to the final state
@@ -243,8 +253,38 @@
 ;;         of the mandatory cities are missing from the path.
 ;;
 (defun f-goal-test (node destination mandatory)
+  (if (find (node-state node) destination)
+    (if (evaluate-list (mapcar #'(lambda(x) (exists-parent-path x node)) mandatory))
+      T
+      NIL)
+    NIL)
   )
 
+(defun evaluate-list (boolean-list)
+  (if (null boolean-list)
+    T
+    (and (first boolean-list) (evaluate-list (rest boolean-list))))
+)
+
+(defun exists-parent-path (candidate path-node)
+  (cond ((null path-node)
+      NIL)
+    ((equal (node-state path-node) candidate)
+      T)
+    (t
+      (exists-parent-path candidate (node-parent path-node))))
+)
+
+(defparameter node-nevers
+   (make-node :state 'Nevers) )
+(defparameter node-paris
+   (make-node :state 'Paris :parent node-nevers))
+(defparameter node-nancy
+   (make-node :state 'Nancy :parent node-paris))
+(defparameter node-reims
+   (make-node :state 'Reims :parent node-nancy))
+(defparameter node-calais
+   (make-node :state 'Calais :parent node-reims))
 ;;
 ;; END: Exercise 3 -- Goal test
 ;;
@@ -263,17 +303,27 @@
 ;; of the problem: two nodes are equivalent if they represent the same city
 ;, and if the path they contain includes the same mandatory cities.
 ;;  Input:
-;;    node-1, node-1: the two nodes that we are comparing, each one
+;;    node-1, node-2: the two nodes that we are comparing, each one
 ;;                    defining a path through the parent links
 ;;    mandatory:  list with the names of the cities that is mandatory to visit
 ;;
 ;;  Returns
-;;    T: the two ndoes are equivalent
+;;    T: the two nodes are equivalent
 ;;    NIL: The nodes are not equivalent
 ;;
 (defun f-search-state-equal (node-1 node-2 &optional mandatory)
-  )
+  (if (equal (node-state node-1) (node-state node-2))
+    (equal-list (mapcar #'(lambda(x) (exists-parent-path x node-1)) mandatory) (mapcar #'(lambda(x) (exists-parent-path x node-2)) mandatory))
+    NIL)
+)
 
+(defun equal-list (list1 list2)
+  (if (or (null list1) (null list2))
+    T
+    (and (equal (first list1) (first list2)) (equal-list (rest list1) (rest list2))))
+  )
+(defparameter node-calais-2
+   (make-node :state 'Calais :parent node-paris))
 ;;
 ;; END: Exercise 4 -- Equal predicate for search states
 ;;
@@ -296,11 +346,25 @@
 
 (defparameter *travel-cheap*
   (make-problem
+    :states *cities*
+    :initial-state *origin*
+    :f-h #'(lambda (state) (f-h-price state *estimate*))
+    :f-goal-test #'(lambda (node) (f-goal-test node *destination* *mandatory*))
+    :f-search-state-equal #'(lambda (node-1 node-2) (f-search-equal node-1 node-2 *mandatory*))
+    :operators (list #'(lambda (node) (navigate-canal-price (node-state node) *canals*))
+                #'(lambda (node) (navigate-train-price (node-state node) *trains* *forbidden*)))
    )
-  )
+)
 
 (defparameter *travel-fast*
   (make-problem
+    :states *cities*
+    :initial-state *origin*
+    :f-h #'(lambda (state) (f-h-time state *estimate*))
+    :f-goal-test #'(lambda (node) (f-goal-test node *destination* *mandatory*))
+    :f-search-state-equal #'(lambda (node-1 node-2) (f-search-equal node-1 node-2 *mandatory*))
+    :operators (list #'(lambda (node) (navigate-canal-time (node-state node) *canals*))
+                #'(lambda (node) (navigate-train-time (node-state node) *trains* *forbidden*)))
    )
   )
 

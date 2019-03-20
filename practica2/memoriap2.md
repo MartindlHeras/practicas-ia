@@ -100,7 +100,8 @@ y devuelve la heurística correspondiente a esa ciudad, la primera de tiempo y l
 ---
 #### Ejercicio 2
 
-La primera función,
+La primera función es una generalización de la función *navigate* a la que llaman. las demás.
+Esta función toma los enlaces de los que *state* es el origen y crea tantas acciones como destinos haya cuyo coste saca usando la función *cfun*.
 
 ```lisp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -124,10 +125,17 @@ La primera función,
 ;;    A list of action structures with the origin in the current state and
 ;;    the destination in the states to which the current one is connected
 ;;
-(defun navigate (state lst-edges cfun  name &optional forbidden )
+(defun navigate (state lst-edges cfun name &optional forbidden)
+  (remove nil (mapcar #'(lambda (x)
+    (if (equal state (first x))
+      (if (find (cadr x) forbidden)
+        nil
+        (make-action :name name :origin state :final (cadr x) :cost (funcall cfun (caddr x))))
+      nil)) lst-edges))
   )
 
 ```
+Estas funciones llaman a *navigate* restringiendo su uso a los campos que quieran: pasando la lista de canales y como función *first* o *second* en función del coste que se haya especificado.
 
 ```lisp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -139,12 +147,16 @@ La primera función,
 ;; from the current city to the cities reachable from it by canal navigation.
 ;;
 (defun navigate-canal-time (state canals)
+  (navigate state canals #'first 'canal-time)
   )
 
 (defun navigate-canal-price (state canals)
+  (navigate state canals #'second 'canal-price)
   )
 
 ```
+
+Estas funciones llaman a *navigate* restringiendo su uso a los campos que quieran: pasando la lista de trenes, como función *first* o *second* en función del coste que se haya especificado y luego opcionalmente una lista de destinos prohibidos.
 
 ```lisp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -158,27 +170,34 @@ La primera función,
 ;; Note that this function takes as a parameter a list of forbidden cities.
 ;;
 (defun navigate-train-time (state trains forbidden)
+  (navigate state trains #'first 'train-time forbidden)
   )
 
 (defun navigate-train-price (state trains forbidden)
+  (navigate state trains #'second 'train-price forbidden)
   )
 ```
 
 ---
 #### Ejercicio 3
 
+En este ejercicio tenemos que ver si se ha accedido a un nodo de manera correcta, recorriendo todos los obligatorios y que esté en la lista de posibles destinos.
+Para ello hacemos uso de dos funciones auxiliares:
+ * La primera comprueba que una ciudad esté en el path del nodo.
+ * La segunda evalúa una lista haciendo and de todos sus elementos.
+
 ```lisp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; Goal test
 ;;
-;;  Returns T or NIl depending on whether a path leads to a final state
+;;  Returns T or NIL depending on whether a path leads to a final state
 ;;
 ;;  Input:
 ;;    node:       node structure that contains, in the chain of parent-nodes,
 ;;                a path starting at the initial state
 ;;    destinations: list with the names of the destination cities
-;;    mandatory:  list with the names of the cities that is mandatoryu to visit
+;;    mandatory:  list with the names of the cities that is mandatory to visit
 ;;
 ;;  Returns
 ;;    T: the path is a valid path to the final state
@@ -186,7 +205,27 @@ La primera función,
 ;;         of the mandatory cities are missing from the path.
 ;;
 (defun f-goal-test (node destination mandatory)
+  (if (find (node-state node) destination)
+    (if (evaluate-list (mapcar #'(lambda(x) (exists-parent-path x node)) mandatory))
+      T
+      NIL)
+    NIL)
   )
+
+(defun evaluate-list (boolean-list)
+  (if (null boolean-list)
+    T
+    (and (first boolean-list) (evaluate-list (rest boolean-list))))
+)
+
+(defun exists-parent-path (candidate path-node)
+  (cond ((null path-node)
+      NIL)
+    ((equal (node-state path-node) candidate)
+      T)
+    (t
+      (exists-parent-path candidate (node-parent path-node))))
+)
 
 
 ```
@@ -194,6 +233,14 @@ La primera función,
 
 ---
 #### Ejercicio 4
+
+En este ejercicio hay que comparar dos nodos para ver si son iguales y tiene que comprobar dos cosas:
+
+* Corresponden a la misma ciudad
+* La lista de ciudades de entre las obligadas que aún ha de visitar coincide
+
+La función principal comprueba que los dos nodos sean de la misma ciudad y comprueba las ciudades obligatorias por las que ha pasado y compara entre los dos las que les quedan.
+Para esto hacemos uso de una función auxiliar que compara dos listas para ver si son iguales y de la función *exists-parent-path* del ejercicio anterior.
 
 ```lisp
 
@@ -212,5 +259,341 @@ La primera función,
 ;;    NIL: The nodes are not equivalent
 ;;
 (defun f-search-state-equal (node-1 node-2 &optional mandatory)
+  (if (equal (node-state node-1) (node-state node-2))
+    (equal-list (mapcar #'(lambda(x) (exists-parent-path x node-1)) mandatory) (mapcar #'(lambda(x) (exists-parent-path x node-2)) mandatory))
+    NIL)
+)
+
+(defun equal-list (list1 list2)
+  (if (or (null list1) (null list2))
+    T
+    (and (equal (first list1) (first list2)) (equal-list (rest list1) (rest list2))))
   )
+```
+
+<br>
+***
+<br>
+
+## 2. Formalización del problema
+
+
+#### Ejercicio 5
+
+En este ejercicio se pide inicializar el valor de dos estructuras que representan los problemas de tiempo y precio mínimos, ambas tienen las mismas ciudades, el mismo punto de origen y las funciones de heurística y navegación se diferencian en que cada una utiliza la específica de precio o tiempo.
+
+```lisp
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  BEGIN: Exercise 5 -- Define the problem structure
+;;
+;;
+;;  Note that the connectivity of the netowrk using canals and trains
+;;  holes is implicit in the operators: there is a list of two
+;;  operators, each one takes a single parameter: a state name, and
+;;  returns a list of actions, indicating to which states one can move
+;;  and at which cost. The lists of edges are placed as constants as
+;;  the second parameter of the navigate operators.
+;;
+;;  There are two problems defined: one minimizes the travel time,
+;;  the other minimizes the cost
+
+(defparameter *travel-cheap*
+  (make-problem
+    :states *cities*
+    :initial-state *origin*
+    :f-h #'(lambda (state) (f-h-price state *estimate*))
+    :f-goal-test #'(lambda (node) (f-goal-test node *destination* *mandatory*))
+    :f-search-state-equal #'(lambda (node-1 node-2) (f-search-equal node-1 node-2 *mandatory*))
+    :operators (list #'(lambda (node) (navigate-canal-price (node-state node) *canals*))
+                #'(lambda (node) (navigate-train-price (node-state node) *trains* *forbidden*)))
+   )
+)
+
+(defparameter *travel-fast*
+  (make-problem
+    :states *cities*
+    :initial-state *origin*
+    :f-h #'(lambda (state) (f-h-time state *estimate*))
+    :f-goal-test #'(lambda (node) (f-goal-test node *destination* *mandatory*))
+    :f-search-state-equal #'(lambda (node-1 node-2) (f-search-equal node-1 node-2 *mandatory*))
+    :operators (list #'(lambda (node) (navigate-canal-time (node-state node) *canals*))
+                #'(lambda (node) (navigate-train-time (node-state node) *trains* *forbidden*)))
+   )
+  )
+```
+
+
+---
+### Ejercicio 6
+
+```lisp
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; BEGIN Exercise 6: Expand node
+;;
+;; The main function of this section is "expand-node", which receives
+;; a node structure (the node to be expanded) and a problem structure.
+;; The problem structure has a list of navigation operators, and we
+;; are interested in the states that can be reached using anuy one of
+;; them.
+;;
+;; So, in the expand-node function, we iterate (using mapcar) on all
+;; the operators of the problem and, for each one of them, we call
+;; expand-node-operator, to determine the states that can be reached
+;; using that operator.
+;;
+;; The operator gives us back a list of actions. We iterate again on
+;; this list of action and, for each one, we call expand-node-action
+;; that creates a node structure with the node that can be reached
+;; using that action.
+;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  Creates a list with all the nodes that can be reached from the
+;;  current one using all the operators in a given problem
+;;
+;;  Input:
+;;    node:   the node structure from which we start.
+;;    problem: the problem structure with the list of operators
+;;
+;;  Returns:
+;;    A list (node_1,...,node_n) of nodes that can be reached from the
+;;    given one
+;;
+(defun expand-node (node problem)
+  )
+```
+
+---
+### Ejercicio 7
+
+```lisp
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;  BEGIN Exercise 7 -- Node list management
+;;;
+;;;  Merges two lists of nodes, one of them ordered with respect to a
+;;;  given strategy, keeping the result ordered with respect to the
+;;;  same strategy.
+;;;
+;;;  This is the idea: suppose that the ordering is simply the
+;;;  ordering of natural numbers. We have a "base" list that is
+;;;  already ordered, for example:
+;;;      lst1 --> '(3 6 8 10 13 15)
+;;;
+;;;  and a list that is not necessarily ordered:
+;;;
+;;;      nord --> '(11 5 9 16)
+;;;
+;;;  the call (insert-nodes nord lst1 #'<) would produce
+;;;
+;;;    (3 5 6 8 9 10 11 13 15 16)
+;;;
+;;;  The functionality is divided in three functions. The first,
+;;;  insert-node, inserts a node in a list keeping it ordered. The
+;;;  second, insert-nodes, insert the nodes of the non-ordered list
+;;;  into the ordered, one by one, so that the two lists are merged.
+;;;  The last function, insert-node-strategy is a simple interface that
+;;;  receives a strategy, extracts from it the comparison function,
+;;;  and calls insert-nodes
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; Inserts a list of nodes in an ordered list keeping the result list
+;; ordered with respect to the given comparison function
+;;
+;; Input:
+;;    nodes: the (possibly unordered) node list to be inserted in the
+;;           other list
+;;    lst-nodes: the (ordered) list of nodes in which the given nodes
+;;               are to be inserted
+;;    node-compare-p: a function node x node --> 2 that returns T if the
+;;                    first node comes first than the second.
+;;
+;; Returns:
+;;    An ordered list of nodes which includes the nodes of lst-nodes and
+;;    those of the list "nodes@. The list is ordered with respect to the
+;;   criterion node-compare-p.
+;;
+(defun insert-nodes (nodes lst-nodes node-compare-p)
+  )
+```
+
+```lisp
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; Inserts a list of nodes in an ordered list keeping the result list
+;; ordered with respect the given strategy
+;;
+;; Input:
+;;    nodes: the (possibly unordered) node list to be inserted in the
+;;           other list
+;;    lst-nodes: the (ordered) list of nodes in which the given nodes
+;;               are to be inserted
+;;    strategy: the strategy that gives the criterion for node
+;;              comparison
+;;
+;; Returns:
+;;    An ordered list of nodes which includes the nodes of lst-nodes and
+;;    those of the list "nodes@. The list is ordered with respect to the
+;;    criterion defined in te strategy.
+;;
+;; Note:
+;;   You will note that this function is just an interface to
+;;   insert-nodes: it allows to call using teh strategy as a
+;;   parameter; all it does is to "extract" the compare function and
+;;   use it to call insert-nodes.
+;;
+(defun insert-nodes-strategy (nodes lst-nodes strategy)
+  )
+```
+
+<br>
+***
+<br>
+
+## 2. Búsqueda
+
+
+#### Ejercicio 8
+
+```lisp
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; BEGIN: Exercise 8 -- Definition of the A* strategy
+;;
+;; A strategy is, basically, a comparison function between nodes to tell
+;; us which nodes should be analyzed first. In the A* strategy, the first
+;; node to be analyzed is the one with the smallest value of g+h
+;;
+(defparameter *A-star*
+  (make-strategy ))
+```
+
+---
+#### Ejercicio 9
+
+```lisp
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;    BEGIN Exercise 9: Search algorithm
+;;;
+;;;    Searches a path that solves a given problem using a given search
+;;;    strategy. Here too we have two functions: one is a simple
+;;;    interface that extracts the relevant information from the
+;;;    problem and strategy structure, builds an initial open-nodes
+;;;    list (which contains only the starting node defined by the
+;;;    state), and initial closed node list (the empty list), and calls
+;;;    the auxiliary function.
+;;;
+;;;    The auxiliary is a recursive function that extracts nodes from
+;;;    the open list, expands them, inserts the neighbors in the
+;;;    open-list, and the expanded node in the closed list. There is a
+;;;    caveat: with this version of the algorithm, a node can be
+;;;    inserted in the open list more than once. In this case, if we
+;;;    extract a node in the open list and the following two condition old:
+;;;
+;;;     the node we extract is already in the closed list (it has
+;;;     already been expanded)
+;;;       and
+;;;     the path estimation that we have is better than the one we
+;;;     obtain from the node in the open list
+;;;
+;;;     then we ignore the node.
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  Auxiliary search function (the one that actually does all the work
+;;
+;;  Input:
+;;    problem: the problem structure from which we get the general
+;;             information (goal testing function, action operatos, etc.
+;;    open-nodes: the list of open nodes, nodes that are waiting to be
+;;                visited
+;;    closed-nodes: the list of closed nodes: nodes that have already
+;;                  been visited
+;;    strategy: the strategy that decide which node is the next extracted
+;;              from the open-nodes list
+;;
+;;    Returns:
+;;     NIL: no path to the destination nodes
+;;     If these is a path, returns the node containing the final state.
+;;
+;;     Note that what is returned is quite a complex structure: the
+;;     node contains in "parent" the node that comes before in the
+;;     path, that contains another one in "parents" and so on until
+;;     the initial one. So, what we have here is a rather complex
+;;     nested structure that contains not only the final node but the
+;;     whole path from the starting node to the final.
+;;
+(defun graph-search-aux (problem open-nodes closed-nodes strategy)
+  )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  Interface function for the graph search.
+;;
+;;  Input:
+;;    problem: the problem structure from which we get the general
+;;             information (goal testing function, action operatos,
+;;             starting node, heuristic, etc.
+;;    strategy: the strategy that decide which node is the next extracted
+;;              from the open-nodes list
+;;
+;;    Returns:
+;;     NIL: no path to the destination nodes
+;;     If these is a path, returns the node containing the final state.
+;;
+;;    See the graph-search-aux for the complete structure of the
+;;    returned node.
+;;    This function simply prepares the data for the auxiliary
+;;    function: creates an open list with a single node (the source)
+;;    and an empty closed list.
+;;
+(defun graph-search (problem strategy)
+  )
+
+;
+;  A* search is simply a function that solves a problem using the A* strategy
+;
+(defun a-star-search (problem)
+  )
+```
+
+---
+#### Ejercicio 10
+
+```lisp
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;    BEGIN Exercise 10: Solution path
+;;;
+;*** solution-path ***
+
+(defun solution-path (node)
+  )
+
+;*** action-sequence ***
+; Visualize sequence of actions
+
+(defun action-sequence (node)
+  )
+```
+
+---
+#### Ejercicio 11
+
+```lisp
+```
+
+---
+#### Ejercicio 12
+
+```lisp
 ```
