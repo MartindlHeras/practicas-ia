@@ -350,7 +350,7 @@
     :initial-state *origin*
     :f-h #'(lambda (state) (f-h-price state *estimate*))
     :f-goal-test #'(lambda (node) (f-goal-test node *destination* *mandatory*))
-    :f-search-state-equal #'(lambda (node-1 node-2) (f-search-equal node-1 node-2 *mandatory*))
+    :f-search-state-equal #'(lambda (node-1 node-2) (f-search-state-equal node-1 node-2 *mandatory*))
     :operators (list #'(lambda (node) (navigate-canal-price (node-state node) *canals*))
                 #'(lambda (node) (navigate-train-price (node-state node) *trains* *forbidden*)))
    )
@@ -362,7 +362,7 @@
     :initial-state *origin*
     :f-h #'(lambda (state) (f-h-time state *estimate*))
     :f-goal-test #'(lambda (node) (f-goal-test node *destination* *mandatory*))
-    :f-search-state-equal #'(lambda (node-1 node-2) (f-search-equal node-1 node-2 *mandatory*))
+    :f-search-state-equal #'(lambda (node-1 node-2) (f-search-state-equal node-1 node-2 *mandatory*))
     :operators (list #'(lambda (node) (navigate-canal-time (node-state node) *canals*))
                 #'(lambda (node) (navigate-train-time (node-state node) *trains* *forbidden*)))
    )
@@ -409,8 +409,19 @@
 ;;    given one
 ;;
 (defun expand-node (node problem)
+  (mapcar #'(lambda (node-action) (make-node
+            :state (action-final node-action)
+            :parent node
+            :action node-action
+            :g (+ (node-g node) (action-cost node-action))
+            :h (funcall (problem-f-h problem) (action-final node-action))
+            :f (+ (funcall (problem-f-h problem) (action-final node-action)) (+ (node-g node) (action-cost node-action)))))
+            (append (funcall (first (problem-operators problem)) node)
+                    (funcall (second (problem-operators problem)) node)))
   )
 
+(defparameter node-marseille-ex6
+   (make-node :state 'Marseille :depth 12 :g 10 :f 20) )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;  BEGIN Exercise 7 -- Node list management

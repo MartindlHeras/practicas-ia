@@ -327,6 +327,10 @@ En este ejercicio se pide inicializar el valor de dos estructuras que representa
 ---
 ### Ejercicio 6
 
+En este ejercicio se pide que se expanda un nodo, es decir, crear una lista de nodos a los que se puede acceder desde el nodo origen.
+
+La función *expand-node* crea un nodo con cada acción que se pueda realizar desde el nodo (las acciones se sacan aplicando los operadores del problema pasado como argumento al nodo) y tras esto inicializa correctamente todos los valores de los nuevos nodos.
+
 ```lisp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -363,6 +367,15 @@ En este ejercicio se pide inicializar el valor de dos estructuras que representa
 ;;    given one
 ;;
 (defun expand-node (node problem)
+  (mapcar #'(lambda (node-action) (make-node
+            :state (action-final node-action)
+            :parent node
+            :action node-action
+            :g (+ (node-g node) (action-cost node-action))
+            :h (funcall (problem-f-h problem) (action-final node-action))
+            :f (+ (funcall (problem-f-h problem) (action-final node-action)) (+ (node-g node) (action-cost node-action)))))
+            (append (funcall (first (problem-operators problem)) node)
+                    (funcall (second (problem-operators problem)) node)))
   )
 ```
 

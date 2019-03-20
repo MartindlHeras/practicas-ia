@@ -16,10 +16,10 @@ Enlace a [moodle](https://moodle.uam.es/course/view.php?id=62174).
 
 Correo de Jessica: jessica.lopez-hazas@inv.uam.es
 
-**Falta por hacer**
+#### Falta por hacer
 
  - [ ] Meter pruebas ej 1 en la memoria
  - [ ] Meter pruebas ej 2 en la memoria
  - [ ] Meter pruebas ej 3 en la memoria
  - [ ] Meter pruebas ej 4 en la memoria
- - [ ] Meter pruebas ej 5 en la memoria
+ - [ ] Meter pruebas ej 6 en la memoria
