@@ -252,13 +252,7 @@
 ;;    NIL: invalid path: either the final city is not a destination or some
 ;;         of the mandatory cities are missing from the path.
 ;;
-(defun f-goal-test (node destination mandatory)
-  (if (find (node-state node) destination)
-    (if (evaluate-list (mapcar #'(lambda(x) (exists-parent-path x node)) mandatory))
-      T
-      NIL)
-    NIL)
-  )
+
 
 (defun evaluate-list (boolean-list)
   (if (null boolean-list)
@@ -268,12 +262,22 @@
 
 (defun exists-parent-path (candidate path-node)
   (cond ((null path-node)
-      NIL)
+         NIL)
     ((equal (node-state path-node) candidate)
-      T)
+     T)
     (t
-      (exists-parent-path candidate (node-parent path-node))))
-)
+     (exists-parent-path candidate (node-parent path-node))))
+  )
+
+
+(defun f-goal-test (node destination mandatory)
+  (if (find (node-state node) destination)
+    (if (evaluate-list (mapcar #'(lambda(x) (exists-parent-path x node)) mandatory))
+      T
+      NIL)
+    NIL)
+  )
+
 
 (defparameter node-nevers
    (make-node :state 'Nevers) )
@@ -311,17 +315,21 @@
 ;;    T: the two nodes are equivalent
 ;;    NIL: The nodes are not equivalent
 ;;
-(defun f-search-state-equal (node-1 node-2 &optional mandatory)
-  (if (equal (node-state node-1) (node-state node-2))
-    (equal-list (mapcar #'(lambda(x) (exists-parent-path x node-1)) mandatory) (mapcar #'(lambda(x) (exists-parent-path x node-2)) mandatory))
-    NIL)
-)
+
 
 (defun equal-list (list1 list2)
   (if (or (null list1) (null list2))
     T
     (and (equal (first list1) (first list2)) (equal-list (rest list1) (rest list2))))
   )
+
+(defun f-search-state-equal (node-1 node-2 &optional mandatory)
+  (if (equal (node-state node-1) (node-state node-2))
+    (equal-list (mapcar #'(lambda(x) (exists-parent-path x node-1)) mandatory) (mapcar #'(lambda(x) (exists-parent-path x node-2)) mandatory))
+    NIL)
+)
+
+
 (defparameter node-calais-2
    (make-node :state 'Calais :parent node-paris))
 ;;
@@ -422,6 +430,10 @@
 
 (defparameter node-marseille-ex6
    (make-node :state 'Marseille :depth 12 :g 10 :f 20) )
+
+(defparameter lst-nodes-ex6
+ (expand-node node-marseille-ex6 *travel-fast*))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;  BEGIN Exercise 7 -- Node list management
@@ -452,6 +464,16 @@
 ;;;  and calls insert-nodes
 
 
+
+(defun insert-node (node lst-nodes node-compare-p)
+  (cond ((null lst-nodes)
+      node)
+    ((funcall node-compare-p node (first lst-nodes))
+      (append (list node) lst-nodes))
+    (t
+      (append (list (first lst-nodes)) (insert-node node (rest lst-nodes)  node-compare-p)))
+  ))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; Inserts a list of nodes in an ordered list keeping the result list
@@ -471,6 +493,10 @@
 ;;   criterion node-compare-p.
 ;;
 (defun insert-nodes (nodes lst-nodes node-compare-p)
+  (if (null nodes)
+      lst-nodes
+      (insert-nodes (rest nodes) (insert-node (first nodes) lst-nodes node-compare-p) node-compare-p))
+
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -498,8 +524,32 @@
 ;;   use it to call insert-nodes.
 ;;
 (defun insert-nodes-strategy (nodes lst-nodes strategy)
+  (insert-nodes nodes lst-nodes (strategy-node-compare-p strategy))
   )
 
+
+(defun node-g-<= (node-1 node-2)
+    (<= (node-g node-1)
+        (node-g node-2)))
+
+(defparameter *uniform-cost*
+  (make-strategy
+   :name 'uniform-cost
+   :node-compare-p #'node-g-<=))
+
+(defparameter node-paris-ex7
+  (make-node :state 'Paris :depth 0 :g 0 :f 0) )
+
+(defparameter node-nancy-ex7
+  (make-node :state 'Nancy :depth 2 :g 50 :f 50) )
+
+
+(defparameter sol-ex7 (insert-nodes-strategy (list node-paris-ex7 node-nancy-ex7)
+                                             lst-nodes-ex6
+                                             *uniform-cost*))
+
+(mapcar #'(lambda (x) (node-state x)) sol-ex7) ; -> (PARIS NANCY TOULOUSE)
+(mapcar #'(lambda (x) (node-g x)) sol-ex7) ; -> (0 50 75)
 ;;
 ;;    END: Exercize 7 -- Node list management
 ;;
@@ -516,7 +566,9 @@
 ;; node to be analyzed is the one with the smallest value of g+h
 ;;
 (defparameter *A-star*
-  (make-strategy ))
+  (make-strategy
+   :name 'A-star
+   :node-compare-p #'(lambda (node-1 node-2) (<= (node-f node-1) (node-f node-2)))))
 
 ;;
 ;; END: Exercise 8 -- Definition of the A* strategy

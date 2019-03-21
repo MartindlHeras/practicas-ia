@@ -8,7 +8,7 @@ santiago.valderrabano@estudiante.uam.es | martin.delasheras@estudiante.uam.es
 
 
 <br>
-***
+<hr>
 
 ## Índice
 
@@ -45,7 +45,7 @@ santiago.valderrabano@estudiante.uam.es | martin.delasheras@estudiante.uam.es
   * Ejercicio 12
 
   <br>
-  ***
+  <hr>
   <br>
 
 ## 1. Modelización del problema
@@ -272,7 +272,7 @@ Para esto hacemos uso de una función auxiliar que compara dos listas para ver s
 ```
 
 <br>
-***
+<hr>
 <br>
 
 ## 2. Formalización del problema
@@ -465,7 +465,7 @@ La función *expand-node* crea un nodo con cada acción que se pueda realizar de
 ```
 
 <br>
-***
+<hr>
 <br>
 
 ## 2. Búsqueda
