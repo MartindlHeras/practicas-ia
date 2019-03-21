@@ -527,6 +527,7 @@
   (insert-nodes nodes lst-nodes (strategy-node-compare-p strategy))
   )
 
+;;; PRUEBAS
 
 (defun node-g-<= (node-1 node-2)
     (<= (node-g node-1)
