@@ -96,6 +96,44 @@ y devuelve la heurística correspondiente a esa ciudad, la primera de tiempo y l
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ```
+<br>
+  ##### Ejemplos:
+
+```lisp
+
+;; Ejemplos time
+
+CL-USER> (f-h-time 'Nantes *estimate*)
+ 75.0
+
+CL-USER> (f-h-time 'Marseille *estimate*)
+145.0
+
+CL-USER> (f-h-time 'Lyon *estimate*)
+105.0
+
+CL-USER> (f-h-time 'Madrid *estimate*)
+NIL
+
+CL-USER> (f-h-time NIL *estimate*)
+NIL
+
+
+;; Ejemplos price
+
+CL-USER> (f-h-price 'Nantes *estimate*)
+0.0
+
+CL-USER> (f-h-price 'Marseille *estimate*)
+0.0
+
+CL-USER> (f-h-price 'Madrid *estimate*)
+NIL
+
+CL-USER> (f-h-price NIL *estimate*)
+NIL
+
+```
 
 ---
 #### Ejercicio 2
@@ -125,7 +163,7 @@ Esta función toma los enlaces de los que *state* es el origen y crea tantas acc
 ;;    A list of action structures with the origin in the current state and
 ;;    the destination in the states to which the current one is connected
 ;;
-(defun navigate (state lst-edges cfun name &optional forbidden)
+(defun navigate (state lst-edges cfun name &optional (forbidden '()))
   (remove nil (mapcar #'(lambda (x)
     (if (equal state (first x))
       (if (find (cadr x) forbidden)
@@ -178,6 +216,42 @@ Estas funciones llaman a *navigate* restringiendo su uso a los campos que quiera
   )
 ```
 
+<br>
+  ##### Ejemplos:
+
+```lisp
+
+;; Ejemplos canal
+
+CL-USER> (navigate-canal-time 'Avignon *canals*)
+(#S(ACTION :NAME CANAL-TIME :ORIGIN AVIGNON :FINAL MARSEILLE :COST 35.0))
+
+CL-USER> (navigate-canal-price 'Avignon *canals*)
+(#S(ACTION :NAME CANAL-PRICE :ORIGIN AVIGNON :FINAL MARSEILLE :COST 10.0))
+
+CL-USER> (navigate-canal-time 'Orleans *canals*)
+NIL
+
+;; Ejemplos train
+
+CL-USER> (navigate-train-price 'Avignon *trains* '())
+(#S(ACTION :NAME TRAIN-PRICE :ORIGIN AVIGNON :FINAL LYON :COST 40.0)
+ #S(ACTION :NAME TRAIN-PRICE :ORIGIN AVIGNON :FINAL MARSEILLE :COST 25.0))
+
+CL-USER> (navigate-train-price 'Avignon *trains* '(Marseille))
+(#S(ACTION :NAME TRAIN-PRICE :ORIGIN AVIGNON :FINAL LYON :COST 40.0))
+
+CL-USER> (navigate-train-time 'Avignon *trains* '())
+(#S(ACTION :NAME TRAIN-TIME :ORIGIN AVIGNON :FINAL LYON :COST 30.0)
+#S(ACTION :NAME TRAIN-TIME :ORIGIN AVIGNON :FINAL MARSEILLE :COST 16.0))
+
+CL-USER> (navigate-train-time 'Avignon *trains* '(Marseille))
+(#S(ACTION :NAME TRAIN-TIME :ORIGIN AVIGNON :FINAL LYON :COST 30.0))
+
+CL-USER> (navigate-train-price 'Madrid *trains* '())
+NIL
+
+```
 ---
 #### Ejercicio 3
 
@@ -669,21 +743,56 @@ Finalmente la función *a-star-search* simplemente llama a *graph-search* pasán
 ---
 #### Ejercicio 10
 
+En este ejecicio se nos pide que dado un nodo resultado de una búsqueda, creemos una lista o bien de los nombres de las ciudades del camino, o bien de las acciones tomadas para llegar a ese nodo.
+
+ * *solution-path*:
+
+  En esta primera función, hacemos lo siguiente:
+    1. Si el nodo es null, devolvemos nil.
+    2. Si el padre del nodo es null, significa que es el origen y por tanto devolvemos su nombre.
+    3. En otro caso, concatenamos lo que nos devuelva la recursion de la función con el padre del nodo y el nombre del nodo.
+
 ```lisp
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;    BEGIN Exercise 10: Solution path
 ;;;
 ;*** solution-path ***
 
 (defun solution-path (node)
+  (cond ((null node)
+          nil)
+        ((null (node-parent node))
+          (list (node-state node)))
+        (t
+          (append (solution-path (node-parent node)) (list (node-state node)))))
   )
+```
 
+* *action-sequence*:
+
+ En esta segunda función, hacemos lo siguiente:
+   1. Si el nodo es null, devolvemos nil.
+   2. Si el padre del padre del nodo es null, significa que es el primer nodo al cual que se llega por medio de una acción y por tanto devolvemos la misma (condición de parada).
+   3. En otro caso, concatenamos lo que nos devuelva la recursion de la función con el padre del nodo y la acción del nodo.
+
+```lisp
 ;*** action-sequence ***
 ; Visualize sequence of actions
 
 (defun action-sequence (node)
+  (cond ((null node)
+          nil)
+        ((null (node-parent (node-parent node)))
+          (list (node-action node)))
+        (t
+          (append (action-sequence (node-parent node)) (list (node-action node)))))
   )
+
+;;;
+;;;    END Exercise 10: Solution path / action sequence
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ```
 
 ---

@@ -120,13 +120,13 @@
     (Limoges (100.0 0.0)) (Roenne (85.0 0.0)) (Lyon (105.0 0.0))
     (Toulouse (130.0 0.0)) (Avignon (135.0 0.0)) (Marseille (145.0 0.0))))
 
-(defparameter *origin* 'Marseille)
+(defparameter *origin* 'Nancy)
 
-(defparameter *destination* '(Calais))
+(defparameter *destination* '(Nantes))
 
-(defparameter *forbidden*  '(Avignon))
+(defparameter *forbidden*  '(Nantes))
 
-(defparameter *mandatory* '(Paris))
+(defparameter *mandatory* '())
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -186,7 +186,7 @@
 ;;    A list of action structures with the origin in the current state and
 ;;    the destination in the states to which the current one is connected
 ;;
-(defun navigate (state lst-edges cfun name &optional forbidden)
+(defun navigate (state lst-edges cfun name &optional (forbidden '()))
   (remove nil (mapcar #'(lambda (x)
     (if (equal state (first x))
       (if (find (cadr x) forbidden)
@@ -312,7 +312,7 @@
     (and (equal (first list1) (first list2)) (equal-list (rest list1) (rest list2))))
   )
 
-(defun f-search-state-equal (node-1 node-2 &optional mandatory)
+(defun f-search-state-equal (node-1 node-2 &optional (mandatory '()))
   (if (equal (node-state node-1) (node-state node-2))
     (equal-list (mapcar #'(lambda(x) (exists-parent-path x node-1)) mandatory) (mapcar #'(lambda(x) (exists-parent-path x node-2)) mandatory))
     NIL)
@@ -663,12 +663,24 @@
 ;*** solution-path ***
 
 (defun solution-path (node)
+  (cond ((null node)
+          nil)
+        ((null (node-parent node))
+          (list (node-state node)))
+        (t
+          (append (solution-path (node-parent node)) (list (node-state node)))))
   )
 
 ;*** action-sequence ***
 ; Visualize sequence of actions
 
 (defun action-sequence (node)
+  (cond ((null node)
+          nil)
+        ((null (node-parent (node-parent node)))
+          (list (node-action node)))
+        (t
+          (append (action-sequence (node-parent node)) (list (node-action node)))))
   )
 
 ;;;
