@@ -447,7 +447,7 @@
 
 (defun insert-node (node lst-nodes node-compare-p)
   (cond ((null lst-nodes)
-      node)
+      (list node))
     ((funcall node-compare-p node (first lst-nodes))
       (append (list node) lst-nodes))
     (t
@@ -588,16 +588,26 @@
 ;;     whole path from the starting node to the final.
 ;;
 
+(defun compare-g-nodes (problem node closed-nodes)
+  (cond ((null closed-nodes)
+          t)
+        ((not (funcall (problem-f-search-state-equal problem) node (first closed-nodes)))
+          (compare-g-nodes problem node (rest closed-nodes)))
+        (t
+          (if (< (node-g node) (node-g (first closed-nodes)))
+            t
+            nil))))
+
 (defun graph-search-aux (problem open-nodes closed-nodes strategy)
   (cond ((null open-nodes)
           nil)
         ((funcall (problem-f-goal-test problem) (first open-nodes))
           (first open-nodes))
-        ((find T (mapcar #'(lambda(x) (funcall (problem-f-search-state-equal problem) (first open-nodes) x)) closed-nodes))
+        ((not (compare-g-nodes problem (first open-nodes) closed-nodes))
           (graph-search-aux problem (rest open-nodes) closed-nodes strategy))
         (t
           (graph-search-aux problem (insert-nodes-strategy (expand-node (first open-nodes) problem) (rest open-nodes) strategy)
-                  (append closed-nodes (list (first open-nodes))) strategy))
+                  (append (list (first open-nodes)) closed-nodes) strategy))
         ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -628,7 +638,8 @@
         :action nil
         :g 0
         :h (funcall (problem-f-h problem) (problem-initial-state problem))
-        :f (funcall (problem-f-h problem) (problem-initial-state problem)))) '() strategy)
+        :f (funcall (problem-f-h problem) (problem-initial-state problem))))
+        '() strategy)
   )
 
 ;
