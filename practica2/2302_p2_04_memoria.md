@@ -32,7 +32,7 @@ santiago.valderrabano@estudiante.uam.es | martin.delasheras@estudiante.uam.es
   * Ejercicio 7
 
 
-  #### 3. Búsqueda
+ #### 3. Búsqueda
 
   * Ejercicio 8
 
