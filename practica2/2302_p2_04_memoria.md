@@ -523,6 +523,12 @@ En este ejecicio hemos definido el algoritmo *A-star* que compara el parámetro 
 ---
 #### Ejercicio 9
 
+En este ejercicio se pide implementar una función que realice la búsqueda para un problema según una estrategia dada, para ello hemos usado dos funciones auxiliares:
+
+ * *compare-g-nodes*:
+
+ Esta función se encarga de comparar si el nodo a explorar está o no en la lista de explorados y en caso de estar compara su valor de g con el del nodo que ya se encuentra en la lista. Si este valor es menor entonces devuelve True y en caso contrario False.
+
 ```lisp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -553,6 +559,26 @@ En este ejecicio hemos definido el algoritmo *A-star* que compara el parámetro 
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun compare-g-nodes (problem node closed-nodes)
+  (cond ((null closed-nodes)
+          t)
+        ((not (funcall (problem-f-search-state-equal problem) node (first closed-nodes)))
+          (compare-g-nodes problem node (rest closed-nodes)))
+        (t
+          (if (< (node-g node) (node-g (first closed-nodes)))
+            t
+            nil))))
+```
+  * *graph-search-aux*:
+
+  Esta función es la que se encarga de la búsqueda en sí. Recorre la lista de nodos abiertos de la siguiente forma:
+
+    1. Si la lista de nodos abierta es vacía, devolvemos nil ya que eso implica que no hay ningún camino posible.
+    2. Si el primer elemento de la lista de abiertos es el nodo final, devuelve ese nodo, ya que es el final.
+    3. Si el primer elemento de la lista de abiertos está en la lista de cerrados pero su g es mayor que la de su igual en la lista continuamos la búsqueda quitando ese elemento de la lista de abiertos.
+    4. En caso contrario llama otra vez a *graph-search-aux* actualizando la lista de abiertos con los accesibles desde ese nodo y añadiendo el mismo a la lista de cerrados.
+
+```lisp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -560,7 +586,7 @@ En este ejecicio hemos definido el algoritmo *A-star* que compara el parámetro 
 ;;
 ;;  Input:
 ;;    problem: the problem structure from which we get the general
-;;             information (goal testing function, action operatos, etc.
+;;             information (goal testing function, action operators, etc.
 ;;    open-nodes: the list of open nodes, nodes that are waiting to be
 ;;                visited
 ;;    closed-nodes: the list of closed nodes: nodes that have already
@@ -579,9 +605,24 @@ En este ejecicio hemos definido el algoritmo *A-star* que compara el parámetro 
 ;;     nested structure that contains not only the final node but the
 ;;     whole path from the starting node to the final.
 ;;
-(defun graph-search-aux (problem open-nodes closed-nodes strategy)
-  )
 
+(defun graph-search-aux (problem open-nodes closed-nodes strategy)
+  (cond ((null open-nodes)
+          nil)
+        ((funcall (problem-f-goal-test problem) (first open-nodes))
+          (first open-nodes))
+        ((not (compare-g-nodes problem (first open-nodes) closed-nodes))
+          (graph-search-aux problem (rest open-nodes) closed-nodes strategy))
+        (t
+          (graph-search-aux problem (insert-nodes-strategy (expand-node (first open-nodes) problem) (rest open-nodes) strategy)
+                  (append (list (first open-nodes)) closed-nodes) strategy))
+        ))
+```
+ * *graph-search*:
+
+  Llama a *graph-search-aux* pasándole el problema y la estrategia tal cual los recibe. Como lista de nodos cerrados una lista vacía y como lista de nodos abiertos construye un nodo con el origen del problema y lo pasa en una lista.
+
+```lisp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;  Interface function for the graph search.
@@ -604,12 +645,24 @@ En este ejecicio hemos definido el algoritmo *A-star* que compara el parámetro 
 ;;    and an empty closed list.
 ;;
 (defun graph-search (problem strategy)
-  )
+    (graph-search-aux problem (list (make-node
+        :state (problem-initial-state problem)
+        :parent nil
+        :action nil
+        :g 0
+        :h (funcall (problem-f-h problem) (problem-initial-state problem))
+        :f (funcall (problem-f-h problem) (problem-initial-state problem))))
+        '() strategy))
+```
+<br>
+Finalmente la función *a-star-search* simplemente llama a *graph-search* pasándole como estrategia **A-star**.
+```lisp
 
 ;
 ;  A* search is simply a function that solves a problem using the A* strategy
 ;
 (defun a-star-search (problem)
+    (graph-search problem *A-star*)
   )
 ```
 

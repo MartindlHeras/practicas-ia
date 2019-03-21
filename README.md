@@ -23,3 +23,5 @@ Correo de Jessica: jessica.lopez-hazas@inv.uam.es
  - [ ] Meter pruebas ej 3 en la memoria
  - [ ] Meter pruebas ej 4 en la memoria
  - [ ] Meter pruebas ej 6 en la memoria
+ - [ ] Meter pruebas ej 7 en la memoria
+ - [ ] Meter pruebas ej 9 en la memoria
