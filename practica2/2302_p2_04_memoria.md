@@ -107,31 +107,31 @@ CL-USER> (f-h-time 'Nantes *estimate*)
  75.0
 
 CL-USER> (f-h-time 'Marseille *estimate*)
-145.0
+ 145.0
 
 CL-USER> (f-h-time 'Lyon *estimate*)
-105.0
+ 105.0
 
 CL-USER> (f-h-time 'Madrid *estimate*)
-NIL
+ NIL
 
 CL-USER> (f-h-time NIL *estimate*)
-NIL
+ NIL
 
 
 ;; Ejemplos price
 
 CL-USER> (f-h-price 'Nantes *estimate*)
-0.0
+ 0.0
 
 CL-USER> (f-h-price 'Marseille *estimate*)
-0.0
+ 0.0
 
 CL-USER> (f-h-price 'Madrid *estimate*)
-NIL
+ NIL
 
 CL-USER> (f-h-price NIL *estimate*)
-NIL
+ NIL
 
 ```
 
@@ -222,31 +222,31 @@ Estas funciones llaman a *navigate* restringiendo su uso a los campos que quiera
 ```lisp
 
 ;; Ejemplos canal
-
+ 
 CL-USER> (navigate-canal-time 'Avignon *canals*)
-(#S(ACTION :NAME CANAL-TIME :ORIGIN AVIGNON :FINAL MARSEILLE :COST 35.0))
+ (#S(ACTION :NAME CANAL-TIME :ORIGIN AVIGNON :FINAL MARSEILLE :COST 35.0))
 
 CL-USER> (navigate-canal-price 'Avignon *canals*)
-(#S(ACTION :NAME CANAL-PRICE :ORIGIN AVIGNON :FINAL MARSEILLE :COST 10.0))
+ (#S(ACTION :NAME CANAL-PRICE :ORIGIN AVIGNON :FINAL MARSEILLE :COST 10.0))
 
 CL-USER> (navigate-canal-time 'Orleans *canals*)
-NIL
+ NIL
 
 ;; Ejemplos train
 
 CL-USER> (navigate-train-price 'Avignon *trains* '())
-(#S(ACTION :NAME TRAIN-PRICE :ORIGIN AVIGNON :FINAL LYON :COST 40.0)
+ (#S(ACTION :NAME TRAIN-PRICE :ORIGIN AVIGNON :FINAL LYON :COST 40.0)
  #S(ACTION :NAME TRAIN-PRICE :ORIGIN AVIGNON :FINAL MARSEILLE :COST 25.0))
 
 CL-USER> (navigate-train-price 'Avignon *trains* '(Marseille))
-(#S(ACTION :NAME TRAIN-PRICE :ORIGIN AVIGNON :FINAL LYON :COST 40.0))
+ (#S(ACTION :NAME TRAIN-PRICE :ORIGIN AVIGNON :FINAL LYON :COST 40.0))
 
 CL-USER> (navigate-train-time 'Avignon *trains* '())
-(#S(ACTION :NAME TRAIN-TIME :ORIGIN AVIGNON :FINAL LYON :COST 30.0)
+ (#S(ACTION :NAME TRAIN-TIME :ORIGIN AVIGNON :FINAL LYON :COST 30.0)
 #S(ACTION :NAME TRAIN-TIME :ORIGIN AVIGNON :FINAL MARSEILLE :COST 16.0))
 
 CL-USER> (navigate-train-time 'Avignon *trains* '(Marseille))
-(#S(ACTION :NAME TRAIN-TIME :ORIGIN AVIGNON :FINAL LYON :COST 30.0))
+ (#S(ACTION :NAME TRAIN-TIME :ORIGIN AVIGNON :FINAL LYON :COST 30.0))
 
 CL-USER> (navigate-train-price 'Madrid *trains* '())
 NIL
@@ -309,13 +309,13 @@ Para ello hacemos uso de dos funciones auxiliares:
 
 ```lisp
 CL-USER> (f-goal-test node-paris '(Calais Marseille) '(Paris))
-NIL
+ NIL
 
 CL-USER> (f-goal-test node-calais '(Calais Marseille) '(Paris Limoges))
-NIL
+ NIL
 
 CL-USER> (f-goal-test node-calais '(Calais Marseille) '(Paris Nancy))
-T
+ T
 ```
 
 ---
@@ -371,13 +371,13 @@ CL-USER> (f-search-state-equal node-calais node-calais-2 '())
  T
 
 CL-USER> (f-search-state-equal node-calais node-calais-2 '(Reims))
-NIL
+ NIL
 
 CL-USER> (f-search-state-equal node-calais node-calais-2 '(Nevers))
-T
+ T
 
 CL-USER> (f-search-state-equal node-nancy node-paris '())
-NIL
+ NIL
 ```
 
 <br>
