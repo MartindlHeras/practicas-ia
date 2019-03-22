@@ -97,7 +97,7 @@ y devuelve la heurística correspondiente a esa ciudad, la primera de tiempo y l
 
 ```
 <br>
-  ##### Ejemplos:
+##### Ejemplos:
 
 ```lisp
 
@@ -105,13 +105,13 @@ y devuelve la heurística correspondiente a esa ciudad, la primera de tiempo y l
 
 CL-USER> (f-h-time 'Nantes *estimate*)
  75.0
-
+
 CL-USER> (f-h-time 'Marseille *estimate*)
  145.0
-
+
 CL-USER> (f-h-time 'Lyon *estimate*)
  105.0
-
+
 CL-USER> (f-h-time 'Madrid *estimate*)
  NIL
 
@@ -123,16 +123,16 @@ CL-USER> (f-h-time NIL *estimate*)
 
 CL-USER> (f-h-price 'Nantes *estimate*)
  0.0
-
+
 CL-USER> (f-h-price 'Marseille *estimate*)
  0.0
-
+
 CL-USER> (f-h-price 'Madrid *estimate*)
  NIL
 
 CL-USER> (f-h-price NIL *estimate*)
  NIL
-
+
 ```
 
 ---
@@ -217,17 +217,17 @@ Estas funciones llaman a *navigate* restringiendo su uso a los campos que quiera
 ```
 
 <br>
-  ##### Ejemplos:
+##### Ejemplos:
 
 ```lisp
 
 ;; Ejemplos canal
- 
+
 CL-USER> (navigate-canal-time 'Avignon *canals*)
  (#S(ACTION :NAME CANAL-TIME :ORIGIN AVIGNON :FINAL MARSEILLE :COST 35.0))
 
 CL-USER> (navigate-canal-price 'Avignon *canals*)
- (#S(ACTION :NAME CANAL-PRICE :ORIGIN AVIGNON :FINAL MARSEILLE :COST 10.0))
+ (#S(ACTION :NAME CANAL-PRICE :ORIGIN AVIGNON :FINAL MARSEILLE :COST 10.0))
 
 CL-USER> (navigate-canal-time 'Orleans *canals*)
  NIL
@@ -243,14 +243,14 @@ CL-USER> (navigate-train-price 'Avignon *trains* '(Marseille))
 
 CL-USER> (navigate-train-time 'Avignon *trains* '())
  (#S(ACTION :NAME TRAIN-TIME :ORIGIN AVIGNON :FINAL LYON :COST 30.0)
-#S(ACTION :NAME TRAIN-TIME :ORIGIN AVIGNON :FINAL MARSEILLE :COST 16.0))
+#S(ACTION :NAME TRAIN-TIME :ORIGIN AVIGNON :FINAL MARSEILLE :COST 16.0))
 
 CL-USER> (navigate-train-time 'Avignon *trains* '(Marseille))
- (#S(ACTION :NAME TRAIN-TIME :ORIGIN AVIGNON :FINAL LYON :COST 30.0))
+ (#S(ACTION :NAME TRAIN-TIME :ORIGIN AVIGNON :FINAL LYON :COST 30.0))
 
 CL-USER> (navigate-train-price 'Madrid *trains* '())
-NIL
-
+ NIL
+
 ```
 ---
 #### Ejercicio 3
@@ -305,15 +305,15 @@ Para ello hacemos uso de dos funciones auxiliares:
 ```
 
 <br>
-  ##### Ejemplos:
+##### Ejemplos:
 
 ```lisp
 CL-USER> (f-goal-test node-paris '(Calais Marseille) '(Paris))
  NIL
-
+
 CL-USER> (f-goal-test node-calais '(Calais Marseille) '(Paris Limoges))
  NIL
-
+
 CL-USER> (f-goal-test node-calais '(Calais Marseille) '(Paris Nancy))
  T
 ```
@@ -369,13 +369,13 @@ Para esto hacemos uso de una función auxiliar que compara dos listas para ver s
 
 CL-USER> (f-search-state-equal node-calais node-calais-2 '())
  T
-
+
 CL-USER> (f-search-state-equal node-calais node-calais-2 '(Reims))
  NIL
-
+
 CL-USER> (f-search-state-equal node-calais node-calais-2 '(Nevers))
  T
-
+
 CL-USER> (f-search-state-equal node-nancy node-paris '())
  NIL
 ```
@@ -490,7 +490,7 @@ La función *expand-node* crea un nodo con cada acción que se pueda realizar de
 
 
 <br>
-  ##### Ejemplos:
+##### Ejemplos:
 
 ```lisp
 
@@ -501,26 +501,7 @@ La función *expand-node* crea un nodo con cada acción que se pueda realizar de
   (expand-node node-marseille-ex6 *travel-fast*))
 
 CL-USER> (print lst-nodes-ex6)
-
-(#S(NODE
-    :STATE TOULOUSE
-    :PARENT #S(NODE
-               :STATE MARSEILLE
-               :PARENT NIL
-               :ACTION NIL
-               :DEPTH 12
-               :G 10
-               :H 0
-               :F 20)
-    :ACTION #S(ACTION
-               :NAME TRAIN-TIME
-               :ORIGIN MARSEILLE
-               :FINAL TOULOUSE
-               :COST 65.0)
-    :DEPTH 0
-    :G 75.0
-    :H 130.0
-    :F 205.0)) 
+
 (#S(NODE
     :STATE TOULOUSE
     :PARENT #S(NODE
@@ -540,7 +521,26 @@ CL-USER> (print lst-nodes-ex6)
     :G 75.0
     :H 130.0
     :F 205.0))
-
+(#S(NODE
+    :STATE TOULOUSE
+    :PARENT #S(NODE
+               :STATE MARSEILLE
+               :PARENT NIL
+               :ACTION NIL
+               :DEPTH 12
+               :G 10
+               :H 0
+               :F 20)
+    :ACTION #S(ACTION
+               :NAME TRAIN-TIME
+               :ORIGIN MARSEILLE
+               :FINAL TOULOUSE
+               :COST 65.0)
+    :DEPTH 0
+    :G 75.0
+    :H 130.0
+    :F 205.0))
+
 ```
 
 ---
