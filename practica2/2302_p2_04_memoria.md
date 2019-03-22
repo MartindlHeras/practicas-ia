@@ -84,12 +84,10 @@ y devuelve la heurística correspondiente a esa ciudad, la primera de tiempo y l
 ;;  the cost of travel
 
 (defun f-h-time (state sensors)
-  (first (cadr (assoc state sensors)))
-  )
+  (first (cadr (assoc state sensors))))
 
 (defun f-h-price (state sensors)
-  (second (cadr (assoc state sensors)))
-  )
+  (second (cadr (assoc state sensors))))
 ;;
 ;; END: Exercise 1 -- Evaluation of the heuristic
 ;;
@@ -169,9 +167,12 @@ Esta función toma los enlaces de los que *state* es el origen y crea tantas acc
     (if (equal state (first x))
       (if (find (cadr x) forbidden)
         nil
-        (make-action :name name :origin state :final (cadr x) :cost (funcall cfun (caddr x))))
-      nil)) lst-edges))
-  )
+        (make-action
+          :name name
+          :origin state
+          :final (cadr x)
+          :cost (funcall cfun (caddr x))))
+      nil)) lst-edges)))
 
 ```
 Estas funciones llaman a *navigate* restringiendo su uso a los campos que quieran: pasando la lista de canales y como función *first* o *second* en función del coste que se haya especificado.
@@ -186,12 +187,10 @@ Estas funciones llaman a *navigate* restringiendo su uso a los campos que quiera
 ;; from the current city to the cities reachable from it by canal navigation.
 ;;
 (defun navigate-canal-time (state canals)
-  (navigate state canals #'first 'canal-time)
-  )
+  (navigate state canals #'first 'canal-time))
 
 (defun navigate-canal-price (state canals)
-  (navigate state canals #'second 'canal-price)
-  )
+  (navigate state canals #'second 'canal-price))
 
 ```
 
@@ -209,12 +208,10 @@ Estas funciones llaman a *navigate* restringiendo su uso a los campos que quiera
 ;; Note that this function takes as a parameter a list of forbidden cities.
 ;;
 (defun navigate-train-time (state trains forbidden)
-  (navigate state trains #'first 'train-time forbidden)
-  )
+  (navigate state trains #'first 'train-time forbidden))
 
 (defun navigate-train-price (state trains forbidden)
-  (navigate state trains #'second 'train-price forbidden)
-  )
+  (navigate state trains #'second 'train-price forbidden))
 ```
 
 <br>
@@ -284,25 +281,26 @@ Para ello hacemos uso de dos funciones auxiliares:
 (defun evaluate-list (boolean-list)
   (if (null boolean-list)
     T
-    (and (first boolean-list) (evaluate-list (rest boolean-list))))
-)
+    (and (first boolean-list) (evaluate-list (rest boolean-list)))))
 
 (defun exists-parent-path (candidate path-node)
   (cond ((null path-node)
-      NIL)
+         NIL)
     ((equal (node-state path-node) candidate)
-      T)
+     T)
     (t
-      (exists-parent-path candidate (node-parent path-node))))
-)
+     (exists-parent-path candidate (node-parent path-node)))))
+
 
 (defun f-goal-test (node destination mandatory)
   (if (find (node-state node) destination)
-    (if (evaluate-list (mapcar #'(lambda(x) (exists-parent-path x node)) mandatory))
+    (if (evaluate-list
+          (mapcar #'(lambda(x)
+                      (exists-parent-path x node)) mandatory))
       T
       NIL)
-    NIL)
-  )
+    NIL))
+
 
 ```
 
@@ -349,17 +347,20 @@ Para esto hacemos uso de una función auxiliar que compara dos listas para ver s
 ;;    NIL: The nodes are not equivalent
 ;;
 
+
 (defun equal-list (list1 list2)
   (if (or (null list1) (null list2))
     T
-    (and (equal (first list1) (first list2)) (equal-list (rest list1) (rest list2))))
-  )
+    (and (equal (first list1) (first list2))
+         (equal-list (rest list1) (rest list2)))))
 
-(defun f-search-state-equal (node-1 node-2 &optional mandatory)
+(defun f-search-state-equal (node-1 node-2 &optional (mandatory '()))
   (if (equal (node-state node-1) (node-state node-2))
-    (equal-list (mapcar #'(lambda(x) (exists-parent-path x node-1)) mandatory) (mapcar #'(lambda(x) (exists-parent-path x node-2)) mandatory))
-    NIL)
-)
+    (equal-list (mapcar #'(lambda(x)
+                            (exists-parent-path x node-1)) mandatory)
+                (mapcar #'(lambda(x)
+                            (exists-parent-path x node-2)) mandatory))
+    NIL))
 
 ```
 
@@ -416,24 +417,32 @@ En este ejercicio se pide inicializar el valor de dos estructuras que representa
     :states *cities*
     :initial-state *origin*
     :f-h #'(lambda (state) (f-h-price state *estimate*))
-    :f-goal-test #'(lambda (node) (f-goal-test node *destination* *mandatory*))
-    :f-search-state-equal #'(lambda (node-1 node-2) (f-search-equal node-1 node-2 *mandatory*))
-    :operators (list #'(lambda (node) (navigate-canal-price (node-state node) *canals*))
-                #'(lambda (node) (navigate-train-price (node-state node) *trains* *forbidden*)))
-   )
-)
+    :f-goal-test #'(lambda (node)
+                      (f-goal-test node *destination* *mandatory*))
+    :f-search-state-equal #'(lambda (node-1 node-2)
+                              (f-search-state-equal node-1 node-2 *mandatory*))
+    :operators (list #'(lambda (node)
+                          (navigate-canal-price (node-state node) *canals*))
+                     #'(lambda (node)
+                          (navigate-train-price
+                            (node-state node) *trains* *forbidden*)))))
 
 (defparameter *travel-fast*
   (make-problem
     :states *cities*
     :initial-state *origin*
-    :f-h #'(lambda (state) (f-h-time state *estimate*))
-    :f-goal-test #'(lambda (node) (f-goal-test node *destination* *mandatory*))
-    :f-search-state-equal #'(lambda (node-1 node-2) (f-search-equal node-1 node-2 *mandatory*))
-    :operators (list #'(lambda (node) (navigate-canal-time (node-state node) *canals*))
-                #'(lambda (node) (navigate-train-time (node-state node) *trains* *forbidden*)))
-   )
-  )
+    :f-h #'(lambda (state)
+              (f-h-time state *estimate*))
+    :f-goal-test #'(lambda (node)
+                      (f-goal-test node *destination* *mandatory*))
+    :f-search-state-equal #'(lambda (node-1 node-2)
+                              (f-search-state-equal node-1 node-2 *mandatory*))
+    :operators (list #'(lambda (node)
+                          (navigate-canal-time (node-state node) *canals*))
+                #'(lambda (node)
+                    (navigate-train-time
+                      (node-state node) *trains* *forbidden*)))))
+
 ```
 
 
@@ -480,22 +489,24 @@ La función *expand-node* crea un nodo con cada acción que se pueda realizar de
 ;;    given one
 ;;
 (defun expand-node (node problem)
-  (mapcar #'(lambda (node-action) (make-node
-            :state (action-final node-action)
-            :parent node
-            :action node-action
-            :g (+ (node-g node) (action-cost node-action))
-            :h (funcall (problem-f-h problem) (action-final node-action))
-            :f (+ (funcall (problem-f-h problem) (action-final node-action)) (+ (node-g node) (action-cost node-action)))))
-            (append (funcall (first (problem-operators problem)) node)
-                    (funcall (second (problem-operators problem)) node)))
-  )
+  (mapcar #'(lambda (node-action)
+              (make-node
+                :state (action-final node-action)
+                :parent node
+                :action node-action
+                :g (+ (node-g node) (action-cost node-action))
+                :h (funcall (problem-f-h problem) (action-final node-action))
+                :f (+ (funcall (problem-f-h problem) (action-final node-action))
+                    (+ (node-g node) (action-cost node-action)))))
+                (append (funcall (first (problem-operators problem)) node)
+                        (funcall (second (problem-operators problem)) node))))
 ```
 
 
 <br>
 
   ##### Ejemplos:
+
 
 ```lisp
 
@@ -590,14 +601,15 @@ Para ello, hacemos uso de dos funciones auxiliares:
 ;;;  receives a strategy, extracts from it the comparison function,
 ;;;  and calls insert-nodes
 
+
 (defun insert-node (node lst-nodes node-compare-p)
   (cond ((null lst-nodes)
-      node)
+      (list node))
     ((funcall node-compare-p node (first lst-nodes))
       (append (list node) lst-nodes))
     (t
-      (append (list (first lst-nodes)) (insert-node node (rest lst-nodes)  node-compare-p)))
-  ))
+      (append(list (first lst-nodes)) (insert-node node
+                                    (rest lst-nodes)  node-compare-p)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -621,9 +633,8 @@ Para ello, hacemos uso de dos funciones auxiliares:
 (defun insert-nodes (nodes lst-nodes node-compare-p)
   (if (null nodes)
       lst-nodes
-      (insert-nodes (rest nodes) (insert-node (first nodes) lst-nodes node-compare-p) node-compare-p))
-
-  )
+      (insert-nodes (rest nodes)
+        (insert-node (first nodes) lst-nodes node-compare-p) node-compare-p)))
 ```
 <br>
 Esta función llama a insert-nodes pasandole la funcion de comparación correspondiente a la estrategia que recibe como parámetro.
@@ -655,8 +666,7 @@ Esta función llama a insert-nodes pasandole la funcion de comparación correspo
 ;;
 
 (defun insert-nodes-strategy (nodes lst-nodes strategy)
-  (insert-nodes nodes lst-nodes (strategy-node-compare-p strategy))
-  )
+  (insert-nodes nodes lst-nodes (strategy-node-compare-p strategy)))
 ```
 
 <br>
