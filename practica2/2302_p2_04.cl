@@ -596,19 +596,18 @@
 
 (defun compare-g-nodes (problem node closed-nodes)
   (if (null closed-nodes)
-      T
-    (if (not (funcall (problem-f-search-state-equal problem)
-                      node (first closed-nodes))
-             (compare-g-nodes problem node (rest closed-nodes)))
+    T
+    (if (not (funcall (problem-f-search-state-equal problem) node (first closed-nodes)))
+        (compare-g-nodes problem node (rest closed-nodes))
         (if (< (node-g node) (node-g (first closed-nodes)))
-            T
+          T
           nil))))
 
 (defun graph-search-aux (problem open-nodes closed-nodes strategy)
   (if (null open-nodes)
       nil
     (if (funcall (problem-f-goal-test problem) (first open-nodes))
-        (first open-nodes)
+        (list (first open-nodes))
       (if (not (compare-g-nodes problem (first open-nodes) closed-nodes))
           (graph-search-aux problem (rest open-nodes) closed-nodes strategy)
         (graph-search-aux problem
@@ -669,8 +668,8 @@
 (defun solution-path (node)
   (if (null node)
       nil
-    (if (null (node-parent node)
-              (list (node-state node)))
+    (if (null (node-parent node))
+              (list (node-state node))
         (cons (node-state node) (solution-path (node-parent node))))))
 
 ;*** action-sequence ***
