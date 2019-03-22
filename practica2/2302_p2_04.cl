@@ -120,13 +120,13 @@
     (Limoges (100.0 0.0)) (Roenne (85.0 0.0)) (Lyon (105.0 0.0))
     (Toulouse (130.0 0.0)) (Avignon (135.0 0.0)) (Marseille (145.0 0.0))))
 
-(defparameter *origin* 'Nancy)
+(defparameter *origin* 'Marseille)
 
-(defparameter *destination* '(Nantes))
+(defparameter *destination* '(Calais))
 
-(defparameter *forbidden*  '(Nantes))
+(defparameter *forbidden*  '(Avignon))
 
-(defparameter *mandatory* '())
+(defparameter *mandatory* '(Paris))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;

@@ -104,34 +104,34 @@ y devuelve la heurística correspondiente a esa ciudad, la primera de tiempo y l
 ;; Ejemplos time
 
 CL-USER> (f-h-time 'Nantes *estimate*)
- 75.0
+ 75.0
 
 CL-USER> (f-h-time 'Marseille *estimate*)
-145.0
+145.0
 
 CL-USER> (f-h-time 'Lyon *estimate*)
-105.0
+105.0
 
 CL-USER> (f-h-time 'Madrid *estimate*)
-NIL
+NIL
 
 CL-USER> (f-h-time NIL *estimate*)
-NIL
+NIL
 
 
 ;; Ejemplos price
 
 CL-USER> (f-h-price 'Nantes *estimate*)
-0.0
+0.0
 
 CL-USER> (f-h-price 'Marseille *estimate*)
-0.0
+0.0
 
 CL-USER> (f-h-price 'Madrid *estimate*)
-NIL
+NIL
 
 CL-USER> (f-h-price NIL *estimate*)
-NIL
+NIL
 
 ```
 
@@ -224,13 +224,13 @@ Estas funciones llaman a *navigate* restringiendo su uso a los campos que quiera
 ;; Ejemplos canal
 
 CL-USER> (navigate-canal-time 'Avignon *canals*)
-(#S(ACTION :NAME CANAL-TIME :ORIGIN AVIGNON :FINAL MARSEILLE :COST 35.0))
+(#S(ACTION :NAME CANAL-TIME :ORIGIN AVIGNON :FINAL MARSEILLE :COST 35.0))
 
 CL-USER> (navigate-canal-price 'Avignon *canals*)
 (#S(ACTION :NAME CANAL-PRICE :ORIGIN AVIGNON :FINAL MARSEILLE :COST 10.0))
 
 CL-USER> (navigate-canal-time 'Orleans *canals*)
-NIL
+NIL
 
 ;; Ejemplos train
 
@@ -239,7 +239,7 @@ CL-USER> (navigate-train-price 'Avignon *trains* '())
  #S(ACTION :NAME TRAIN-PRICE :ORIGIN AVIGNON :FINAL MARSEILLE :COST 25.0))
 
 CL-USER> (navigate-train-price 'Avignon *trains* '(Marseille))
-(#S(ACTION :NAME TRAIN-PRICE :ORIGIN AVIGNON :FINAL LYON :COST 40.0))
+(#S(ACTION :NAME TRAIN-PRICE :ORIGIN AVIGNON :FINAL LYON :COST 40.0))
 
 CL-USER> (navigate-train-time 'Avignon *trains* '())
 (#S(ACTION :NAME TRAIN-TIME :ORIGIN AVIGNON :FINAL LYON :COST 30.0)
@@ -249,7 +249,7 @@ CL-USER> (navigate-train-time 'Avignon *trains* '(Marseille))
 (#S(ACTION :NAME TRAIN-TIME :ORIGIN AVIGNON :FINAL LYON :COST 30.0))
 
 CL-USER> (navigate-train-price 'Madrid *trains* '())
-NIL
+NIL
 
 ```
 ---
@@ -304,6 +304,19 @@ Para ello hacemos uso de dos funciones auxiliares:
 
 ```
 
+<br>
+  ##### Ejemplos:
+
+```lisp
+CL-USER> (f-goal-test node-paris '(Calais Marseille) '(Paris))
+NIL
+
+CL-USER> (f-goal-test node-calais '(Calais Marseille) '(Paris Limoges))
+NIL
+
+CL-USER> (f-goal-test node-calais '(Calais Marseille) '(Paris Nancy))
+T
+```
 
 ---
 #### Ejercicio 4
@@ -345,6 +358,26 @@ Para esto hacemos uso de una función auxiliar que compara dos listas para ver s
     NIL)
 )
 
+```
+
+<br>
+  ##### Ejemplos:
+
+```lisp
+(defparameter node-calais-2
+   (make-node :state 'Calais :parent node-paris))
+
+CL-USER> (f-search-state-equal node-calais node-calais-2 '())
+ T
+
+CL-USER> (f-search-state-equal node-calais node-calais-2 '(Reims))
+NIL
+
+CL-USER> (f-search-state-equal node-calais node-calais-2 '(Nevers))
+T
+
+CL-USER> (f-search-state-equal node-nancy node-paris '())
+NIL
 ```
 
 <br>
@@ -453,6 +486,61 @@ La función *expand-node* crea un nodo con cada acción que se pueda realizar de
             (append (funcall (first (problem-operators problem)) node)
                     (funcall (second (problem-operators problem)) node)))
   )
+```
+
+
+<br>
+  ##### Ejemplos:
+
+```lisp
+
+(defparameter node-marseille-ex6
+   (make-node :state 'Marseille :depth 12 :g 10 :f 20) )
+
+(defparameter lst-nodes-ex6
+  (expand-node node-marseille-ex6 *travel-fast*))
+
+CL-USER> (print lst-nodes-ex6)
+
+(#S(NODE
+    :STATE TOULOUSE
+    :PARENT #S(NODE
+               :STATE MARSEILLE
+               :PARENT NIL
+               :ACTION NIL
+               :DEPTH 12
+               :G 10
+               :H 0
+               :F 20)
+    :ACTION #S(ACTION
+               :NAME TRAIN-TIME
+               :ORIGIN MARSEILLE
+               :FINAL TOULOUSE
+               :COST 65.0)
+    :DEPTH 0
+    :G 75.0
+    :H 130.0
+    :F 205.0)) 
+(#S(NODE
+    :STATE TOULOUSE
+    :PARENT #S(NODE
+               :STATE MARSEILLE
+               :PARENT NIL
+               :ACTION NIL
+               :DEPTH 12
+               :G 10
+               :H 0
+               :F 20)
+    :ACTION #S(ACTION
+               :NAME TRAIN-TIME
+               :ORIGIN MARSEILLE
+               :FINAL TOULOUSE
+               :COST 65.0)
+    :DEPTH 0
+    :G 75.0
+    :H 130.0
+    :F 205.0))
+
 ```
 
 ---
