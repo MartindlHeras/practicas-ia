@@ -97,6 +97,7 @@ y devuelve la heurística correspondiente a esa ciudad, la primera de tiempo y l
 
 ```
 <br>
+
   ##### Ejemplos:
 
 ```lisp
@@ -217,6 +218,7 @@ Estas funciones llaman a *navigate* restringiendo su uso a los campos que quiera
 ```
 
 <br>
+
   ##### Ejemplos:
 
 ```lisp
@@ -492,7 +494,8 @@ La función *expand-node* crea un nodo con cada acción que se pueda realizar de
 
 
 <br>
-##### Ejemplos:
+
+  ##### Ejemplos:
 
 ```lisp
 
