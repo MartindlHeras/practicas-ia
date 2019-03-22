@@ -97,7 +97,7 @@ y devuelve la heurística correspondiente a esa ciudad, la primera de tiempo y l
 
 ```
 <br>
-##### Ejemplos:
+  ##### Ejemplos:
 
 ```lisp
 
@@ -217,7 +217,7 @@ Estas funciones llaman a *navigate* restringiendo su uso a los campos que quiera
 ```
 
 <br>
-##### Ejemplos:
+  ##### Ejemplos:
 
 ```lisp
 
@@ -305,7 +305,8 @@ Para ello hacemos uso de dos funciones auxiliares:
 ```
 
 <br>
-##### Ejemplos:
+
+  ##### Ejemplos:
 
 ```lisp
 CL-USER> (f-goal-test node-paris '(Calais Marseille) '(Paris))
@@ -361,6 +362,7 @@ Para esto hacemos uso de una función auxiliar que compara dos listas para ver s
 ```
 
 <br>
+
   ##### Ejemplos:
 
 ```lisp
