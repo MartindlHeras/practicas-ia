@@ -12,7 +12,7 @@ santiago.valderrabano@estudiante.uam.es | martin.delasheras@estudiante.uam.es
 
 ## Índice
 
-  #### 1. Modelización del problema
+#### 1. Modelización del problema
 
   * Ejercicio 1
 
@@ -23,7 +23,7 @@ santiago.valderrabano@estudiante.uam.es | martin.delasheras@estudiante.uam.es
   * Ejercicio 4
 
 
- #### 2. Formalización del problema
+#### 2. Formalización del problema
 
   * Ejercicio 5
 
@@ -32,7 +32,7 @@ santiago.valderrabano@estudiante.uam.es | martin.delasheras@estudiante.uam.es
   * Ejercicio 7
 
 
- #### 3. Búsqueda
+#### 3. Búsqueda
 
   * Ejercicio 8
 
