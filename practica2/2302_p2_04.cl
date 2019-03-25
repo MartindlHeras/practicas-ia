@@ -315,24 +315,6 @@
                    (exists-parent-path x node-2))
          mandatory))
     NIL))
-
-(defparameter node-nevers
-   (make-node :state 'Nevers) )
-(defparameter node-paris
-   (make-node :state 'Paris :parent node-nevers))
-(defparameter node-nancy
-   (make-node :state 'Nancy :parent node-paris))
-(defparameter node-reims
-   (make-node :state 'Reims :parent node-nancy))
-(defparameter node-calais
-   (make-node :state 'Calais :parent node-reims))
-(defparameter node-calais-2
-   (make-node :state 'Calais :parent node-paris))
-
-(f-search-state-equal node-calais node-calais-2 '()) ;-> T
-(f-search-state-equal node-calais node-calais-2 '(Reims)) ;-> NIL
-(f-search-state-equal node-calais node-calais-2 '(Nevers)) ;-> T
-(f-search-state-equal node-nancy node-paris '()) ;-> NIL
 ;;
 ;; END: Exercise 4 -- Equal predicate for search states
 ;;
@@ -428,24 +410,18 @@
 ;;
 (defun expand-node (node problem)
   (mapcar #'(lambda (node-action)
-              (make-node
-               :state (action-final node-action)
-               :parent node
-               :action node-action
-               :g (+ (node-g node) (action-cost node-action))
-               :h (funcall (problem-f-h problem) (action-final node-action))
-               :f (+ (funcall (problem-f-h problem) (action-final node-action))
-                     (+ (node-g node) (action-cost node-action)))))
+              (let ((g (+ (node-g node) (action-cost node-action)))
+                    (h (funcall (problem-f-h problem) (action-final node-action))))
+                      (make-node
+                       :state (action-final node-action)
+                       :parent node
+                       :action node-action
+                       :g g
+                       :h h
+                       :f (+ h g))))
     (append (funcall (first (problem-operators problem)) node)
             (funcall (second (problem-operators problem)) node))))
 
-(defparameter node-nevers-ex6
-   (make-node :state 'Nevers :depth 12 :g 10 :f 20))
-
-(defparameter lst-nodes-ex6
-  (expand-node node-nevers-ex6 *travel-fast*))
-
-(print lst-nodes-ex6)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;  BEGIN Exercise 7 -- Node list management
@@ -537,34 +513,6 @@
 (defun insert-nodes-strategy (nodes lst-nodes strategy)
   (insert-nodes nodes lst-nodes (strategy-node-compare-p strategy)))
 
-(defun node-g-<= (node-1 node-2)
-  (<= (node-g node-1)
-      (node-g node-2)))
-
-(defparameter *uniform-cost*
-  (make-strategy
-   :name 'uniform-cost
-   :node-compare-p #'node-g-<=))
-
-(defparameter node-paris-ex7
-  (make-node :state 'Paris :depth 0 :g 0 :f 0) )
-
-(defparameter node-nancy-ex7
-  (make-node :state 'Nancy :depth 2 :g 50 :f 50) )
-
-(defparameter node-marseille-ex6
-   (make-node :state 'Marseille :depth 12 :g 10 :f 20) )
-
-(defparameter lst-nodes-ex6
-  (expand-node node-marseille-ex6 *travel-fast*))
-
-(defparameter sol-ex7 (insert-nodes-strategy (list node-nancy-ex7)
-                                             (list node-nevers)
-                                             *uniform-cost*))
-(defparameter node-nevers
-  (make-node :state 'Nevers :depth 20 :g 10 :f 15))
-(mapcar #'(lambda (x) (node-state x)) sol-ex7) ; -> (PARIS NANCY TOULOUSE)
-(mapcar #'(lambda (x) (node-g x)) sol-ex7) ; -> (0 50 75)
 ;;
 ;;    END: Exercize 7 -- Node list management
 ;;
@@ -659,17 +607,18 @@
 (defun graph-search-aux (problem open-nodes closed-nodes strategy)
   (if (null open-nodes)
       nil
-    (if (funcall (problem-f-goal-test problem) (first open-nodes))
-        (first open-nodes)
-      (if (not (compare-g-nodes problem (first open-nodes) closed-nodes))
-          (graph-search-aux problem (rest open-nodes) closed-nodes strategy)
-          (graph-search-aux problem
-                          (insert-nodes-strategy
-                            (expand-node (first open-nodes) problem)
-                            (rest open-nodes)
-                            strategy)
-                          (cons (first open-nodes) closed-nodes)
-                          strategy)))))
+    (let ((current-node (first open-nodes)))
+        (if (funcall (problem-f-goal-test problem) current-node)
+            current-node
+          (if (not (compare-g-nodes problem current-node closed-nodes))
+              (graph-search-aux problem (rest open-nodes) closed-nodes strategy)
+              (graph-search-aux problem
+                              (insert-nodes-strategy
+                                (expand-node current-node problem)
+                                (rest open-nodes)
+                                strategy)
+                              (cons current-node closed-nodes)
+                              strategy))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -693,25 +642,23 @@
 ;;    and an empty closed list.
 ;;
 (defun graph-search (problem strategy)
-  (graph-search-aux problem
-                    (list (make-node
-                           :state (problem-initial-state problem)
-                           :parent nil
-                           :action nil
-                           :g 0
-                           :h (funcall (problem-f-h problem) (problem-initial-state problem))
-                           :f (funcall (problem-f-h problem) (problem-initial-state problem))))
-                    '()
-                    strategy))
-
+  (let ((h (funcall (problem-f-h problem) (problem-initial-state problem))))
+         (graph-search-aux problem
+              (list (make-node
+                     :state (problem-initial-state problem)
+                     :parent nil
+                     :action nil
+                     :g 0
+                     :h h
+                     :f h))
+              '()
+              strategy)))
 ;
 ;  A* search is simply a function that solves a problem using the A* strategy
 ;
 (defun a-star-search (problem)
   (graph-search problem *A-star*))
 
-(graph-search *travel-cheap* *A-star*)
-(a-star-search *travel-fast*)
 ;;
 ;; END: Exercise 9 -- Search algorithm
 ;;
@@ -740,13 +687,6 @@
               (list (node-state node))
         (append (solution-path (node-parent node)) (list (node-state node))))))
 
-; (defun solution-path (node)
-;   (if (null node)
-;       nil
-;     (if (null (node-parent node))
-;               (list (node-state node))
-;         (cons (node-state node) (solution-path (node-parent node))))))
-
 ;;
 ;;  Funcion de action-sequence.
 ;;
@@ -766,29 +706,6 @@
               (list (node-action node))
         (append (action-sequence (node-parent node)) (list (node-action node))))))
 
-(solution-path nil) ;-> NIL
-
-(solution-path (a-star-search *travel-fast*)) ; ->
-; (MARSEILLE TOULOUSE LIMOGES ORLEANS PARIS CALAIS)
-
-(solution-path (a-star-search *travel-cheap*))  ; ->
-; (MARSEILLE TOULOUSE LIMOGES NEVERS PARIS REIMS CALAIS)
-
-(action-sequence (a-star-search *travel-fast*))
-
-(defparameter *origin* 'Marseille)
-
-(defparameter *destination* '(Calais))
-
-(defparameter *forbidden*  '(Paris))
-
-(defparameter *mandatory* '(Paris))
-; (defun action-sequence (node)
-;   (if (null node)
-;       nil
-;     (if (null (node-parent (node-parent node)))
-;               (list (node-action node))
-;         (cons (node-action node) (action-sequence (node-parent node))))))
 ;;;
 ;;;    END Exercise 10: Solution path / action sequence
 ;;;
@@ -810,11 +727,6 @@
    :name 'depth-first
    :node-compare-p #'depth-first-node-compare-p))
 
-(defparameter *destination* '(Madrid))
-(solution-path (graph-search *travel-fast* *depth-first*))
-
-(defparameter *destination* '(Calais))
-(defparameter *mandatory* '(Madrid))
 ;;
 ;; Definicion de breadth-first
 ;;    En la busqueda en anchura, los nodos recien descubiertos tienen que ir
@@ -828,7 +740,6 @@
   :name 'breadth-first
   :node-compare-p #'breadth-first-node-compare-p))
 
-(solution-path (graph-search *travel-cheap* *breadth-first*))
 ;;;
 ;;;
 ;;;    END Exercise 11: depth-first / breadth-first

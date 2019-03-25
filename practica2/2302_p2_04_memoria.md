@@ -519,14 +519,15 @@ La función *expand-node* crea un nodo con cada acción que se pueda realizar de
 ;;
 (defun expand-node (node problem)
   (mapcar #'(lambda (node-action)
-              (make-node
-               :state (action-final node-action)
-               :parent node
-               :action node-action
-               :g (+ (node-g node) (action-cost node-action))
-               :h (funcall (problem-f-h problem) (action-final node-action))
-               :f (+ (funcall (problem-f-h problem) (action-final node-action))
-                     (+ (node-g node) (action-cost node-action)))))
+              (let ((g (+ (node-g node) (action-cost node-action)))
+                    (h (funcall (problem-f-h problem) (action-final node-action))))
+                      (make-node
+                       :state (action-final node-action)
+                       :parent node
+                       :action node-action
+                       :g g
+                       :h h
+                       :f (+ h g))))
     (append (funcall (first (problem-operators problem)) node)
             (funcall (second (problem-operators problem)) node))))
 ```
@@ -975,17 +976,18 @@ En este ejercicio se pide implementar una función que realice la búsqueda para
 (defun graph-search-aux (problem open-nodes closed-nodes strategy)
   (if (null open-nodes)
       nil
-    (if (funcall (problem-f-goal-test problem) (first open-nodes))
-        (first open-nodes)
-      (if (not (compare-g-nodes problem (first open-nodes) closed-nodes))
-          (graph-search-aux problem (rest open-nodes) closed-nodes strategy)
-          (graph-search-aux problem
-                          (insert-nodes-strategy
-                            (expand-node (first open-nodes) problem)
-                            (rest open-nodes)
-                            strategy)
-                          (cons (first open-nodes) closed-nodes)
-                          strategy)))))
+    (let ((current-node (first open-nodes)))
+        (if (funcall (problem-f-goal-test problem) current-node)
+            current-node
+          (if (not (compare-g-nodes problem current-node closed-nodes))
+              (graph-search-aux problem (rest open-nodes) closed-nodes strategy)
+              (graph-search-aux problem
+                              (insert-nodes-strategy
+                                (expand-node current-node problem)
+                                (rest open-nodes)
+                                strategy)
+                              (cons current-node closed-nodes)
+                              strategy))))))
 ```
  * *graph-search*:
 
@@ -1014,16 +1016,17 @@ En este ejercicio se pide implementar una función que realice la búsqueda para
 ;;    and an empty closed list.
 ;;
 (defun graph-search (problem strategy)
-  (graph-search-aux problem
-                    (list (make-node
-                           :state (problem-initial-state problem)
-                           :parent nil
-                           :action nil
-                           :g 0
-                           :h (funcall (problem-f-h problem) (problem-initial-state problem))
-                           :f (funcall (problem-f-h problem) (problem-initial-state problem))))
-                    '()
-                    strategy))
+  (let ((h (funcall (problem-f-h problem) (problem-initial-state problem))))
+         (graph-search-aux problem
+              (list (make-node
+                     :state (problem-initial-state problem)
+                     :parent nil
+                     :action nil
+                     :g 0
+                     :h h
+                     :f h))
+              '()
+              strategy)))
 ```
 <br>
 Finalmente la función *a-star-search* simplemente llama a *graph-search* pasándole como estrategia **A-star**.
