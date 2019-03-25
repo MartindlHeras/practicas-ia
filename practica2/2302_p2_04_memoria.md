@@ -1029,7 +1029,9 @@ En este ejercicio se pide implementar una función que realice la búsqueda para
               strategy)))
 ```
 <br>
+
 Finalmente la función *a-star-search* simplemente llama a *graph-search* pasándole como estrategia **A-star**.
+
 ```lisp
 
 ;
