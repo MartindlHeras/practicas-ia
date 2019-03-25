@@ -47,7 +47,7 @@
   name              ; Name of the operator that generated the action
   origin            ; State on which the action is applied
   final             ; State that results from the application of the action
-  cost )            ; Cost of the action
+  cost)             ; Cost of the action
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -271,6 +271,7 @@
                                  (exists-parent-path x node))
                        mandatory))
     NIL))
+
 ;;
 ;; END: Exercise 3 -- Goal test
 ;;
@@ -315,6 +316,23 @@
          mandatory))
     NIL))
 
+(defparameter node-nevers
+   (make-node :state 'Nevers) )
+(defparameter node-paris
+   (make-node :state 'Paris :parent node-nevers))
+(defparameter node-nancy
+   (make-node :state 'Nancy :parent node-paris))
+(defparameter node-reims
+   (make-node :state 'Reims :parent node-nancy))
+(defparameter node-calais
+   (make-node :state 'Calais :parent node-reims))
+(defparameter node-calais-2
+   (make-node :state 'Calais :parent node-paris))
+
+(f-search-state-equal node-calais node-calais-2 '()) ;-> T
+(f-search-state-equal node-calais node-calais-2 '(Reims)) ;-> NIL
+(f-search-state-equal node-calais node-calais-2 '(Nevers)) ;-> T
+(f-search-state-equal node-nancy node-paris '()) ;-> NIL
 ;;
 ;; END: Exercise 4 -- Equal predicate for search states
 ;;
@@ -421,11 +439,11 @@
     (append (funcall (first (problem-operators problem)) node)
             (funcall (second (problem-operators problem)) node))))
 
-(defparameter node-marseille-ex6
-   (make-node :state 'Marseille :depth 12 :g 10 :f 20) )
+(defparameter node-nevers-ex6
+   (make-node :state 'Nevers :depth 12 :g 10 :f 20))
 
 (defparameter lst-nodes-ex6
-  (expand-node node-marseille-ex6 *travel-fast*))
+  (expand-node node-nevers-ex6 *travel-fast*))
 
 (print lst-nodes-ex6)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -459,12 +477,13 @@
 
 (defun insert-node (node lst-nodes node-compare-p)
   (if (null lst-nodes)
-      node
+      (list node)
     (if (funcall node-compare-p node (first lst-nodes))
         (cons node lst-nodes)
       (cons
        (first lst-nodes) (insert-node node
-                                      (rest lst-nodes)  node-compare-p)))))
+                                      (rest lst-nodes)
+                                      node-compare-p)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -486,10 +505,10 @@
 ;;
 (defun insert-nodes (nodes lst-nodes node-compare-p)
   (if (null nodes)
-      lst-nodes
+    lst-nodes
     (insert-nodes (rest nodes)
                   (insert-node
-                   (first nodes) lst-nodes node-compare-p) node-compare-p)))
+                  (first nodes) lst-nodes node-compare-p) node-compare-p)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -533,11 +552,17 @@
 (defparameter node-nancy-ex7
   (make-node :state 'Nancy :depth 2 :g 50 :f 50) )
 
+(defparameter node-marseille-ex6
+   (make-node :state 'Marseille :depth 12 :g 10 :f 20) )
 
-(defparameter sol-ex7 (insert-nodes-strategy (list node-paris-ex7 node-nancy-ex7)
-                                             lst-nodes-ex6
+(defparameter lst-nodes-ex6
+  (expand-node node-marseille-ex6 *travel-fast*))
+
+(defparameter sol-ex7 (insert-nodes-strategy (list node-nancy-ex7)
+                                             (list node-nevers)
                                              *uniform-cost*))
-
+(defparameter node-nevers
+  (make-node :state 'Nevers :depth 20 :g 10 :f 15))
 (mapcar #'(lambda (x) (node-state x)) sol-ex7) ; -> (PARIS NANCY TOULOUSE)
 (mapcar #'(lambda (x) (node-g x)) sol-ex7) ; -> (0 50 75)
 ;;
@@ -697,26 +722,115 @@
 ;;;
 ;;;    BEGIN Exercise 10: Solution path
 ;;;
-;*** solution-path ***
+;;
+;;  Funcion de solution-path.
+;;
+;;  Input:
+;;    node: recibe el nodo final de una busqueda.
+;;
+;;    Returns:
+;;     NIL: el nodo es nulo por lo que no hay solucion
+;;     Una lista con las ciudades recorridas en orden.
+;;
 
 (defun solution-path (node)
   (if (null node)
       nil
     (if (null (node-parent node))
               (list (node-state node))
-        (cons (node-state node) (solution-path (node-parent node))))))
+        (append (solution-path (node-parent node)) (list (node-state node))))))
 
-;*** action-sequence ***
+; (defun solution-path (node)
+;   (if (null node)
+;       nil
+;     (if (null (node-parent node))
+;               (list (node-state node))
+;         (cons (node-state node) (solution-path (node-parent node))))))
+
+;;
+;;  Funcion de action-sequence.
+;;
+;;  Input:
+;;    node: recibe el nodo final de una busqueda.
+;;
+;;    Returns:
+;;     NIL: el nodo es nulo por lo que no hay solucion
+;;     Una lista con las acciones realizadas en el camino.
+;;
 ; Visualize sequence of actions
 
 (defun action-sequence (node)
   (if (null node)
       nil
     (if (null (node-parent (node-parent node)))
-              (node-action node)
-        (cons (action-sequence (node-parent node)) (node-action node)))))
+              (list (node-action node))
+        (append (action-sequence (node-parent node)) (list (node-action node))))))
 
+(solution-path nil) ;-> NIL
+
+(solution-path (a-star-search *travel-fast*)) ; ->
+; (MARSEILLE TOULOUSE LIMOGES ORLEANS PARIS CALAIS)
+
+(solution-path (a-star-search *travel-cheap*))  ; ->
+; (MARSEILLE TOULOUSE LIMOGES NEVERS PARIS REIMS CALAIS)
+
+(action-sequence (a-star-search *travel-fast*))
+
+(defparameter *origin* 'Marseille)
+
+(defparameter *destination* '(Calais))
+
+(defparameter *forbidden*  '(Paris))
+
+(defparameter *mandatory* '(Paris))
+; (defun action-sequence (node)
+;   (if (null node)
+;       nil
+;     (if (null (node-parent (node-parent node)))
+;               (list (node-action node))
+;         (cons (node-action node) (action-sequence (node-parent node))))))
 ;;;
 ;;;    END Exercise 10: Solution path / action sequence
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;    BEGIN Exercise 11: depth-first / breadth-first
+;;
+;; Definicion de depth-first
+;;    En la busqueda en profundidad, los nodos recien descubiertos tienen que ir
+;;    antes en la lista de abiertos por lo que se devuelve T siempre en la comparacion.
+
+(defun depth-first-node-compare-p (node-1 node-2)
+  T)
+
+(defparameter *depth-first*
+  (make-strategy
+   :name 'depth-first
+   :node-compare-p #'depth-first-node-compare-p))
+
+(defparameter *destination* '(Madrid))
+(solution-path (graph-search *travel-fast* *depth-first*))
+
+(defparameter *destination* '(Calais))
+(defparameter *mandatory* '(Madrid))
+;;
+;; Definicion de breadth-first
+;;    En la busqueda en anchura, los nodos recien descubiertos tienen que ir
+;;    ultimos en la lista de abiertos por lo que se devuelve NIL siempre en la comparacion.
+
+(defun breadth-first-node-compare-p (node-1 node-2)
+ NIL)
+
+(defparameter *breadth-first*
+ (make-strategy
+  :name 'breadth-first
+  :node-compare-p #'breadth-first-node-compare-p))
+
+(solution-path (graph-search *travel-cheap* *breadth-first*))
+;;;
+;;;
+;;;    END Exercise 11: depth-first / breadth-first
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

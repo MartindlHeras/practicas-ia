@@ -164,15 +164,16 @@ Esta función toma los enlaces de los que *state* es el origen y crea tantas acc
 ;;
 (defun navigate (state lst-edges cfun name &optional (forbidden '()))
   (remove nil (mapcar #'(lambda (x)
-    (if (equal state (first x))
-      (if (find (cadr x) forbidden)
-        nil
-        (make-action
-          :name name
-          :origin state
-          :final (cadr x)
-          :cost (funcall cfun (caddr x))))
-      nil)) lst-edges)))
+                          (if (equal state (first x))
+                              (if (find (cadr x) forbidden)
+                                  nil
+                                (make-action
+                                 :name name
+                                 :origin state
+                                 :final (cadr x)
+                                 :cost (funcall cfun (caddr x))))
+                            nil))
+                lst-edges)))
 
 ```
 Estas funciones llaman a *navigate* restringiendo su uso a los campos que quieran: pasando la lista de canales y como función *first* o *second* en función del coste que se haya especificado.
@@ -280,28 +281,23 @@ Para ello hacemos uso de dos funciones auxiliares:
 
 (defun evaluate-list (boolean-list)
   (if (null boolean-list)
-    T
+      T
     (and (first boolean-list) (evaluate-list (rest boolean-list)))))
 
 (defun exists-parent-path (candidate path-node)
-  (cond ((null path-node)
-         NIL)
-    ((equal (node-state path-node) candidate)
-     T)
-    (t
-     (exists-parent-path candidate (node-parent path-node)))))
+  (if (null path-node)
+      NIL
+    (if (equal (node-state path-node) candidate)
+        T
+      (exists-parent-path candidate (node-parent path-node)))))
 
 
 (defun f-goal-test (node destination mandatory)
   (if (find (node-state node) destination)
-    (if (evaluate-list
-          (mapcar #'(lambda(x)
-                      (exists-parent-path x node)) mandatory))
-      T
-      NIL)
+      (evaluate-list (mapcar #'(lambda(x)
+                                 (exists-parent-path x node))
+                       mandatory))
     NIL))
-
-
 ```
 
 <br>
@@ -309,6 +305,17 @@ Para ello hacemos uso de dos funciones auxiliares:
   ##### Ejemplos:
 
 ```lisp
+(defparameter node-nevers
+   (make-node :state 'Nevers) )
+(defparameter node-paris
+   (make-node :state 'Paris :parent node-nevers))
+(defparameter node-nancy
+   (make-node :state 'Nancy :parent node-paris))
+(defparameter node-reims
+   (make-node :state 'Reims :parent node-nancy))
+(defparameter node-calais
+   (make-node :state 'Calais :parent node-reims))
+
 CL-USER> (f-goal-test node-paris '(Calais Marseille) '(Paris))
  NIL
 
@@ -317,6 +324,18 @@ CL-USER> (f-goal-test node-calais '(Calais Marseille) '(Paris Limoges))
 
 CL-USER> (f-goal-test node-calais '(Calais Marseille) '(Paris Nancy))
  T
+
+CL-USER> (f-goal-test node-calais '(Calais Marseille) '(Paris Madrid))
+ NIL
+
+CL-USER> (f-goal-test node-calais '(Calais Madrid) '(Paris Madrid))
+ NIL
+
+CL-USER> (f-goal-test node-calais '(Calais Madrid) '())
+ T
+
+CL-USER> (f-goal-test node-calais '() '())
+ NIL
 ```
 
 ---
@@ -350,16 +369,19 @@ Para esto hacemos uso de una función auxiliar que compara dos listas para ver s
 
 (defun equal-list (list1 list2)
   (if (or (null list1) (null list2))
-    T
+      T
     (and (equal (first list1) (first list2))
          (equal-list (rest list1) (rest list2)))))
 
 (defun f-search-state-equal (node-1 node-2 &optional (mandatory '()))
   (if (equal (node-state node-1) (node-state node-2))
-    (equal-list (mapcar #'(lambda(x)
-                            (exists-parent-path x node-1)) mandatory)
-                (mapcar #'(lambda(x)
-                            (exists-parent-path x node-2)) mandatory))
+      (equal-list
+       (mapcar #'(lambda(x)
+                   (exists-parent-path x node-1))
+         mandatory)
+       (mapcar #'(lambda(x)
+                   (exists-parent-path x node-2))
+         mandatory))
     NIL))
 
 ```
@@ -382,6 +404,12 @@ CL-USER> (f-search-state-equal node-calais node-calais-2 '(Nevers))
  T
 
 CL-USER> (f-search-state-equal node-nancy node-paris '())
+ NIL
+
+CL-USER> (f-search-state-equal node-nancy node-paris '(Madrid Nancy))
+ NIL
+
+CL-USER> (f-search-state-equal node-nancy node-paris '(Nancy))
  NIL
 ```
 
@@ -414,35 +442,36 @@ En este ejercicio se pide inicializar el valor de dos estructuras que representa
 
 (defparameter *travel-cheap*
   (make-problem
-    :states *cities*
-    :initial-state *origin*
-    :f-h #'(lambda (state) (f-h-price state *estimate*))
-    :f-goal-test #'(lambda (node)
-                      (f-goal-test node *destination* *mandatory*))
-    :f-search-state-equal #'(lambda (node-1 node-2)
-                              (f-search-state-equal node-1 node-2 *mandatory*))
-    :operators (list #'(lambda (node)
-                          (navigate-canal-price (node-state node) *canals*))
-                     #'(lambda (node)
-                          (navigate-train-price
-                            (node-state node) *trains* *forbidden*)))))
+   :states *cities*
+   :initial-state *origin*
+   :f-h #'(lambda (state)
+            (f-h-price state *estimate*))
+   :f-goal-test #'(lambda (node)
+                    (f-goal-test node *destination* *mandatory*))
+   :f-search-state-equal #'(lambda (node-1 node-2)
+                             (f-search-state-equal node-1 node-2 *mandatory*))
+   :operators (list #'(lambda (node)
+                        (navigate-canal-price (node-state node) *canals*))
+                    #'(lambda (node)
+                        (navigate-train-price
+                         (node-state node) *trains* *forbidden*)))))
 
 (defparameter *travel-fast*
   (make-problem
-    :states *cities*
-    :initial-state *origin*
-    :f-h #'(lambda (state)
-              (f-h-time state *estimate*))
-    :f-goal-test #'(lambda (node)
-                      (f-goal-test node *destination* *mandatory*))
-    :f-search-state-equal #'(lambda (node-1 node-2)
-                              (f-search-state-equal node-1 node-2 *mandatory*))
-    :operators (list #'(lambda (node)
-                          (navigate-canal-time (node-state node) *canals*))
-                #'(lambda (node)
-                    (navigate-train-time
-                      (node-state node) *trains* *forbidden*)))))
-
+   :states *cities*
+   :initial-state *origin*
+   :f-h #'(lambda (state)
+            (f-h-time state *estimate*))
+   :f-goal-test #'(lambda (node)
+                    (f-goal-test node *destination* *mandatory*))
+   :f-search-state-equal #'(lambda (node-1 node-2)
+                             (f-search-state-equal node-1 node-2 *mandatory*))
+   :operators (list #'(lambda (node)
+                        (navigate-canal-time
+                         (node-state node) *canals*))
+                    #'(lambda (node)
+                        (navigate-train-time
+                         (node-state node) *trains* *forbidden*)))))
 ```
 
 
@@ -491,15 +520,15 @@ La función *expand-node* crea un nodo con cada acción que se pueda realizar de
 (defun expand-node (node problem)
   (mapcar #'(lambda (node-action)
               (make-node
-                :state (action-final node-action)
-                :parent node
-                :action node-action
-                :g (+ (node-g node) (action-cost node-action))
-                :h (funcall (problem-f-h problem) (action-final node-action))
-                :f (+ (funcall (problem-f-h problem) (action-final node-action))
-                    (+ (node-g node) (action-cost node-action)))))
-                (append (funcall (first (problem-operators problem)) node)
-                        (funcall (second (problem-operators problem)) node))))
+               :state (action-final node-action)
+               :parent node
+               :action node-action
+               :g (+ (node-g node) (action-cost node-action))
+               :h (funcall (problem-f-h problem) (action-final node-action))
+               :f (+ (funcall (problem-f-h problem) (action-final node-action))
+                     (+ (node-g node) (action-cost node-action)))))
+    (append (funcall (first (problem-operators problem)) node)
+            (funcall (second (problem-operators problem)) node))))
 ```
 
 
@@ -557,6 +586,113 @@ CL-USER> (print lst-nodes-ex6)
     :H 130.0
     :F 205.0))
 
+(defparameter node-nevers-ex6
+   (make-node :state 'Nevers :depth 12 :g 10 :f 20))
+
+(defparameter lst-nodes-ex6
+  (expand-node node-nevers-ex6 *travel-fast*))
+
+CL-USER> (print lst-nodes-ex6)
+
+(#S(NODE
+    :STATE PARIS
+    :PARENT #S(NODE
+               :STATE NEVERS
+               :PARENT NIL
+               :ACTION NIL
+               :DEPTH 12
+               :G 10
+               :H 0
+               :F 20)
+    :ACTION #S(ACTION :NAME CANAL-TIME :ORIGIN NEVERS :FINAL PARIS :COST 90.0)
+    :DEPTH 0
+    :G 100.0
+    :H 30.0
+    :F 130.0)
+ #S(NODE
+    :STATE PARIS
+    :PARENT #S(NODE
+               :STATE NEVERS
+               :PARENT NIL
+               :ACTION NIL
+               :DEPTH 12
+               :G 10
+               :H 0
+               :F 20)
+    :ACTION #S(ACTION :NAME TRAIN-TIME :ORIGIN NEVERS :FINAL PARIS :COST 48.0)
+    :DEPTH 0
+    :G 58.0
+    :H 30.0
+    :F 88.0)
+ #S(NODE
+    :STATE LIMOGES
+    :PARENT #S(NODE
+               :STATE NEVERS
+               :PARENT NIL
+               :ACTION NIL
+               :DEPTH 12
+               :G 10
+               :H 0
+               :F 20)
+    :ACTION #S(ACTION
+               :NAME TRAIN-TIME
+               :ORIGIN NEVERS
+               :FINAL LIMOGES
+               :COST 42.0)
+    :DEPTH 0
+    :G 52.0
+    :H 100.0
+    :F 152.0))
+   (#S(NODE
+    :STATE PARIS
+    :PARENT #S(NODE
+               :STATE NEVERS
+               :PARENT NIL
+               :ACTION NIL
+               :DEPTH 12
+               :G 10
+               :H 0
+               :F 20)
+    :ACTION #S(ACTION :NAME CANAL-TIME :ORIGIN NEVERS :FINAL PARIS :COST 90.0)
+    :DEPTH 0
+    :G 100.0
+    :H 30.0
+    :F 130.0)
+ #S(NODE
+    :STATE PARIS
+    :PARENT #S(NODE
+               :STATE NEVERS
+               :PARENT NIL
+               :ACTION NIL
+               :DEPTH 12
+               :G 10
+               :H 0
+               :F 20)
+    :ACTION #S(ACTION :NAME TRAIN-TIME :ORIGIN NEVERS :FINAL PARIS :COST 48.0)
+    :DEPTH 0
+    :G 58.0
+    :H 30.0
+    :F 88.0)
+ #S(NODE
+    :STATE LIMOGES
+    :PARENT #S(NODE
+               :STATE NEVERS
+               :PARENT NIL
+               :ACTION NIL
+               :DEPTH 12
+               :G 10
+               :H 0
+               :F 20)
+    :ACTION #S(ACTION
+               :NAME TRAIN-TIME
+               :ORIGIN NEVERS
+               :FINAL LIMOGES
+               :COST 42.0)
+    :DEPTH 0
+    :G 52.0
+    :H 100.0
+    :F 152.0))
+
 ```
 
 ---
@@ -603,13 +739,14 @@ Para ello, hacemos uso de dos funciones auxiliares:
 
 
 (defun insert-node (node lst-nodes node-compare-p)
-  (cond ((null lst-nodes)
-      (list node))
-    ((funcall node-compare-p node (first lst-nodes))
-      (append (list node) lst-nodes))
-    (t
-      (append(list (first lst-nodes)) (insert-node node
-                                    (rest lst-nodes)  node-compare-p)))))
+  (if (null lst-nodes)
+      (list node)
+    (if (funcall node-compare-p node (first lst-nodes))
+        (cons node lst-nodes)
+      (cons
+       (first lst-nodes) (insert-node node
+                                      (rest lst-nodes)
+                                      node-compare-p)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -670,6 +807,58 @@ Esta función llama a insert-nodes pasandole la funcion de comparación correspo
 ```
 
 <br>
+
+  ##### Ejemplos:
+
+```lisp
+(defun node-g-<= (node-1 node-2)
+  (<= (node-g node-1)
+      (node-g node-2)))
+
+(defparameter *uniform-cost*
+  (make-strategy
+   :name 'uniform-cost
+   :node-compare-p #'node-g-<=))
+
+(defparameter node-paris-ex7
+  (make-node :state 'Paris :depth 0 :g 0 :f 0) )
+
+(defparameter node-nancy-ex7
+  (make-node :state 'Nancy :depth 2 :g 50 :f 50) )
+
+(defparameter node-marseille-ex6
+   (make-node :state 'Marseille :depth 12 :g 10 :f 20) )
+
+(defparameter lst-nodes-ex6
+  (expand-node node-marseille-ex6 *travel-fast*))
+
+(defparameter sol-ex7 (insert-nodes-strategy (list node-paris-ex7 node-nancy-ex7)
+                                             lst-nodes-ex6
+                                             *uniform-cost*))
+CL-USER> (mapcar #'(lambda (x) (node-state x)) sol-ex7)
+ (PARIS NANCY TOULOUSE)
+
+CL-USER> (mapcar #'(lambda (x) (node-g x)) sol-ex7)
+ (0 50 75.0)
+
+(defparameter sol-ex7 (insert-nodes-strategy (list node-nancy-ex7)
+                                            lst-nodes-ex6
+                                            *uniform-cost*))
+
+CL-USER> (mapcar #'(lambda (x) (node-state x)) sol-ex7)
+ (NANCY TOULOUSE)
+
+(defparameter node-nevers
+ (make-node :state 'Nevers :depth 20 :g 10 :f 15))
+
+(defparameter sol-ex7 (insert-nodes-strategy (list node-nancy-ex7)
+                                            (list node-nevers)
+                                            *uniform-cost*))
+CL-USER> (mapcar #'(lambda (x) (node-state x)) sol-ex7)
+ (NEVERS NANCY)
+```
+
+<br>
 <hr>
 <br>
 
@@ -693,7 +882,8 @@ En este ejecicio hemos definido el algoritmo *A-star* que compara el parámetro 
 (defparameter *A-star*
   (make-strategy
    :name 'A-star
-   :node-compare-p #'(lambda (node-1 node-2) (<= (node-f node-1) (node-f node-2)))))
+   :node-compare-p #'(lambda (node-1 node-2)
+                       (<= (node-f node-1) (node-f node-2)))))
 
 ```
 
@@ -737,14 +927,13 @@ En este ejercicio se pide implementar una función que realice la búsqueda para
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun compare-g-nodes (problem node closed-nodes)
-  (cond ((null closed-nodes)
-          t)
-        ((not (funcall (problem-f-search-state-equal problem) node (first closed-nodes)))
-          (compare-g-nodes problem node (rest closed-nodes)))
-        (t
-          (if (< (node-g node) (node-g (first closed-nodes)))
-            t
-            nil))))
+  (if (null closed-nodes)
+    T
+    (if (funcall (problem-f-search-state-equal problem) node (first closed-nodes))
+        (if (< (node-g node) (node-g (first closed-nodes)))
+          T
+          nil)
+        (compare-g-nodes problem node (rest closed-nodes)))))
 ```
   * *graph-search-aux*:
 
@@ -784,16 +973,19 @@ En este ejercicio se pide implementar una función que realice la búsqueda para
 ;;
 
 (defun graph-search-aux (problem open-nodes closed-nodes strategy)
-  (cond ((null open-nodes)
-          nil)
-        ((funcall (problem-f-goal-test problem) (first open-nodes))
-          (first open-nodes))
-        ((not (compare-g-nodes problem (first open-nodes) closed-nodes))
-          (graph-search-aux problem (rest open-nodes) closed-nodes strategy))
-        (t
-          (graph-search-aux problem (insert-nodes-strategy (expand-node (first open-nodes) problem) (rest open-nodes) strategy)
-                  (append (list (first open-nodes)) closed-nodes) strategy))
-        ))
+  (if (null open-nodes)
+      nil
+    (if (funcall (problem-f-goal-test problem) (first open-nodes))
+        (first open-nodes)
+      (if (not (compare-g-nodes problem (first open-nodes) closed-nodes))
+          (graph-search-aux problem (rest open-nodes) closed-nodes strategy)
+          (graph-search-aux problem
+                          (insert-nodes-strategy
+                            (expand-node (first open-nodes) problem)
+                            (rest open-nodes)
+                            strategy)
+                          (cons (first open-nodes) closed-nodes)
+                          strategy)))))
 ```
  * *graph-search*:
 
@@ -822,14 +1014,16 @@ En este ejercicio se pide implementar una función que realice la búsqueda para
 ;;    and an empty closed list.
 ;;
 (defun graph-search (problem strategy)
-    (graph-search-aux problem (list (make-node
-        :state (problem-initial-state problem)
-        :parent nil
-        :action nil
-        :g 0
-        :h (funcall (problem-f-h problem) (problem-initial-state problem))
-        :f (funcall (problem-f-h problem) (problem-initial-state problem))))
-        '() strategy))
+  (graph-search-aux problem
+                    (list (make-node
+                           :state (problem-initial-state problem)
+                           :parent nil
+                           :action nil
+                           :g 0
+                           :h (funcall (problem-f-h problem) (problem-initial-state problem))
+                           :f (funcall (problem-f-h problem) (problem-initial-state problem))))
+                    '()
+                    strategy))
 ```
 <br>
 Finalmente la función *a-star-search* simplemente llama a *graph-search* pasándole como estrategia **A-star**.
@@ -839,10 +1033,146 @@ Finalmente la función *a-star-search* simplemente llama a *graph-search* pasán
 ;  A* search is simply a function that solves a problem using the A* strategy
 ;
 (defun a-star-search (problem)
-    (graph-search problem *A-star*)
-  )
+  (graph-search problem *A-star*))
 ```
+##### Ejemplos:
 
+Por simplicidad y claridad el resto de ejemplos de este ejercicio se pondrán en la batería de ejemplos del siguiente.
+
+```lisp
+CL-USER> (graph-search *travel-cheap* *A-star*)
+#S(NODE
+   :STATE CALAIS
+   :PARENT #S(NODE
+              :STATE REIMS
+              :PARENT #S(NODE
+                         :STATE PARIS
+                         :PARENT #S(NODE
+                                    :STATE NEVERS
+                                    :PARENT #S(NODE
+                                               :STATE LIMOGES
+                                               :PARENT #S(NODE
+                                                          :STATE TOULOUSE
+                                                          :PARENT #S(NODE
+                                                                     :STATE MARSEILLE
+                                                                     :PARENT NIL
+                                                                     :ACTION NIL
+                                                                     :DEPTH 0
+                                                                     :G 0
+                                                                     :H 0.0
+                                                                     :F 0.0)
+                                                          :ACTION #S(ACTION
+                                                                     :NAME TRAIN-PRICE
+                                                                     :ORIGIN MARSEILLE
+                                                                     :FINAL TOULOUSE
+                                                                     :COST 120.0)
+                                                          :DEPTH 0
+                                                          :G 120.0
+                                                          :H 0.0
+                                                          :F 120.0)
+                                               :ACTION #S(ACTION
+                                                          :NAME TRAIN-PRICE
+                                                          :ORIGIN TOULOUSE
+                                                          :FINAL LIMOGES
+                                                          :COST 35.0)
+                                               :DEPTH 0
+                                               :G 155.0
+                                               :H 0.0
+                                               :F 155.0)
+                                    :ACTION #S(ACTION
+                                               :NAME TRAIN-PRICE
+                                               :ORIGIN LIMOGES
+                                               :FINAL NEVERS
+                                               :COST 60.0)
+                                    :DEPTH 0
+                                    :G 215.0
+                                    :H 0.0
+                                    :F 215.0)
+                         :ACTION #S(ACTION
+                                    :NAME CANAL-PRICE
+                                    :ORIGIN NEVERS
+                                    :FINAL PARIS
+                                    :COST 10.0)
+                         :DEPTH 0
+                         :G 225.0
+                         :H 0.0
+                         :F 225.0)
+              :ACTION #S(ACTION
+                         :NAME CANAL-PRICE
+                         :ORIGIN PARIS
+                         :FINAL REIMS
+                         :COST 10.0)
+              :DEPTH 0
+              :G 235.0
+              :H 0.0
+              :F 235.0)
+   :ACTION #S(ACTION :NAME CANAL-PRICE :ORIGIN REIMS :FINAL CALAIS :COST 15.0)
+   :DEPTH 0
+   :G 250.0
+   :H 0.0
+   :F 250.0)
+
+CL-USER> (a-star-search *travel-fast*)
+#S(NODE
+  :STATE CALAIS
+  :PARENT #S(NODE
+             :STATE PARIS
+             :PARENT #S(NODE
+                        :STATE ORLEANS
+                        :PARENT #S(NODE
+                                   :STATE LIMOGES
+                                   :PARENT #S(NODE
+                                              :STATE TOULOUSE
+                                              :PARENT #S(NODE
+                                                         :STATE MARSEILLE
+                                                         :PARENT NIL
+                                                         :ACTION NIL
+                                                         :DEPTH 0
+                                                         :G 0
+                                                         :H 145.0
+                                                         :F 145.0)
+                                              :ACTION #S(ACTION
+                                                         :NAME TRAIN-TIME
+                                                         :ORIGIN MARSEILLE
+                                                         :FINAL TOULOUSE
+                                                         :COST 65.0)
+                                              :DEPTH 0
+                                              :G 65.0
+                                              :H 130.0
+                                              :F 195.0)
+                                   :ACTION #S(ACTION
+                                              :NAME TRAIN-TIME
+                                              :ORIGIN TOULOUSE
+                                              :FINAL LIMOGES
+                                              :COST 25.0)
+                                   :DEPTH 0
+                                   :G 90.0
+                                   :H 100.0
+                                   :F 190.0)
+                        :ACTION #S(ACTION
+                                   :NAME TRAIN-TIME
+                                   :ORIGIN LIMOGES
+                                   :FINAL ORLEANS
+                                   :COST 55.0)
+                        :DEPTH 0
+                        :G 145.0
+                        :H 55.0
+                        :F 200.0)
+             :ACTION #S(ACTION
+                        :NAME TRAIN-TIME
+                        :ORIGIN ORLEANS
+                        :FINAL PARIS
+                        :COST 23.0)
+             :DEPTH 0
+             :G 168.0
+             :H 30.0
+             :F 198.0)
+  :ACTION #S(ACTION :NAME TRAIN-TIME :ORIGIN PARIS :FINAL CALAIS :COST 34.0)
+  :DEPTH 0
+  :G 202.0
+  :H 0.0
+  :F 202.0)
+```
 ---
 #### Ejercicio 10
 
@@ -863,13 +1193,11 @@ En este ejecicio se nos pide que dado un nodo resultado de una búsqueda, creemo
 ;*** solution-path ***
 
 (defun solution-path (node)
-  (cond ((null node)
-          nil)
-        ((null (node-parent node))
-          (list (node-state node)))
-        (t
-          (append (solution-path (node-parent node)) (list (node-state node)))))
-  )
+  (if (null node)
+      nil
+    (if (null (node-parent node))
+              (list (node-state node))
+        (append (solution-path (node-parent node)) (list (node-state node))))))
 ```
 
 * *action-sequence*:
@@ -884,26 +1212,118 @@ En este ejecicio se nos pide que dado un nodo resultado de una búsqueda, creemo
 ; Visualize sequence of actions
 
 (defun action-sequence (node)
-  (cond ((null node)
-          nil)
-        ((null (node-parent (node-parent node)))
-          (list (node-action node)))
-        (t
-          (append (action-sequence (node-parent node)) (list (node-action node)))))
-  )
-
-;;;
-;;;    END Exercise 10: Solution path / action sequence
-;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (if (null node)
+      nil
+    (if (null (node-parent (node-parent node)))
+              (list (node-action node))
+        (append (action-sequence (node-parent node)) (list (node-action node))))))
 ```
+##### Ejemplos:
 
+```lisp
+CL-USER> (solution-path nil)
+ NIL
+
+CL-USER> (solution-path (a-star-search *travel-fast*))
+ (MARSEILLE TOULOUSE LIMOGES ORLEANS PARIS CALAIS)
+
+CL-USER> (solution-path (a-star-search *travel-cheap*))
+ (MARSEILLE TOULOUSE LIMOGES NEVERS PARIS REIMS CALAIS)
+
+CL-USER> (action-sequence (a-star-search *travel-fast*))
+ (#S(ACTION :NAME TRAIN-TIME :ORIGIN MARSEILLE :FINAL TOULOUSE :COST 65.0)
+ #S(ACTION :NAME TRAIN-TIME :ORIGIN TOULOUSE :FINAL LIMOGES :COST 25.0)
+ #S(ACTION :NAME TRAIN-TIME :ORIGIN LIMOGES :FINAL ORLEANS :COST 55.0)
+ #S(ACTION :NAME TRAIN-TIME :ORIGIN ORLEANS :FINAL PARIS :COST 23.0)
+ #S(ACTION :NAME TRAIN-TIME :ORIGIN PARIS :FINAL CALAIS :COST 34.0))
+
+CL-USER> (action-sequence (a-star-search *travel-cheap*))
+(#S(ACTION :NAME TRAIN-PRICE :ORIGIN MARSEILLE :FINAL TOULOUSE :COST 120.0)
+#S(ACTION :NAME TRAIN-PRICE :ORIGIN TOULOUSE :FINAL LIMOGES :COST 35.0)
+#S(ACTION :NAME TRAIN-PRICE :ORIGIN LIMOGES :FINAL NEVERS :COST 60.0)
+#S(ACTION :NAME CANAL-PRICE :ORIGIN NEVERS :FINAL PARIS :COST 10.0)
+#S(ACTION :NAME CANAL-PRICE :ORIGIN PARIS :FINAL REIMS :COST 10.0)
+#S(ACTION :NAME CANAL-PRICE :ORIGIN REIMS :FINAL CALAIS :COST 15.0))
+
+(defparameter *destination* '(Madrid))
+
+CL-USER> (solution-path (a-star-search *travel-fast*))
+ NIL
+
+(defparameter *destination* '(Calais))
+(defparameter *mandatory* '(Madrid))
+
+CL-USER> (solution-path (a-star-search *travel-fast*))
+ NIL
+```
 ---
 #### Ejercicio 11
 
+En este ejercicio se nos pide implementar búsqueda en anchura y profundidad, haciendo uso de todas las funciones anteriores solo tenemos que definir una estrategia con el nombre adecuado y una función de comparación.
+
+En el la búsqueda en profundidad los nodos recién descubiertos van los primeros, por lo que la comparación al devolver siempre T se asegura de que vayan los primeros.
+
 ```lisp
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;    BEGIN Exercise 11: depth-first / breadth-first
+;;
+;; Definicion de depth-first
+;;    En la busqueda en profundidad, los nodos recien descubiertos tienen que ir
+;;    antes en la lista de abiertos por lo que se devuelve T siempre en la comparacion.
+
+(defun depth-first-node-compare-p (node-1 node-2)
+  T)
+
+(defparameter *depth-first*
+  (make-strategy
+   :name 'depth-first
+   :node-compare-p #'depth-first-node-compare-p))
 ```
 
+En el la búsqueda en anchura los nodos recién descubiertos van los últimos, por lo que la comparación al devolver siempre NIL se asegura de que vayan los últimos.
+
+```lisp
+;;
+;; Definicion de breadth-first
+;;    En la busqueda en anchura, los nodos recien descubiertos tienen que ir
+;;    ultimos en la lista de abiertos por lo que se devuelve NIL siempre en la comparacion.
+
+(defun breadth-first-node-compare-p (node-1 node-2)
+ NIL)
+
+(defparameter *breadth-first*
+ (make-strategy
+  :name 'breadth-first
+  :node-compare-p #'breadth-first-node-compare-p))
+```
+##### Ejemplos:
+
+```lisp
+CL-USER> (solution-path (graph-search *travel-fast* *depth-first*))
+(MARSEILLE TOULOUSE LYON ROENNE NEVERS LIMOGES ORLEANS NANTES BREST ST-MALO
+ PARIS ST-MALO BREST NANTES TOULOUSE LYON NANCY REIMS CALAIS)
+
+CL-USER> (solution-path (graph-search *travel-cheap* *breadth-first*))
+ (MARSEILLE TOULOUSE NANTES ST-MALO PARIS CALAIS)
+
+(defparameter *destination* '(Madrid))
+
+CL-USER> (solution-path (graph-search *travel-fast* *depth-first*))
+ NIL
+
+CL-USER> (solution-path (graph-search *travel-cheap* *breadth-first*))
+ NIL
+
+(defparameter *destination* '(Calais))
+(defparameter *mandatory* '(Madrid))
+
+CL-USER> (solution-path (graph-search *travel-fast* *depth-first*))
+ NIL
+
+CL-USER> (solution-path (graph-search *travel-cheap* *breadth-first*))
+ NIL
+```
 ---
 #### Ejercicio 12
 

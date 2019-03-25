@@ -18,10 +18,16 @@ Correo de Jessica: jessica.lopez-hazas@inv.uam.es
 
 #### Falta por hacer
 
+ - [ ] Usar *let*
+ - [ ] Ejercicio 12
+ - [ ] Preguntas del final
+ - [ ] Quitar pruebas del fichero de código
  - [x] Meter pruebas ej 1 en la memoria
  - [x] Meter pruebas ej 2 en la memoria
  - [x] Meter pruebas ej 3 en la memoria
  - [x] Meter pruebas ej 4 en la memoria
  - [x] Meter pruebas ej 6 en la memoria
- - [ ] Meter pruebas ej 7 en la memoria
- - [ ] Meter pruebas ej 9 en la memoria
+ - [x] Meter pruebas ej 7 en la memoria
+ - [x] Meter pruebas ej 9 en la memoria
+ - [x] Meter pruebas ej 10 en la memoria
+ - [x] Meter pruebas ej 11 en la memoria
