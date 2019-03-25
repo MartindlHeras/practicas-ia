@@ -271,7 +271,6 @@
                                  (exists-parent-path x node))
                        mandatory))
     NIL))
-
 ;;
 ;; END: Exercise 3 -- Goal test
 ;;
@@ -422,6 +421,13 @@
     (append (funcall (first (problem-operators problem)) node)
             (funcall (second (problem-operators problem)) node))))
 
+(defparameter node-marseille-ex6
+   (make-node :state 'Marseille :depth 12 :g 10 :f 20) )
+
+(defparameter lst-nodes-ex6
+  (expand-node node-marseille-ex6 *travel-fast*))
+
+(print lst-nodes-ex6)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;  BEGIN Exercise 7 -- Node list management
@@ -512,6 +518,28 @@
 (defun insert-nodes-strategy (nodes lst-nodes strategy)
   (insert-nodes nodes lst-nodes (strategy-node-compare-p strategy)))
 
+(defun node-g-<= (node-1 node-2)
+  (<= (node-g node-1)
+      (node-g node-2)))
+
+(defparameter *uniform-cost*
+  (make-strategy
+   :name 'uniform-cost
+   :node-compare-p #'node-g-<=))
+
+(defparameter node-paris-ex7
+  (make-node :state 'Paris :depth 0 :g 0 :f 0) )
+
+(defparameter node-nancy-ex7
+  (make-node :state 'Nancy :depth 2 :g 50 :f 50) )
+
+
+(defparameter sol-ex7 (insert-nodes-strategy (list node-paris-ex7 node-nancy-ex7)
+                                             lst-nodes-ex6
+                                             *uniform-cost*))
+
+(mapcar #'(lambda (x) (node-state x)) sol-ex7) ; -> (PARIS NANCY TOULOUSE)
+(mapcar #'(lambda (x) (node-g x)) sol-ex7) ; -> (0 50 75)
 ;;
 ;;    END: Exercize 7 -- Node list management
 ;;
@@ -597,24 +625,26 @@
 (defun compare-g-nodes (problem node closed-nodes)
   (if (null closed-nodes)
     T
-    (if (not (funcall (problem-f-search-state-equal problem) node (first closed-nodes)))
-        (compare-g-nodes problem node (rest closed-nodes))
+    (if (funcall (problem-f-search-state-equal problem) node (first closed-nodes))
         (if (< (node-g node) (node-g (first closed-nodes)))
           T
-          nil))))
+          nil)
+        (compare-g-nodes problem node (rest closed-nodes)))))
 
 (defun graph-search-aux (problem open-nodes closed-nodes strategy)
   (if (null open-nodes)
       nil
     (if (funcall (problem-f-goal-test problem) (first open-nodes))
-        (list (first open-nodes))
+        (first open-nodes)
       (if (not (compare-g-nodes problem (first open-nodes) closed-nodes))
           (graph-search-aux problem (rest open-nodes) closed-nodes strategy)
-        (graph-search-aux problem
+          (graph-search-aux problem
                           (insert-nodes-strategy
-                           (expand-node
-                            (first open-nodes) problem) (rest open-nodes) strategy)
-                          (cons (first open-nodes) closed-nodes) strategy)))))
+                            (expand-node (first open-nodes) problem)
+                            (rest open-nodes)
+                            strategy)
+                          (cons (first open-nodes) closed-nodes)
+                          strategy)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -638,14 +668,16 @@
 ;;    and an empty closed list.
 ;;
 (defun graph-search (problem strategy)
-  (graph-search-aux problem (list (make-node
-                                   :state (problem-initial-state problem)
-                                   :parent nil
-                                   :action nil
-                                   :g 0
-                                   :h (funcall (problem-f-h problem) (problem-initial-state problem))
-                                   :f (funcall (problem-f-h problem) (problem-initial-state problem))))
-                    '() strategy))
+  (graph-search-aux problem
+                    (list (make-node
+                           :state (problem-initial-state problem)
+                           :parent nil
+                           :action nil
+                           :g 0
+                           :h (funcall (problem-f-h problem) (problem-initial-state problem))
+                           :f (funcall (problem-f-h problem) (problem-initial-state problem))))
+                    '()
+                    strategy))
 
 ;
 ;  A* search is simply a function that solves a problem using the A* strategy
@@ -653,6 +685,8 @@
 (defun a-star-search (problem)
   (graph-search problem *A-star*))
 
+(graph-search *travel-cheap* *A-star*)
+(a-star-search *travel-fast*)
 ;;
 ;; END: Exercise 9 -- Search algorithm
 ;;
@@ -678,9 +712,9 @@
 (defun action-sequence (node)
   (if (null node)
       nil
-    (if (null (node-parent (node-parent node))
-              (node-action node))
-        (cons (action-sequence (node-parent node)) (node-action node)))))s
+    (if (null (node-parent (node-parent node)))
+              (node-action node)
+        (cons (action-sequence (node-parent node)) (node-action node)))))
 
 ;;;
 ;;;    END Exercise 10: Solution path / action sequence

@@ -95,20 +95,20 @@
 ;;
 ;; Exercise 6:
 ;;
-;; NOTE: In order to run the tests from this point on, you must 
-;; have solved exercise 5, that is, you must have created the 
+;; NOTE: In order to run the tests from this point on, you must
+;; have solved exercise 5, that is, you must have created the
 ;; structures *travel-ceap* and *travel-fast*
 ;;
 ;; ALSO NOTE: The output of tehse examples is "as is", the same as
-;; it appears on the allegro console. The console "cuts" some of 
-;; the outputs when these are too complex. Your output might be 
+;; it appears on the allegro console. The console "cuts" some of
+;; the outputs when these are too complex. Your output might be
 ;; slightly diffferent than this one.
 
 (defparameter node-marseille-ex6
    (make-node :state 'Marseille :depth 12 :g 10 :f 20) )
 
 (defparameter lst-nodes-ex6
-  (expand-node node-marseille-ex6 *travel-fast*)) 
+  (expand-node node-marseille-ex6 *travel-fast*))
 
 (print lst-nodes-ex6) ; ->
 ;(#S(NODE :STATE TOULOUSE
@@ -139,7 +139,7 @@
 ;         :DEPTH 13
 ;        :G 75.0
 ;         :H 130.0
-;         :F 205.0)) 
+;         :F 205.0))
 ;(#S(NODE :STATE TOULOUSE
 ;         :PARENT #S(NODE
 ;                    :STATE
@@ -187,18 +187,18 @@
   (make-node :state 'Nancy :depth 2 :g 50 :f 50) )
 
 
-(defparameter sol-ex7 (insert-nodes-strategy (list node-paris-ex7 node-nancy-ex7) 
+(defparameter sol-ex7 (insert-nodes-strategy (list node-paris-ex7 node-nancy-ex7)
                                              lst-nodes-ex6
                                              *uniform-cost*))
 
-(mapcar #'(lambda (x) (node-state x)) sol-ex6) ; -> (PARIS NANCY TOULOUSE)
-(mapcar #'(lambda (x) (node-g x)) sol-ex6) ; -> (0 50 75)
+(mapcar #'(lambda (x) (node-state x)) sol-ex7) ; -> (PARIS NANCY TOULOUSE)
+(mapcar #'(lambda (x) (node-g x)) sol-ex7) ; -> (0 50 75)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;
-;; Exercise 8:
+;; Exercise 9:
 ;;
 
 (graph-search *travel-cheap* *A-star*);->
@@ -364,7 +364,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;
-;; Exercise 9:
+;; Exercise 10:
 ;;
 
 
@@ -423,4 +423,3 @@
 ;           :ORIGIN REIMS
 ;           :FINAL CALAIS
 ;           :COST 15.0))
-
