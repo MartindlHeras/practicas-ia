@@ -44,6 +44,8 @@ santiago.valderrabano@estudiante.uam.es | martin.delasheras@estudiante.uam.es
 
   * Ejercicio 12
 
+#### 4. Preguntas
+
   <br>
   <hr>
   <br>
@@ -1332,5 +1334,56 @@ CL-USER> (solution-path (graph-search *travel-cheap* *breadth-first*))
 ---
 #### Ejercicio 12
 
+  Para este ejercicio, hemos implementado una nueva heurística para el precio del viaje. Esta heurística será un tercio de el mínimo coste posible. Es decir, si para llegar de Paris a Nantes el menor coste posible es 25.0, 10.0 + 15.0, entonces el valor de *h* para París será de 8.33.
+
+  Para definir el problema *travel-cost-new* bastará con coger *travel-cheap* y cambiarle la heurística que tenía, que era estimate, por la nueva heurística *estimate-new*.
+
+```lisp
+(defparameter *estimate-new*
+  '((Calais (0.0 0.0)) (Reims (25.0 5.0)) (Paris (30.0 8.33))
+    (Nancy (50.0 11.66)) (Orleans (55.0 21.0)) (St-Malo (65.0 31.66))
+    (Nantes (75.0 39.33)) (Brest (90.0 45.00)) (Nevers (70.0 15.0))
+    (Limoges (100.0 35.0)) (Roenne (85.0 16.66)) (Lyon (105.0 18.33))
+    (Toulouse (130.0 46.66)) (Avignon (135.0 31.66)) (Marseille (145.0 40.0))))
+
+(defparameter *travel-cost-new*
+  (make-problem
+   :states *cities*
+   :initial-state *origin*
+   :f-h #'(lambda (state)
+                  (f-h-price state *estimate-new*))
+   :f-goal-test #'(lambda (node)
+                          (f-goal-test node *destination* *mandatory*))
+   :f-search-state-equal #'(lambda (node-1 node-2)
+                                   (f-search-state-equal node-1 node-2 *mandatory*))
+   :operators (list #'(lambda (node)
+                              (navigate-canal-price (node-state node) *canals*))
+                    #'(lambda (node)
+                              (navigate-train-price
+                               (node-state node) *trains* *forbidden*)))))
+```
+
+  A continuación, probamos que esta heurística es mejor que la definida anteriormente comparando el tiempo que tarda en resolver cada uno de los problemas el algoritmo *A-star*.
+
 ```lisp
 ```
+
+
+## 4. Preguntas
+
+#### 1. ¿Por qué se ha realizado este diseño para resolver el problema de búsqueda?
+
+
+#### 2. En concreto,  
+
+##### a.) ¿Qué ventajas aporta?  
+
+##### b.) ¿Por qué se han utilizado funciones lambda para especificar el test objetivo, la heurística y los operadores del problema?
+
+#### 3. Sabiendo que en cada nodo de búsqueda hay un campo “parent”, que proporciona una referencia al nodo a partir del cual se ha generado el actual ¿es eficiente el uso de memoria?
+
+#### 4. ¿Cuál es la complejidad espacial del algoritmo implementado?
+
+#### 5. ¿Cuál es la complejidad temporal del algoritmo?
+
+#### 6. Indicad qué partes del código se modificarían para limitar el número de veces que se puede utilizar la acción “navegar por agujeros de gusano” (bidireccionales).
