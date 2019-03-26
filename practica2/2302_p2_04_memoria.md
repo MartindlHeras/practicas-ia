@@ -229,7 +229,7 @@ CL-USER> (navigate-canal-time 'Avignon *canals*)
  (#S(ACTION :NAME CANAL-TIME :ORIGIN AVIGNON :FINAL MARSEILLE :COST 35.0))
 
 CL-USER> (navigate-canal-price 'Avignon *canals*)
- (#S(ACTION :NAME CANAL-PRICE :ORIGIN AVIGNON :FINAL MARSEILLE :COST 10.0))
+ (#S(ACTION :NAME CANAL-PRICE :ORIGIN AVIGNON :FINAL MARSEILLE :COST 10.0))
 
 CL-USER> (navigate-canal-time 'Orleans *canals*)
  NIL
@@ -1368,7 +1368,7 @@ CL-USER> (solution-path (graph-search *travel-cheap* *breadth-first*))
 ```lisp
 ;; TRAVEL-CHEAP
 CL-USER> (time (solution-path (a-star-search *travel-cheap*)))
-
+
 Evaluation took:
   0.000 seconds of real time
   0.000073 seconds of total run time (0.000068 user, 0.000005 system)
@@ -1376,11 +1376,11 @@ Evaluation took:
   219,871 processor cycles
   32,752 bytes consed
 
-(MARSEILLE TOULOUSE LIMOGES NEVERS PARIS REIMS CALAIS)
+(MARSEILLE TOULOUSE LIMOGES NEVERS PARIS REIMS CALAIS)
 
 ;; TRAVEL-COST-NEW
 CL-USER> (time (solution-path (a-star-search *travel-cost-new*)))
-
+
 Evaluation took:
   0.000 seconds of real time
   0.000052 seconds of total run time (0.000052 user, 0.000000 system)
@@ -1388,7 +1388,7 @@ Evaluation took:
   145,402 processor cycles
   32,768 bytes consed
 
-(MARSEILLE TOULOUSE LIMOGES NEVERS PARIS REIMS CALAIS)
+(MARSEILLE TOULOUSE LIMOGES NEVERS PARIS REIMS CALAIS)
 ```
 
 Se puede observar que la nueva heurística es mejor ya que, el algoritmo *A-star* tarda menos en resolver el problema con esta. En concreto es 1.4 veces mejor la heurística dada.
