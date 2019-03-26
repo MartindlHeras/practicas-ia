@@ -111,8 +111,6 @@
     (Nantes St-Malo (40.0 15.0)) (St-Malo Brest (65.0 15.0))
     (Nantes Brest (75.0 15.0))))
 
-
-
 (defparameter *estimate*
   '((Calais (0.0 0.0)) (Reims (25.0 0.0)) (Paris (30.0 0.0))
     (Nancy (50.0 0.0)) (Orleans (55.0 0.0)) (St-Malo (65.0 0.0))
@@ -124,7 +122,7 @@
 
 (defparameter *destination* '(Calais))
 
-(defparameter *forbidden*  '(Avignon))
+(defparameter *forbidden*  '(Nevers))
 
 (defparameter *mandatory* '(Paris))
 
