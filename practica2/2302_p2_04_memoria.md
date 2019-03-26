@@ -1366,7 +1366,32 @@ CL-USER> (solution-path (graph-search *travel-cheap* *breadth-first*))
   A continuación, probamos que esta heurística es mejor que la definida anteriormente comparando el tiempo que tarda en resolver cada uno de los problemas el algoritmo *A-star*.
 
 ```lisp
+;; TRAVEL-CHEAP
+CL-USER> (time (solution-path (a-star-search *travel-cheap*)))
+
+Evaluation took:
+  0.000 seconds of real time
+  0.000073 seconds of total run time (0.000068 user, 0.000005 system)
+  100.00% CPU
+  219,871 processor cycles
+  32,752 bytes consed
+
+(MARSEILLE TOULOUSE LIMOGES NEVERS PARIS REIMS CALAIS)
+
+;; TRAVEL-COST-NEW
+CL-USER> (time (solution-path (a-star-search *travel-cost-new*)))
+
+Evaluation took:
+  0.000 seconds of real time
+  0.000052 seconds of total run time (0.000052 user, 0.000000 system)
+  100.00% CPU
+  145,402 processor cycles
+  32,768 bytes consed
+
+(MARSEILLE TOULOUSE LIMOGES NEVERS PARIS REIMS CALAIS)
 ```
+
+Se puede observar que la nueva heurística es mejor ya que, el algoritmo *A-star* tarda menos en resolver el problema con esta. En concreto es 1.4 veces mejor la heurística dada.
 
 
 ## 4. Preguntas
