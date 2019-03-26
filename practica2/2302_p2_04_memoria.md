@@ -1376,7 +1376,7 @@ Evaluation took:
   219,871 processor cycles
   32,752 bytes consed
 
-(MARSEILLE TOULOUSE LIMOGES NEVERS PARIS REIMS CALAIS)
+(MARSEILLE TOULOUSE LIMOGES NEVERS PARIS REIMS CALAIS)
 
 ;; TRAVEL-COST-NEW
 CL-USER> (time (solution-path (a-star-search *travel-cost-new*)))
@@ -1388,7 +1388,7 @@ Evaluation took:
   145,402 processor cycles
   32,768 bytes consed
 
-(MARSEILLE TOULOUSE LIMOGES NEVERS PARIS REIMS CALAIS)
+(MARSEILLE TOULOUSE LIMOGES NEVERS PARIS REIMS CALAIS)
 ```
 
 Se puede observar que la nueva heurística es mejor ya que, el algoritmo *A-star* tarda menos en resolver el problema con esta. En concreto es 1.4 veces mejor la heurística dada.
