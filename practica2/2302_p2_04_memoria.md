@@ -1423,10 +1423,10 @@ Se puede observar que la nueva heurística es mejor ya que, el algoritmo *A-star
 <p>La complejidad espacial es exponencial respecto al tamaño del problema. En concreto es: </p>
 
 **O(b^d)** donde:
- *  b es el factor de ramificación.
- *  d = C/ε donde:
-  * C es el coste óptimo.
-  * ε es el mínimo coste por acción.
+  * b es el factor de ramificación.
+  * d = C/ε donde:  
+    * C es el coste óptimo.
+    * ε es el mínimo coste por acción.
 
 #### 5. ¿Cuál es la complejidad temporal del algoritmo?
 
