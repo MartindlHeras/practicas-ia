@@ -1,3 +1,6 @@
+<script async
+  src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
 # Memoria Práctica 2
 
 ### Pareja 4 Grupo 2302
@@ -1398,17 +1401,36 @@ Se puede observar que la nueva heurística es mejor ya que, el algoritmo *A-star
 
 #### 1. ¿Por qué se ha realizado este diseño para resolver el problema de búsqueda?
 
+<p>Se ha elegido el algoritmo A* ya que este es completo y óptimo. Completo porque llega siempre a la solución. Y óptimo porque llega a la solución por el camino más eficiente.</p>
+
+<p>Otra de las razones por las que se ha elegido este algoritmo, es porque su eficiencia depende de la heurística que se use. Por tanto, si somos capaces de encontrar una heurística admisible el algoritmo es mejor que cualquier otro.</p>
 
 #### 2. En concreto,  
 
 ##### a.) ¿Qué ventajas aporta?  
 
+<p>Como hemos dicho en la pregunta anterior la mayor ventaja que se observa es que la eficiencia depende de la heurística usada.</p>
+
 ##### b.) ¿Por qué se han utilizado funciones lambda para especificar el test objetivo, la heurística y los operadores del problema?
+
+<p>El uso de funciones lambda, aporta una mayor independencia respecto a la estructura utilizada en la práctica. Por tanto, podría ser adaptado a otro tipo de problema. Por ejemplo, no habría que cambiar nada en estas funciones si se modificase el numero de trenes, canales o ciudades, o la estructura que tiene un nodo.</p>
+<p>También es destacable que las funciones sean tan cortas ya que esto aumenta la claridad del código y hace más simple la depuración del mismo. </p>
+
 
 #### 3. Sabiendo que en cada nodo de búsqueda hay un campo “parent”, que proporciona una referencia al nodo a partir del cual se ha generado el actual ¿es eficiente el uso de memoria?
 
+<p> No. Esto se debe a que cada nodo tiene almacenado a su nodo padre y sus hijos y estos a la vez los suyos. Esto implica que hay información repetida. Una solución posible, seria almacenar todos los nodos en memoria y referenciarlos entre ellos únicamente por el nombre. Esto haría que el uso de memoria fuera mas eficiente peor perderíamos un poco de eficiencia en la ejecución. </p>
+
 #### 4. ¿Cuál es la complejidad espacial del algoritmo implementado?
+
+<p>La complejidad espacial es exponencial respecto al tamaño del problema. En concreto es: </p>
+
+<p>O(b^d) donde b es el factor de ramificación y  d = C*/ε donde C* es el coste óptimo y ε es el mínimo coste por acción.</p>
 
 #### 5. ¿Cuál es la complejidad temporal del algoritmo?
 
+Depende de la heurísitica como hemos podido comprobar en el ejercicio 12, pero teóricamente es igual que el coste espacial.
+
 #### 6. Indicad qué partes del código se modificarían para limitar el número de veces que se puede utilizar la acción “navegar por agujeros de gusano” (bidireccionales).
+
+<p>Un opción posible, es a través de el uso de una heurística admisible ya que esta evita que haya recursión infinita. Otra opción sería que a la hora de definir los enlaces entre ciudades, pusiéramos un tercer número que se correspondería con el número de veces que se puede utilizar ese enlace y que cada vez que use el enlace se decremente en 1 ese valor hasta que llegue a cero en cuyo caso no se podrá utilizar más el enlace.</p>
