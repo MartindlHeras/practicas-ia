@@ -15,3 +15,5 @@ santiago.valderrabano@estudiante.uam.es | martin.delasheras@estudiante.uam.es
 Enlace a [moodle](https://moodle.uam.es/course/view.php?id=62174).
 
 Correo de Jessica: jessica.lopez-hazas@inv.uam.es
+
+[Ejercicios resueltos Prolog](http://www.ic.unicamp.br/~meidanis/courses/mc336/2009s2/prolog/problemas/).
