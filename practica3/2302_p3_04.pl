@@ -3,25 +3,30 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 duplica([], []).
+% Si son iguales el primer elemento de L y los dos primeros de L1 hace una
+% llamada recursiva.
 duplica([X | L], [X , X | L1]) :- duplica(L, L1).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% EJERCICIO 2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%Esto nos lo daban hecho
+%% Esto nos lo daban hecho
 concatena([], L, L).
 concatena([X | L1], L2, [X | L3]) :- concatena(L1,L2,L3).
 
-%Código nuestro
+% Código nuestro
 
 invierte([], []).
+% Una vez llega al final de la lista por invierte va llamando a concatena y
+% creando la lista nueva invertida.
 invierte([X | L], R) :- invierte(L, P), concatena(P, [X], R).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% EJERCICIO 3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Llama a invierte y esta devuelve True si es la misma lista invertida.
 palindromo([]).
 palindromo(L) :- invierte(L,L).
 
@@ -30,6 +35,7 @@ palindromo(L) :- invierte(L,L).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 divide(L, 0, [], L).
+% Decrementa N hasta el caso base y luego va concatenando y comprobando.
 divide([X | L], N, L1, L2) :- N1 is N - 1, divide(L, N1, P, L2), concatena([X], P, L1).
 
 
@@ -37,6 +43,9 @@ divide([X | L], N, L1, L2) :- N1 is N - 1, divide(L, N1, P, L2), concatena([X], 
 %% EJERCICIO 5
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Va recorriendo los elementos de la lista y en caso de que el elemento sea una
+% lista la recorre a su vez, todo esto comparando con los elementos de la otra
+% lista.
 aplasta([], []).
 aplasta([L|L1], LAplastado) :-
     aplasta(L, NuevaL),
@@ -72,7 +81,7 @@ primos(N, L) :-
   primos(N,L,2).
 
 % primos(N,L,K) :- L es la lista de factores primos N. K es el primo a comprobar
-% Si N es 1 devulve una lista vacia ya que uno no se contempla como factor.
+% Si N es 1 devuelve una lista vacia ya que uno no se contempla como factor.
 
 primos(1,[],_) :- !.
 
@@ -132,6 +141,6 @@ contar([],[]).
 contar([[X|RestX]|L], [[N,X]|L1]) :- length([X|RestX], N), contar(L, L1).
 
 run_lenght([],[]).
-run_length(L, L1):- 
+run_length(L, L1):-
     cod_all(L, L2),
     contar(L2, L1).

@@ -52,6 +52,8 @@ Nuestra función va comparando su primer elemento con los dos primeros de la seg
 
 ```prolog
 duplica([], []).
+% Si son iguales el primer elemento de L y los dos primeros de L1 hace una
+% llamada recursiva.
 duplica([X | L], [X , X | L1]) :- duplica(L, L1).
 ```
 <br>
@@ -59,7 +61,32 @@ duplica([X | L], [X , X | L1]) :- duplica(L, L1).
   ##### Ejemplos:
 
 ```prolog
+duplica([1,2,3], [1,1,2,2,3,3]).
+true
 
+duplica([1,2,3], [1,1,2,3,3]).
+false
+
+duplica([1,2,3], L1).
+L1 = [1, 1, 2, 2, 3, 3]
+
+duplica(L, [1,2,3]).
+false
+
+duplica(L, [1,1,2,2,3,3]).
+L = [1, 2, 3]
+
+duplica(L, [1,1,2,2,3,3,4]).
+false
+
+duplica([1,2], L1).
+L1 = [1, 1, 2, 2]
+
+duplica([1,2], []).
+false
+
+duplica([], []).
+true
 ```
 
 ---
@@ -71,12 +98,15 @@ En nuestra función hacemos uso de la función **concatena** proporcionada en el
 
 
 ```prolog
-%%Esto nos lo daban hecho
+%% Esto nos lo daban hecho
 concatena([], L, L).
 concatena([X | L1], L2, [X | L3]) :- concatena(L1,L2,L3).
 
-%Código nuestro
+% Código nuestro
+
 invierte([], []).
+% Una vez llega al final de la lista por invierte va llamando a concatena y
+% creando la lista nueva invertida.
 invierte([X | L], R) :- invierte(L, P), concatena(P, [X], R).
 ```
 
@@ -85,7 +115,29 @@ invierte([X | L], R) :- invierte(L, P), concatena(P, [X], R).
   ##### Ejemplos:
 
 ```prolog
+invierte([1,2], L).
+L = [2, 1]
 
+invierte([], L).
+L = []
+
+invierte(L, [1,2]).
+L = [2, 1]
+
+invierte(L, [1]).
+L = [1]
+
+invierte([3,2,1], [1,2,3]).
+true
+
+invierte([3,2,1], [1,2,3,4]).
+false
+
+invierte([1,2,3], [1,2,3]).
+false
+
+invierte([1,2,3], []).
+false
 ```
 
 ---
@@ -96,6 +148,7 @@ En este ejercicio se pide implementar una función que te devuelva *True* cuando
 Como una lista palíndroma es su misma inversa, simplemente le pasamos la lista como los dos argumentos a la función **invierte** y esta devolverá *True* solamente cuando sea su misma inversa y por tanto palíndroma.
 
 ```prolog
+% Llama a invierte y esta devuelve True si es la misma lista invertida.
 palindromo([]).
 palindromo(L) :- invierte(L,L).
 ```
@@ -105,7 +158,24 @@ palindromo(L) :- invierte(L,L).
   ##### Ejemplos:
 
 ```prolog
+palindromo([1,2,1]).
+true
 
+palindromo([1,2,1,1]).
+false
+
+palindromo([1,1,1,1]).
+true
+
+palindromo([]).
+true
+
+palindromo([1,2,3]).
+false
+
+% Al llamar a la función con una variable no inicializada esta devuelve simplemente una lista vacía.
+palindromo(L).
+L = []
 ```
 
 ---
@@ -117,6 +187,7 @@ En nuestra función se van eliminando elementos de la lista principal y la de lo
 
 ```prolog
 divide(L, 0, [], L).
+% Decrementa N hasta el caso base y luego va concatenando y comprobando.
 divide([X | L], N, L1, L2) :- N1 is N - 1, divide(L, N1, P, L2), concatena([X], P, L1).
 ```
 
@@ -125,7 +196,30 @@ divide([X | L], N, L1, L2) :- N1 is N - 1, divide(L, N1, P, L2), concatena([X], 
   ##### Ejemplos:
 
 ```prolog
+divide([1,2,3,4,5], 3, L1, L2).
+L1 = [1, 2, 3],
+L2 = [4, 5]
 
+divide(L, 3, [1,2,3], [4,5,6]).
+L = [1, 2, 3, 4, 5, 6]
+
+divide([1,2,3,4,5,6], 3, [1,2,3], [4,5,6]).
+true
+
+divide([1,2,3,4,5,6], 3, [1,2,3], []).
+false
+
+divide([1,2,3], 3, [1,2,3], []).
+true
+
+divide([1,2,3], 0, [], [1,2,3]).
+true
+
+divide([1,2,3], 0, [], [1,3]).
+false
+
+divide([1,2,3], 1, [1], [2,3]).
+true
 ```
 
 ---
@@ -136,6 +230,9 @@ En este ejercicio se nos pide implementar una función que devuelve *True* cuand
 Nuestra función recorre la lista por elementos y en caso de que uno de ellos sea una lista lo recorre de igual manera y va comparando con la otra lista para comprobar si tiene los mismos elementos atómicos.
 
 ```prolog
+% Va recorriendo los elementos de la lista y en caso de que el elemento sea una
+% lista la recorre a su vez, todo esto comparando con los elementos de la otra
+% lista.
 aplasta([], []).
 aplasta([L|L1], LAplastado) :-
     aplasta(L, NuevaL),
@@ -149,7 +246,23 @@ aplasta(L, [L]).
   ##### Ejemplos:
 
 ```prolog
+aplasta([1, [2, [3, 4], 5], [6, 7]], L).
+L = [1, 2, 3, 4, 5, 6, 7]
 
+aplasta([[[[1]],2], 3], [1,2,3]).
+true
+
+aplasta([[[[1,2]],2], 3], [1,2,3]).
+false
+
+aplasta([[[[1]],2], 3, 4], [1,2,3,4]).
+true
+
+aplasta([[[[1]],2], 3, 4], L).
+L = [1, 2, 3, 4]
+
+% En caso de hacer esto el programa no devuelve nada ya que no hay una sola solución válida
+aplasta(L,[1, 2, 3])
 ```
 
 ---
@@ -160,7 +273,41 @@ Esta función, dados un número y una lista de números primos nos pide que devo
 Nuestra función en el caso base tiene como argumentos 1 y una lista vacía, ya que cuando llegamos al 1 no tenemos más factores y el 1 no tiene que estar en la lista de factores. En caso contrario recibe como argumentos un número y una lista de factores primos, entonces comprueba que el primer elemento de la lista sea factor del número grande, tras lo cual realiza una llamada recursiva a sí misma pero pasando el resto de la lista de factores y como número el cociente de la división entre ambos.
 
 ```prolog
+% next_factor(N,F,NF) :- when calculating the prime factors of N
+%    and if F does not divide N then NF is the next larger candidate to
+%    be a factor of N.
 
+next_factor(_,2,3) :- !.
+
+next_factor(N,F,NF) :-
+  F * F < N,         % F < sqrt(N)
+  !,
+  NF is F + 2.
+
+next_factor(N,_,N).
+
+% primos(N, L) :- L es la lista de factores primos N.
+% Primero comprueba que N sea mayor que 0.
+% Si lo es, llama a primos(N, L, 2)
+
+primos(N, L) :-
+  N > 0,
+  primos(N,L,2).
+
+% primos(N,L,K) :- L es la lista de factores primos N. K es el primo a comprobar
+% Si N es 1 devuelve una lista vacia ya que uno no se contempla como factor.
+
+primos(1,[],_) :- !.
+
+primos(N,[Factor|L], Factor) :-
+    Cociente is N // Factor,
+    N =:= Cociente * Factor,
+    !,
+    primos(Cociente,L,Factor).
+
+primos(N,L,F) :-
+   next_factor(N,F,NF),
+   primos(N,L,NF).
 ```
 
 <br>
@@ -168,6 +315,15 @@ Nuestra función en el caso base tiene como argumentos 1 y una lista vacía, ya 
   ##### Ejemplos:
 
 ```prolog
+primos(100,L).
+
+primos(N,[2,2,5,5]).
+
+primos(100,[2,5,5]).
+
+primos(100,[2,2,5]).
+
+primos(100,[3,5,5]).
 
 ```
 
