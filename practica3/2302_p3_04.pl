@@ -49,36 +49,39 @@ aplasta(L, [L]).
 %% EJERCICIO 6
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%divisible(X,Y) :- 0 is X mod Y, !.
 
-%divisible(X,Y) :- X > Y+1, divisible(X, Y+1).
-%isPrime(2) :- true,!.
-%isPrime(X) :- X < 2,!,false.
-%isPrime(X) :- not(divisible(X, 2)).
-%
-divisible(X,Y):-
-N is Y*Y,
-N =< X,
-X mod Y =:= 0.
+% next_factor(N,F,NF) :- when calculating the prime factors of N
+%    and if F does not divide N then NF is the next larger candidate to
+%    be a factor of N.
 
-divisible(X,Y):-
-Y < X,
-Y1 is Y+1,
-divisible(X,Y1).
+next_factor(_,2,3) :- !.
 
-isPrime(X):-
-Y is 2, X > 1, \+divisible(X,Y).
+next_factor(N,F,NF) :-
+  F * F < N,         % F < sqrt(N)
+  !,
+  NF is F + 2.
 
-next_factor(_, 2, 3).
-next_factor(N, F, NF):-
-    F < ceil(sqrt(N)),
-    NF is F + 2.
+next_factor(N,_,N).
 
-primos(1,[]).
-primos(X, [Factor1|L]):-
-    between(2, X, Factor1),
-    isPrime(Factor1),
-    (X mod Factor1) =:= 0,
-    NuevoX is X // Factor1,
-    next_factor(NuevoX, Factor1, NF),
-    primos(NuevoX, L).
+% primos(N, L) :- L es la lista de factores primos N.
+% Primero comprueba que N sea mayor que 0.
+% Si lo es, llama a primos(N, L, 2)
+
+primos(N, L) :-
+  N > 0,
+  primos(N,L,2).
+
+% primos(N,L,K) :- L es la lista de factores primos N. K es el primo a comprobar
+% Si N es 1 devulve una lista vacia ya que uno no se contempla como factor.
+
+primos(1,[],_) :- !.
+
+primos(N,[Factor|L], Factor) :-
+    Cociente is N // Factor,
+    N =:= Cociente * Factor,
+    !,
+    primos(Cociente,L,Factor).
+
+primos(N,L,F) :-
+   next_factor(N,F,NF),
+   primos(N,L,NF).
