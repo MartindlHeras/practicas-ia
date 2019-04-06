@@ -85,3 +85,53 @@ primos(N,[Factor|L], Factor) :-
 primos(N,L,F) :-
    next_factor(N,F,NF),
    primos(N,L,NF).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% EJERCICIO 7
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% EJERCICIO 7.1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Primero miramos si la lista que nos pasan para buscar copias esta vacia, si
+% es así, entonces devovlemos una lista con el elemento X como Lfront.
+% El sigueinte caso es comparar el primer elemento de la lista que nos pasan
+% con el que estamos buscando. Si son distintos, al estar la lista que se pasa
+% ordenada, habremos acabado. Si son iguales pasamos al ultimo caso. Este
+% consiste en meter en llamar de nuevo a cod_primero con el rsto de la lista
+% y al hacer la recursión de vuelta es domnde metemos en la lista Lfront todos
+% los elementos repetidos.
+
+
+cod_primero(X,[],[],[X]).
+
+cod_primero(X,[Y|Rem],[Y|Rem],[X]) :-
+  X \= Y.
+
+cod_primero(X,[X|L],Rem,[X|Front]) :-
+  cod_primero(X,L,Rem,Front).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% EJERCICIO 7.2
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+cod_all([],[]).
+
+cod_all([X|L],[Y|L1]):-
+  cod_primero(X, L, Lrem, Y),
+  cod_all(Lrem, L1).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% EJERCICIO 7.3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+contar([],[]).
+contar([[X|RestX]|L], [[N,X]|L1]) :- length([X|RestX], N), contar(L, L1).
+
+run_lenght([],[]).
+run_length(L, L1):- 
+    cod_all(L, L2),
+    contar(L2, L1).
