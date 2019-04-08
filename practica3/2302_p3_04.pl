@@ -176,7 +176,7 @@ encode_elem(X1, X2, tree(1, tree(X1, nil, nil), _)) :-
 % En este caso, el arbol está compuesto por un único nodo. Este tambien sería
 % el caso en el que se llega a un nodo hoja que está en la derecha.
 
-encode_elem(X1, [], tree(X1, nil, nil)).
+encode_elem(X1, [], tree(X1, nil, nil)) :- !.
 
 % Este ultimo caso es en el que se llega a un nodo intermedio y sigue habiendo
 % mas nodos que "explorar" (Resto) por tanto como se genera un nuevo nivel,
@@ -184,7 +184,7 @@ encode_elem(X1, [], tree(X1, nil, nil)).
 
 encode_elem(X1, X2, tree(1,_,Resto)) :-
     encode_elem(X1, X2Aux, Resto),
-    concatena([1], X2Aux, X2) .
+    concatena([1], X2Aux, X2).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% EJERCICIO 8.2
@@ -201,3 +201,20 @@ encode_list([X1|Resto], L2, T) :-
     encode_elem(X1, X2, T),
     encode_list(Resto, L2Aux, T),
     concatena([X2], L2Aux, L2).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% EJERCICIO 8.3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+contar([],[]).
+
+contar([[X|RestX]|L], [[N,X]|L1]) :-
+  length([X|RestX], N),
+  contar(L, L1).
+
+run_lenght([],[]):- !.
+
+run_length(L, L1):-
+    cod_all(L, L2),
+    contar(L2, L1).
