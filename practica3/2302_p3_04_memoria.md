@@ -233,12 +233,12 @@ Nuestra función recorre la lista por elementos y en caso de que uno de ellos se
 % Va recorriendo los elementos de la lista y en caso de que el elemento sea una
 % lista la recorre a su vez, todo esto comparando con los elementos de la otra
 % lista.
+aplasta(L,[L]) :- \+ is_list(L)
 aplasta([], []).
 aplasta([L|L1], LAplastado) :-
     aplasta(L, NuevaL),
     aplasta(L1, NuevaLs),
     append(NuevaL, NuevaLs, LAplastado).
-aplasta(L, [L]).
 ```
 
 <br>
@@ -306,6 +306,7 @@ primos(N,[Factor|L], Factor) :-
     primos(Cociente,L,Factor).
 
 primos(N,L,F) :-
+   F < N,
    next_factor(N,F,NF),
    primos(N,L,NF).
 ```
@@ -316,23 +317,129 @@ primos(N,L,F) :-
 
 ```prolog
 primos(100,L).
+L = [2, 2, 5, 5]
 
 primos(N,[2,2,5,5]).
+>/2: Arguments are not sufficiently instantiated
+
+primos(6,[2,3]).
+true
+
+primos(100,[2,2,5,5]).
+true
 
 primos(100,[2,5,5]).
+primos(100,[2,5,5]).
+false
 
 primos(100,[2,2,5]).
+false
 
 primos(100,[3,5,5]).
+primos(100,[3,5,5]).
+false
 
+primos(100,[4,5,5]).
+false
+
+primos(6,[3,2]).
+false
 ```
 
 ---
 ### Ejercicio 7
 
 
-```prolog
+#### Apartado 7.1
 
+```prolog
+% Primero miramos si la lista que nos pasan para buscar copias esta vacia, si
+% es así, entonces devovlemos una lista con el elemento X como Lfront.
+% El sigueinte caso es comparar el primer elemento de la lista que nos pasan
+% con el que estamos buscando. Si son distintos, al estar la lista que se pasa
+% ordenada, habremos acabado. Si son iguales pasamos al ultimo caso. Este
+% consiste en meter en llamar de nuevo a cod_primero con el rsto de la lista
+% y al hacer la recursión de vuelta es domnde metemos en la lista Lfront todos
+% los elementos repetidos.
+
+cod_primero(X,[],[],[X]).
+
+cod_primero(X,[Y|Rem],[Y|Rem],[X]) :-
+  X \= Y.
+
+cod_primero(X,[X|L],Rem,[X|Front]) :-
+  cod_primero(X,L,Rem,Front).
+```
+
+##### Ejemplos:
+
+```prolog
+cod_primero(1, [1, 1, 2, 3], Lrem, Lfront).
+Lfront = [1, 1, 1],
+Lrem = [2, 3]
+false
+
+cod_primero(1, [2, 3, 4], Lrem, Lfront).
+Lfront = [1],
+Lrem = [2, 3, 4]
+false
+
+cod_primero(2, [1, 2, 3, 4], Lrem, Lfront).
+Lfront = [2],
+Lrem = [1, 2, 3, 4]
+false
+
+cod_primero(1, [1, 2, 3, 4], [2, 3, 4], [1, 1]).
+true
+false
+
+cod_primero(1, [1, 1, 2, 3, 4], [2, 3, 4], [1, 1]).
+false
+```
+
+#### Apartado 7.2
+
+```prolog
+cod_all([],[]).
+
+cod_all([X|L],[Y|L1]):-
+  cod_primero(X, L, Lrem, Y),
+  cod_all(Lrem, L1).
+```
+
+##### Ejemplos:
+
+```prolog
+cod_all([1, 1, 2, 3, 3, 3, 3], L).
+L = [[1, 1], [2], [3, 3, 3, 3]]
+false
+
+cod_all([1, 2, 2, 3, 3, 4, 4, 4, 5], L).
+L = [[1], [2, 2], [3, 3], [4, 4, 4], [5]]
+false
+
+cod_all([1, 1, 2, 3, 3, 3, 3], [[1, 1], [2], [3, 3, 3, 3]]).
+true
+false
+
+cod_all([1, 1, 2, 3, 3, 3, 3], [[1, 1], [2], [3, 3, 3], [4]]).
+cod_all([1, 1, 2, 3, 3, 3, 3], [[1, 1], [2], [3, 3, 3], [4]]).
+false
+
+cod_all([], L).
+L = []
+```
+
+#### Apartado 7.3
+
+```prolog
+contar([],[]).
+contar([[X|RestX]|L], [[N,X]|L1]) :- length([X|RestX], N), contar(L, L1).
+
+run_lenght([],[]).
+run_length(L, L1):-
+    cod_all(L, L2),
+    contar(L2, L1).
 ```
 
 <br>
@@ -340,7 +447,30 @@ primos(100,[3,5,5]).
   ##### Ejemplos:
 
 ```prolog
+run_length([1, 1, 1, 1, 2, 3, 3, 4, 4, 4, 4, 4, 5, 5], L).
+L = [[4, 1], [1, 2], [2, 3], [5, 4], [2, 5]]
+false
 
+run_length([1, 1, 1, 1, 2, 3, 3, 4, 4, 4, 4, 4, 5, 5], []).
+false
+
+run_length([1, 1, 3, 3, 4, 4, 4, 4, 4, 5, 5], L).
+run_length([1, 1, 3, 3, 4, 4, 4, 4, 4, 5, 5], L).
+L = [[2, 1], [2, 3], [5, 4], [2, 5]]
+false
+
+run_length([1, 1, 3, 3, 4, 4, 4, 4, 4, 5, 5], [[2, 1], [2, 1], [2, 3], [5, 4], [2, 5]]).
+false
+
+run_length([1, 1, 3, 3, 4, 4, 4, 4, 4, 5, 5], [[2, 1], [2, 3], [5, 4], [2, 5]]).
+true
+false
+
+run_length([], [[2, 1], [2, 3], [5, 4], [2, 5]]).
+false
+
+run_length([], L).
+L = []
 ```
 
 ---
@@ -348,10 +478,92 @@ primos(100,[3,5,5]).
 
 
 ```prolog
+build_tree([], nil).
+
+build_tree([Nodo-_], tree(Nodo, nil, nil)):- !.
+
+build_tree([Nodo-_|Resto], T) :-
+    build_tree(Resto, TAux),
+    T = tree(1, tree(Nodo, nil, nil), TAux).
+```
+
+  ##### Ejemplos:
+
+```prolog
+build_tree([], X).
+X = nil
+
+build_tree([p-0], X).
+X = tree(p, nil, nil)
+
+build_tree([p-0, a-6, g-7, p-9, t-2, 9-99], X).
+X = tree(1, tree(p, nil, nil), tree(1, tree(a, nil, nil), tree(1, tree(g, nil, nil), tree(1, tree(p, nil, nil), tree(1, tree(t, nil, nil), tree(9, nil, nil))))))
+
+build_tree([p-55, a-6, g-7, p-9, t-2, 9-99], X).
+X = tree(1, tree(p, nil, nil), tree(1, tree(a, nil, nil), tree(1, tree(g, nil, nil), tree(1, tree(p, nil, nil), tree(1, tree(t, nil, nil), tree(9, nil, nil))))))
+
+build_tree([p-55, a-6, g-2, p-1], X).
+X = tree(1, tree(p, nil, nil), tree(1, tree(a, nil, nil), tree(1, tree(g, nil, nil), tree(p, nil, nil))))
+
+build_tree([a-11, b-6, c-2, d-1], X)
+X = tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))
+```
+#### Apartado 8.1
+
+```prolog
+% En este caso es que ya ha llegado al nodo hoja de la parte izquierda y por
+% tanto, concatena un 0.
+
+encode_elem(X1, X2, tree(1, tree(X1, nil, nil), _)) :-
+    concatena([0], [], X2).
+
+% En este caso, el arbol está compuesto por un único nodo. Este tambien sería
+% el caso en el que se llega a un nodo hoja que está en la derecha.
+
+encode_elem(X1, [], tree(X1, nil, nil)) :- !.
+
+% Este ultimo caso es en el que se llega a un nodo intermedio y sigue habiendo
+% mas nodos que "explorar" (Resto) por tanto como se genera un nuevo nivel,
+% se llama a encode_elem del resto y a lo que devuelva se le concatena un uno.
+
+encode_elem(X1, X2, tree(1,_,Resto)) :-
+    encode_elem(X1, X2Aux, Resto),
+    concatena([1], X2Aux, X2) .
+```
+
+  ##### Ejemplos:
+
+```prolog
 
 ```
 
-<br>
+#### Apartado 8.2
+
+```prolog
+encode_list([], [], _):- !.
+
+encode_list([X1], L2 , T) :-
+    encode_elem(X1, X2, T),
+    concatena([X2], [], L2),
+    !.
+
+encode_list([X1|Resto], L2, T) :-
+    encode_elem(X1, X2, T),
+    encode_list(Resto, L2Aux, T),
+    concatena([X2], L2Aux, L2).
+```
+
+  ##### Ejemplos:
+
+```prolog
+
+```
+
+#### Apartado 8.3
+
+```prolog
+
+```
 
   ##### Ejemplos:
 
