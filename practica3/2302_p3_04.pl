@@ -144,7 +144,7 @@ contar([[X|RestX]|L], [[N,X]|L1]) :-
   length([X|RestX], N),
   contar(L, L1).
 
-run_lenght([],[]):- !.
+run_length([],[]):- !.
 
 run_length(L, L1):-
     cod_all(L, L2),
@@ -209,12 +209,12 @@ encode_list([X1|Resto], L2, T) :-
 
 contar([],[]).
 
-contar([[X|RestX]|L], [[N,X]|L1]) :-
+contar([[X|RestX]|L], [[X-N]|L1]) :-
   length([X|RestX], N),
   contar(L, L1).
 
-run_lenght([],[]):- !.
+run_length2([],[]):- !.
 
-run_length(L, L1):-
+run_length2(L, L1):-
     cod_all(L, L2),
     contar(L2, L1).
