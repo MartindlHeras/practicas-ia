@@ -46,13 +46,12 @@ divide([X | L], N, L1, L2) :- N1 is N - 1, divide(L, N1, P, L2), concatena([X], 
 % Va recorriendo los elementos de la lista y en caso de que el elemento sea una
 % lista la recorre a su vez, todo esto comparando con los elementos de la otra
 % lista.
-aplasta(X,[X]) :- \+ is_list(X)
+aplasta(L,[L]) :- \+ is_list(L)
 aplasta([], []).
 aplasta([L|L1], LAplastado) :-
     aplasta(L, NuevaL),
     aplasta(L1, NuevaLs),
     append(NuevaL, NuevaLs, LAplastado).
-aplasta(L, [L]).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -145,3 +144,15 @@ run_lenght([],[]).
 run_length(L, L1):-
     cod_all(L, L2),
     contar(L2, L1).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% EJERCICIO 8
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+build_tree([], nil).
+
+build_tree([Nodo-_], tree(Nodo, nil, nil)):- !.
+
+build_tree([Nodo-_|Resto], T) :-
+    build_tree(Resto, TAux),
+    T = tree(1, tree(Nodo, nil, nil), TAux).

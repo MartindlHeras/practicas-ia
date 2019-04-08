@@ -1,0 +1,6 @@
+build_tree([], X)
+build_tree([p-0], X)
+build_tree([p-0, a-6, g-7, p-9, t-2, 9-99], X)
+build_tree([p-55, a-6, g-7, p-9, t-2, 9-99], X)
+build_tree([p-55, a-6, g-2, p-1], X)
+build_tree([a-11, b-6, c-2, d-1], X)
