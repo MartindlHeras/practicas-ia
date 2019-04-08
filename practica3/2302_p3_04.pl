@@ -46,7 +46,8 @@ divide([X | L], N, L1, L2) :- N1 is N - 1, divide(L, N1, P, L2), concatena([X], 
 % Va recorriendo los elementos de la lista y en caso de que el elemento sea una
 % lista la recorre a su vez, todo esto comparando con los elementos de la otra
 % lista.
-aplasta([], []) :- \+ is_list(X).
+aplasta(X,[X]) :- \+ is_list(X)
+aplasta([], []).
 aplasta([L|L1], LAplastado) :-
     aplasta(L, NuevaL),
     aplasta(L1, NuevaLs),
