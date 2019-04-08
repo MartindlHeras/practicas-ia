@@ -86,14 +86,15 @@ primos(N, L) :-
 primos(1,[],_) :- !.
 
 primos(N,[Factor|L], Factor) :-
-    Cociente is N // Factor,
-    N =:= Cociente * Factor,
-    !,
-    primos(Cociente,L,Factor).
+  Cociente is N // Factor,
+  N =:= Cociente * Factor,
+  !,
+  primos(Cociente,L,Factor).
 
 primos(N,L,F) :-
-   next_factor(N,F,NF),
-   primos(N,L,NF).
+  F < N,
+  next_factor(N,F,NF),
+  primos(N,L,NF).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -138,9 +139,13 @@ cod_all([X|L],[Y|L1]):-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 contar([],[]).
-contar([[X|RestX]|L], [[N,X]|L1]) :- length([X|RestX], N), contar(L, L1).
 
-run_lenght([],[]).
+contar([[X|RestX]|L], [[N,X]|L1]) :-
+  length([X|RestX], N),
+  contar(L, L1).
+
+run_lenght([],[]):- !.
+
 run_length(L, L1):-
     cod_all(L, L2),
     contar(L2, L1).
@@ -156,3 +161,43 @@ build_tree([Nodo-_], tree(Nodo, nil, nil)):- !.
 build_tree([Nodo-_|Resto], T) :-
     build_tree(Resto, TAux),
     T = tree(1, tree(Nodo, nil, nil), TAux).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% EJERCICIO 8.1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% En este caso es que ya ha llegado al nodo hoja de la parte izquierda y por
+% tanto, concatena un 0.
+
+encode_elem(X1, X2, tree(1, tree(X1, nil, nil), _)) :-
+    concatena([0], [], X2).
+
+% En este caso, el arbol está compuesto por un único nodo. Este tambien sería
+% el caso en el que se llega a un nodo hoja que está en la derecha.
+
+encode_elem(X1, [], tree(X1, nil, nil)).
+
+% Este ultimo caso es en el que se llega a un nodo intermedio y sigue habiendo
+% mas nodos que "explorar" (Resto) por tanto como se genera un nuevo nivel,
+% se llama a encode_elem del resto y a lo que devuelva se le concatena un uno.
+
+encode_elem(X1, X2, tree(1,_,Resto)) :-
+    encode_elem(X1, X2Aux, Resto),
+    concatena([1], X2Aux, X2) .
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% EJERCICIO 8.2
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+encode_list([], [], _):- !.
+
+encode_list([X1], L2 , T) :-
+    encode_elem(X1, X2, T),
+    concatena([X2], [], L2),
+    !.
+
+encode_list([X1|Resto], L2, T) :-
+    encode_elem(X1, X2, T),
+    encode_list(Resto, L2Aux, T),
+    concatena([X2], L2Aux, L2).
