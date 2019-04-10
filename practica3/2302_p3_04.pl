@@ -130,7 +130,6 @@ primos(N,L,F) :-
 % los elementos repetidos.
 
 
-
 cod_primero(X,[],[],[X]).
 
 cod_primero(X,[Y|Rem],[Y|Rem],[X]) :-
@@ -241,13 +240,17 @@ encode_list([X1|Resto], L2, T) :-
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Esta funcion, le pone guion a lo que devuelve run_length
+% Esta funcion, le pone guion a lo que devuelve run_length ya que para formar
+% el arbol los argumentos tienen que tener la forma [caracter-numRep]
 pone_guion([],[]) :- !.
 
 pone_guion([[X, Y|_] | Resto], [[Y-X]|L]) :-
   pone_guion(Resto, L).
 
 
+% Esta funcion, inserta en una lista ordenadamente los elementos que se le
+% pasan teniendo en cuenta el valor de después del guion que es el numero
+% de repeticiones.
 insertar([X-Y],[], [X-Y]).
 
 insertar([X-Y], [P-Q|Resto], [X-Y, P-Q | Resto]) :-
@@ -257,15 +260,42 @@ insertar([X-Y], [P-Q|Resto], [P-Q | Z]) :-
   insertar([X-Y], Resto, Z),
   Y > Q.
 
+% Esta función, ordena una lista que contiene elementos del tipo
+%[caracter-numRep] haciendo uso de la funcion insertar para ello.
 ordena_lista([],[]).
 
 ordena_lista([[X-Y] | Resto], L) :-
   ordena_lista(Resto, Buffer),
   insertar([X-Y], Buffer, L).
 
+
+
+eliminar_elemento(_, [], []) :- !.
+
+eliminar_elemento(X, L1, L2) :-
+  member(X, L1),
+	concatena([X], [], L2),
+  !.
+
+eliminar_extra([], _, []) :- !.
+
+eliminar_extra([X | Resto], D, CleanL1) :-
+  eliminar_elemento(X, D, Buffer),
+  eliminar_extra(Resto, D, S),
+  concatena(Buffer, S, CleanL1).
+
+
+% Diccionario que se nos proporciona en el enunciado.
+dictionary([a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z]).
+
+% Caso base
+encode([], []) :- !.
+
 encode(L1, L2) :-
   sort(0, @=<, L1, SortedL1),
-  run_length(SortedL1, CountedL1),
+  dictionary(D),
+  eliminar_extra(SortedL1, D, CleanL1),
+  run_length(CleanL1, CountedL1),
   pone_guion(CountedL1, GuionL1),
   ordena_lista(GuionL1, OrdenadaL1),
   invierte(OrdenadaL1, ReOrdenadaL1),
