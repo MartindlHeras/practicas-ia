@@ -5,7 +5,8 @@
 duplica([], []).
 % Si son iguales el primer elemento de L y los dos primeros de L1 hace una
 % llamada recursiva.
-duplica([X | L], [X , X | L1]) :- duplica(L, L1).
+duplica([X | L], [X , X | L1]) :-
+  duplica(L, L1).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% EJERCICIO 2
@@ -13,14 +14,18 @@ duplica([X | L], [X , X | L1]) :- duplica(L, L1).
 
 %% Esto nos lo daban hecho
 concatena([], L, L).
-concatena([X | L1], L2, [X | L3]) :- concatena(L1,L2,L3).
+
+concatena([X | L1], L2, [X | L3]) :-
+  concatena(L1,L2,L3).
 
 % Código nuestro
 
 invierte([], []).
 % Una vez llega al final de la lista por invierte va llamando a concatena y
 % creando la lista nueva invertida.
-invierte([X | L], R) :- invierte(L, P), concatena(P, [X], R).
+invierte([X | L], R) :-
+  invierte(L, P),
+  concatena(P, [X], R).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% EJERCICIO 3
@@ -28,15 +33,20 @@ invierte([X | L], R) :- invierte(L, P), concatena(P, [X], R).
 
 % Llama a invierte y esta devuelve True si es la misma lista invertida.
 palindromo([]).
-palindromo(L) :- invierte(L,L).
+palindromo(L) :-
+  invierte(L,L).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% EJERCICIO 4
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 divide(L, 0, [], L).
+
 % Decrementa N hasta el caso base y luego va concatenando y comprobando.
-divide([X | L], N, L1, L2) :- N1 is N - 1, divide(L, N1, P, L2), concatena([X], P, L1).
+divide([X | L], N, L1, L2) :-
+  N1 is N - 1,
+  divide(L, N1, P, L2),
+  concatena([X], P, L1).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -47,7 +57,9 @@ divide([X | L], N, L1, L2) :- N1 is N - 1, divide(L, N1, P, L2), concatena([X], 
 % lista la recorre a su vez, todo esto comparando con los elementos de la otra
 % lista.
 aplasta(L,[L]) :- \+ is_list(L)
+
 aplasta([], []).
+
 aplasta([L|L1], LAplastado) :-
     aplasta(L, NuevaL),
     aplasta(L1, NuevaLs),
@@ -147,8 +159,8 @@ contar([[X|RestX]|L], [[N,X]|L1]) :-
 run_length([],[]):- !.
 
 run_length(L, L1):-
-    cod_all(L, L2),
-    contar(L2, L1).
+  cod_all(L, L2),
+  contar(L2, L1).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% EJERCICIO 8
@@ -159,8 +171,8 @@ build_tree([], nil).
 build_tree([Nodo-_], tree(Nodo, nil, nil)):- !.
 
 build_tree([Nodo-_|Resto], T) :-
-    build_tree(Resto, TAux),
-    T = tree(1, tree(Nodo, nil, nil), TAux).
+  build_tree(Resto, TAux),
+  T = tree(1, tree(Nodo, nil, nil), TAux).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -171,7 +183,7 @@ build_tree([Nodo-_|Resto], T) :-
 % tanto, concatena un 0.
 
 encode_elem(X1, X2, tree(1, tree(X1, nil, nil), _)) :-
-    concatena([0], [], X2).
+  concatena([0], [], X2).
 
 % En este caso, el arbol está compuesto por un único nodo. Este tambien sería
 % el caso en el que se llega a un nodo hoja que está en la derecha.
@@ -183,8 +195,8 @@ encode_elem(X1, [], tree(X1, nil, nil)) :- !.
 % se llama a encode_elem del resto y a lo que devuelva se le concatena un uno.
 
 encode_elem(X1, X2, tree(1,_,Resto)) :-
-    encode_elem(X1, X2Aux, Resto),
-    concatena([1], X2Aux, X2).
+  encode_elem(X1, X2Aux, Resto),
+  concatena([1], X2Aux, X2).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% EJERCICIO 8.2
@@ -193,28 +205,45 @@ encode_elem(X1, X2, tree(1,_,Resto)) :-
 encode_list([], [], _):- !.
 
 encode_list([X1], L2 , T) :-
-    encode_elem(X1, X2, T),
-    concatena([X2], [], L2),
-    !.
+  encode_elem(X1, X2, T),
+  concatena([X2], [], L2),
+  !.
 
 encode_list([X1|Resto], L2, T) :-
-    encode_elem(X1, X2, T),
-    encode_list(Resto, L2Aux, T),
-    concatena([X2], L2Aux, L2).
+  encode_elem(X1, X2, T),
+  encode_list(Resto, L2Aux, T),
+  concatena([X2], L2Aux, L2).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% EJERCICIO 8.3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+pone_guion([],[]) :- !.
 
-contar([],[]).
+pone_guion([[X, Y|_] | Resto], [[Y-X]|L]) :-
+  pone_guion(Resto, L).
 
-contar([[X|RestX]|L], [[X-N]|L1]) :-
-  length([X|RestX], N),
-  contar(L, L1).
 
-run_length2([],[]):- !.
+insertar([X-Y],[], [X-Y]).
 
-run_length2(L, L1):-
-    cod_all(L, L2),
-    contar(L2, L1).
+insertar([X-Y], [P-Q|Resto], [X-Y, P-Q | Resto]) :-
+  Y =< Q.
+
+insertar([X-Y], [P-Q|Resto], [P-Q | Z]) :-
+  insertar([X-Y], Resto, Z),
+  Y > Q.
+
+ordena_lista([],[]).
+
+ordena_lista([[X-Y] | Resto], L) :-
+  ordena_lista(Resto, Buffer),
+  insertar([X-Y], Buffer, L).
+
+encode(L1, L2) :-
+  sort(0, @=<, L1, SortedL1),
+  run_length(SortedL1, CountedL1),
+  pone_guion(CountedL1, GuionL1),
+  ordena_lista(GuionL1, OrdenadaL1),
+  invierte(OrdenadaL1, ReOrdenadaL1),
+  build_tree(ReOrdenadaL1, T),
+  encode_list(L1, L2, T).
