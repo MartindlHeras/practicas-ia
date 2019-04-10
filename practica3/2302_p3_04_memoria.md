@@ -352,6 +352,10 @@ false
 
 #### Apartado 7.1
 
+Esta función dada una lista de elementos y un elemento, devuelve *True* si en Lfront está una lista del elemento repetido tantas veces como esté seguidas en el principio de la lista y en Lrem el resto de la lista. En caso de que no se pase Lrem o Lfront se devolverá los valores que requiera para devolver *True*.
+
+Nuestra función va recorriendo el principio de la lista comparando los valores del principio de la lista y de Lfront y al no encontrar más comprueba que lo que quede en la lista sea igual que Lrem.
+
 ```prolog
 % Primero miramos si la lista que nos pasan para buscar copias esta vacia, si
 % es así, entonces devovlemos una lista con el elemento X como Lfront.
@@ -399,9 +403,16 @@ false
 
 #### Apartado 7.2
 
+En este apartado se pide lo mismo que en el anterior pero que en vez de hacerlo para los elementos del principio de la lista que lo haga para cada elemento diferente.
+
+Nuestra función va llamando a **cod_primero** de manera recursiva y creando la lista de listas (equivalentes a Lfront del apartado anterior).
+
 ```prolog
+% Caso base las dos listas están vacías.
 cod_all([],[]).
 
+% Recorre la primera lista y va llamando a cod_primero por cada elemento nuevo
+% que encuentra.
 cod_all([X|L],[Y|L1]):-
   cod_primero(X, L, Lrem, Y),
   cod_all(Lrem, L1).
@@ -432,10 +443,17 @@ L = []
 
 #### Apartado 7.3
 
+En este apartado finalmente se nos pide que en vez de la lista con todos los elementos repetidos devolvamos una tupla (n, e) donde *n* es el número de veces que aparece repetido el elemento *e* y *e* es el elemento.
+
+Nuestra función simplemente llama a **cod_all** y luego, por cada elemento de la lista (que es a su vez una lista) cuenta el número de veces que el elemento aparece y devuelve la tupla generada.
+
 ```prolog
+% Funcion que cuenta el numero de veces que esta el elemento en la lista y
+% genera la tupla correspondiente
 contar([],[]).
 contar([[X|RestX]|L], [[N,X]|L1]) :- length([X|RestX], N), contar(L, L1).
 
+% Funcion que llama a cod_all y a contar para que genere la lista de tuplas.
 run_lenght([],[]).
 run_length(L, L1):-
     cod_all(L, L2),
@@ -476,12 +494,17 @@ L = []
 ---
 ### Ejercicio 8
 
+Esta función nos pide que dada una lista de nodos, nos devuelva su árbol de Huffman creado.
+
+Nuestra función dada la lista pasada nos va creando los nodos y anexándolos al árbol que ha ido generando.
 
 ```prolog
 build_tree([], nil).
 
+% En caso de que no queden mas elementos en la lista de nodos se para.
 build_tree([Nodo-_], tree(Nodo, nil, nil)):- !.
 
+% Va recorriendo los nodos y metiendolos en el arbol.
 build_tree([Nodo-_|Resto], T) :-
     build_tree(Resto, TAux),
     T = tree(1, tree(Nodo, nil, nil), TAux).
@@ -510,6 +533,10 @@ X = tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, n
 ```
 #### Apartado 8.1
 
+Esta función dado dos elementos, comprueba si el segundo elemento es la codificación en el árbol de Huffman del primero, y en ese caso devuelve *True*.
+
+Nuestra función comprueba si ha llegado al nodo hoja y le concatena un *0* o un *1* en función de si la hoja a la que se ha llegado está por la parte izquierda o no.
+
 ```prolog
 % En este caso es que ya ha llegado al nodo hoja de la parte izquierda y por
 % tanto, concatena un 0.
@@ -534,19 +561,65 @@ encode_elem(X1, X2, tree(1,_,Resto)) :-
   ##### Ejemplos:
 
 ```prolog
+encode_elem(a, X, tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+X = [0]
+false
 
+encode_elem(b, X, tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+X = [1, 0]
+false
+
+encode_elem(c, X, tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+X = [1, 1, 0]
+false
+
+encode_elem(d, X, tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+X = [1, 1, 1]
+
+encode_elem(e, X, tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+false
+
+encode_elem(d, [0], tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+false
+
+encode_elem(d, [1,1,1], tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+true
+
+encode_elem(X, [1,1,1], tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+X = d
+
+encode_elem(X, [1,1,2], tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+false
+
+encode_elem(X, [1,0], tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+X = b
+false
+
+encode_elem(X, [1], tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+false
+
+encode_elem(X, [1,1,1], nil).
+false
 ```
 
 #### Apartado 8.2
 
+En este ejercicio se pide que dada una lista y un árbol de Huffman se devuelva una lista con los elementos codificados como en el árbol.
+
+Nuestra función va llamando recursivamente a la función **encode_elem** del apartado anterior y creando la lista de los elementos.
+
 ```prolog
 encode_list([], [], _):- !.
 
+% En caso de estar en el ultimo elemento se llama a enconde_elem se concatena
+% y se termina.
 encode_list([X1], L2 , T) :-
     encode_elem(X1, X2, T),
     concatena([X2], [], L2),
     !.
 
+% Va elemento a elemento de la lista llamando a encode_elem y concatenandolos en
+% la lista nueva.
 encode_list([X1|Resto], L2, T) :-
     encode_elem(X1, X2, T),
     encode_list(Resto, L2Aux, T),
@@ -556,7 +629,35 @@ encode_list([X1|Resto], L2, T) :-
   ##### Ejemplos:
 
 ```prolog
+encode_list([a], X, tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+X = [[0]]
 
+encode_list([a,a], X, tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+X = [[0], [0]]
+false
+
+encode_list([a,d,a], X, tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+X = [[0], [1, 1, 1], [0]]
+false
+
+encode_list([a,d,a,q], X, tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+false
+
+encode_list(L, [[0], [1]], tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+false
+
+encode_list([a,a], [[0], [0]], tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+true
+false
+
+encode_list([a,e], X, tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+false
+
+encode_list([], L, tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+L = []
+
+encode_list(L, [[0]], tree(1, tree(a, nil, nil), tree(1, tree(b, nil, nil), tree(1, tree(c, nil, nil), tree(d, nil, nil))))).
+L = [a]
 ```
 
 #### Apartado 8.3
