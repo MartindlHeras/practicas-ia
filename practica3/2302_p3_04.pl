@@ -128,6 +128,7 @@ primos(N,L,F) :-
 % los elementos repetidos.
 
 
+
 cod_primero(X,[],[],[X]).
 
 cod_primero(X,[Y|Rem],[Y|Rem],[X]) :-
@@ -139,24 +140,29 @@ cod_primero(X,[X|L],Rem,[X|Front]) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% EJERCICIO 7.2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Caso base las dos listas están vacías.
 cod_all([],[]).
 
+% Recorre la primera lista y va llamando a cod_primero por cada elemento nuevo
+% que encuentra.
 cod_all([X|L],[Y|L1]):-
   cod_primero(X, L, Lrem, Y),
   cod_all(Lrem, L1).
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% EJERCICIO 7.3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Funcion que cuenta el numero de veces que esta el elemento en la lista y
+% genera la tupla correspondiente
 contar([],[]).
 
 contar([[X|RestX]|L], [[N,X]|L1]) :-
   length([X|RestX], N),
   contar(L, L1).
 
-run_length([],[]):- !.
+% Funcion que llama a cod_all y a contar para que genere la lista de tuplas.
+run_lenght([],[]).
 
 run_length(L, L1):-
   cod_all(L, L2),
@@ -166,10 +172,13 @@ run_length(L, L1):-
 %% EJERCICIO 8
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Caso base
 build_tree([], nil).
 
+% En caso de que no queden mas elementos en la lista de nodos se para.
 build_tree([Nodo-_], tree(Nodo, nil, nil)):- !.
 
+% Va recorriendo los nodos y metiendolos en el arbol.
 build_tree([Nodo-_|Resto], T) :-
   build_tree(Resto, TAux),
   T = tree(1, tree(Nodo, nil, nil), TAux).
@@ -204,11 +213,15 @@ encode_elem(X1, X2, tree(1,_,Resto)) :-
 
 encode_list([], [], _):- !.
 
+% En caso de estar en el ultimo elemento se llama a enconde_elem se concatena
+% y se termina.
 encode_list([X1], L2 , T) :-
   encode_elem(X1, X2, T),
   concatena([X2], [], L2),
   !.
 
+% Va elemento a elemento de la lista llamando a encode_elem y concatenandolos en
+% la lista nueva.
 encode_list([X1|Resto], L2, T) :-
   encode_elem(X1, X2, T),
   encode_list(Resto, L2Aux, T),

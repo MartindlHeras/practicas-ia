@@ -451,13 +451,17 @@ Nuestra función simplemente llama a **cod_all** y luego, por cada elemento de l
 % Funcion que cuenta el numero de veces que esta el elemento en la lista y
 % genera la tupla correspondiente
 contar([],[]).
-contar([[X|RestX]|L], [[N,X]|L1]) :- length([X|RestX], N), contar(L, L1).
+
+contar([[X|RestX]|L], [[N,X]|L1]) :-
+  length([X|RestX], N),
+  contar(L, L1).
 
 % Funcion que llama a cod_all y a contar para que genere la lista de tuplas.
 run_lenght([],[]).
+
 run_length(L, L1):-
-    cod_all(L, L2),
-    contar(L2, L1).
+  cod_all(L, L2),
+  contar(L2, L1).
 ```
 
 <br>
@@ -499,6 +503,7 @@ Esta función nos pide que dada una lista de nodos, nos devuelva su árbol de Hu
 Nuestra función dada la lista pasada nos va creando los nodos y anexándolos al árbol que ha ido generando.
 
 ```prolog
+%Caso base
 build_tree([], nil).
 
 % En caso de que no queden mas elementos en la lista de nodos se para.
@@ -542,7 +547,7 @@ Nuestra función comprueba si ha llegado al nodo hoja y le concatena un *0* o un
 % tanto, concatena un 0.
 
 encode_elem(X1, X2, tree(1, tree(X1, nil, nil), _)) :-
-    concatena([0], [], X2).
+  concatena([0], [], X2).
 
 % En este caso, el arbol está compuesto por un único nodo. Este tambien sería
 % el caso en el que se llega a un nodo hoja que está en la derecha.
@@ -554,8 +559,8 @@ encode_elem(X1, [], tree(X1, nil, nil)) :- !.
 % se llama a encode_elem del resto y a lo que devuelva se le concatena un uno.
 
 encode_elem(X1, X2, tree(1,_,Resto)) :-
-    encode_elem(X1, X2Aux, Resto),
-    concatena([1], X2Aux, X2) .
+  encode_elem(X1, X2Aux, Resto),
+  concatena([1], X2Aux, X2).
 ```
 
   ##### Ejemplos:
