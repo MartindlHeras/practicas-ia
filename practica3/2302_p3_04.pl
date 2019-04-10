@@ -273,10 +273,9 @@ ordena_lista([[X-Y] | Resto], L) :-
 validar_elemento(_, []) :- !.
 
 validar_elemento(X, D) :-
-  member(X, L1),
-  !.
+  member(X, D).
 
-validar_texto([], _, []) :- !.
+validar_texto([], _).
 
 validar_texto([X | Resto], D) :-
   validar_elemento(X, D),
