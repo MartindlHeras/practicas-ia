@@ -270,17 +270,17 @@ ordena_lista([[X-Y] | Resto], L) :-
 
 % Esta funcion detecta si hay algun elemento del texto a codificar que no se
 % encuentra en el diccionario
-validar_elemento(_, [], []) :- !.
+validar_elemento(_, []) :- !.
 
-validar_elemento(X, L1, L2) :-
+validar_elemento(X, D) :-
   member(X, L1),
   !.
 
 validar_texto([], _, []) :- !.
 
 validar_texto([X | Resto], D) :-
-  validar_elemento(X, D, Buffer),
-  validar_texto(Resto, D, S).
+  validar_elemento(X, D),
+  validar_texto(Resto, D).
 
 % Diccionario que se nos proporciona en el enunciado.
 dictionary([a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z]).
