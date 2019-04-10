@@ -268,22 +268,19 @@ ordena_lista([[X-Y] | Resto], L) :-
   ordena_lista(Resto, Buffer),
   insertar([X-Y], Buffer, L).
 
+% Esta funcion detecta si hay algun elemento del texto a codificar que no se
+% encuentra en el diccionario
+validar_elemento(_, [], []) :- !.
 
-
-eliminar_elemento(_, [], []) :- !.
-
-eliminar_elemento(X, L1, L2) :-
+validar_elemento(X, L1, L2) :-
   member(X, L1),
-	concatena([X], [], L2),
   !.
 
-eliminar_extra([], _, []) :- !.
+validar_texto([], _, []) :- !.
 
-eliminar_extra([X | Resto], D, CleanL1) :-
-  eliminar_elemento(X, D, Buffer),
-  eliminar_extra(Resto, D, S),
-  concatena(Buffer, S, CleanL1).
-
+validar_texto([X | Resto], D) :-
+  validar_elemento(X, D, Buffer),
+  validar_texto(Resto, D, S).
 
 % Diccionario que se nos proporciona en el enunciado.
 dictionary([a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z]).
@@ -294,8 +291,8 @@ encode([], []) :- !.
 encode(L1, L2) :-
   sort(0, @=<, L1, SortedL1),
   dictionary(D),
-  eliminar_extra(SortedL1, D, CleanL1),
-  run_length(CleanL1, CountedL1),
+  validar_texto(SortedL1, D),
+  run_length(SortedL1, CountedL1),
   pone_guion(CountedL1, GuionL1),
   ordena_lista(GuionL1, OrdenadaL1),
   invierte(OrdenadaL1, ReOrdenadaL1),
