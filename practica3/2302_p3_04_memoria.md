@@ -667,8 +667,66 @@ L = [a]
 
 #### Apartado 8.3
 
-```prolog
 
+```prolog
+% Esta funcion, le pone guion a lo que devuelve run_length ya que para formar
+% el arbol los argumentos tienen que tener la forma [caracter-numRep]
+pone_guion([],[]) :- !.
+
+pone_guion([[X, Y|_] | Resto], [[Y-X]|L]) :-
+  pone_guion(Resto, L).
+
+
+% Esta funcion, inserta en una lista ordenadamente los elementos que se le
+% pasan teniendo en cuenta el valor de después del guion que es el numero
+% de repeticiones.
+insertar([X-Y],[], [X-Y]).
+
+insertar([X-Y], [P-Q|Resto], [X-Y, P-Q | Resto]) :-
+  Y =< Q.
+
+insertar([X-Y], [P-Q|Resto], [P-Q | Z]) :-
+  insertar([X-Y], Resto, Z),
+  Y > Q.
+
+% Esta función, ordena una lista que contiene elementos del tipo
+% [caracter-numRep] haciendo uso de la funcion insertar para ello.
+ordena_lista([],[]).
+
+ordena_lista([[X-Y] | Resto], L) :-
+  ordena_lista(Resto, Buffer),
+  insertar([X-Y], Buffer, L).
+
+% Esta funcion comprueba si un elemento X esta en una lista D.
+validar_elemento(_, []) :- !.
+
+validar_elemento(X, D) :-
+  member(X, D).
+
+% Esta funcion detecta si hay algun elemento del texto a codificar que no se
+% encuentra en el diccionario
+validar_texto([], _).
+
+validar_texto([X | Resto], D) :-
+  validar_elemento(X, D),
+  validar_texto(Resto, D).
+
+% Diccionario que se nos proporciona en el enunciado.
+dictionary([a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z]).
+
+% Caso base
+encode([], []) :- !.
+
+encode(L1, L2) :-
+  sort(0, @=<, L1, SortedL1),
+  dictionary(D),
+  validar_texto(SortedL1, D),
+  run_length(SortedL1, CountedL1),
+  pone_guion(CountedL1, GuionL1),
+  ordena_lista(GuionL1, OrdenadaL1),
+  invierte(OrdenadaL1, ReOrdenadaL1),
+  build_tree(ReOrdenadaL1, T),
+  encode_list(L1, L2, T).
 ```
 
   ##### Ejemplos:

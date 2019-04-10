@@ -268,13 +268,14 @@ ordena_lista([[X-Y] | Resto], L) :-
   ordena_lista(Resto, Buffer),
   insertar([X-Y], Buffer, L).
 
-% Esta funcion detecta si hay algun elemento del texto a codificar que no se
-% encuentra en el diccionario
+% Esta funcion comprueba si un elemento X esta en una lista D.
 validar_elemento(_, []) :- !.
 
 validar_elemento(X, D) :-
   member(X, D).
 
+% Esta funcion detecta si hay algun elemento del texto a codificar que no se
+% encuentra en el diccionario
 validar_texto([], _).
 
 validar_texto([X | Resto], D) :-
@@ -287,6 +288,7 @@ dictionary([a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z]).
 % Caso base
 encode([], []) :- !.
 
+% E
 encode(L1, L2) :-
   sort(0, @=<, L1, SortedL1),
   dictionary(D),
