@@ -667,6 +667,9 @@ L = [a]
 
 #### Apartado 8.3
 
+En este apartado se pide una función que codifica una lista *L1* en una lista *L2* con un árbol de Huffman.
+
+Nuestra función primero ordena el texto pasado en *L1*, comprueba que todos los elementos estén en el diccionario, y haciendo uso de funciones como **run_length** va hallando cuántas veces se repite un elemento en la lista para luego crear un árbol de Huffman con esos nodos (las tuplas con el elemento y las veces que aparece en la lista) y con eso codifica los elementos uno a uno de la lista en L2.
 
 ```prolog
 % Esta funcion, le pone guion a lo que devuelve run_length ya que para formar
