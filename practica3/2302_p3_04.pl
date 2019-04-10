@@ -288,7 +288,18 @@ dictionary([a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z]).
 % Caso base
 encode([], []) :- !.
 
-% E
+% Esta funcion realiza los siguientes pasos:
+%  1: Ordena el texto que se nos pasa.
+%  2: Comprueba que todos los caracteres estan en el diccionario dado.
+%  3: Cuenta cuantas veces se encuentra cada caracter en el texto.
+%  4: Cambia el formato que devuelve run_length de [numVeces, X] a [X-num_veces]
+%  5: Ordena la lista en orden ascendente segun la cantidad de veces que cada
+%     caracter se encuentre en el texto.
+%  6: Invierte la lista resultante en 5.
+%  7: Construye el arbol de Huffman con esta lista.
+%  8: Hace enconde_list del texto inicial metiendo el resultante en L2 y usando
+%     el arbol generado en 7.
+
 encode(L1, L2) :-
   sort(0, @=<, L1, SortedL1),
   dictionary(D),
