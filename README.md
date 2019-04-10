@@ -17,6 +17,3 @@ Enlace a [moodle](https://moodle.uam.es/course/view.php?id=62174).
 Correo de Jessica: jessica.lopez-hazas@inv.uam.es
 
 [Ejercicios resueltos Prolog](http://www.ic.unicamp.br/~meidanis/courses/mc336/2009s2/prolog/problemas/).
-
-  - [ ] Comentarios + memoria + ejemplos 8.3
-  - [ ] Meter comentarios en código (7.1, 7.2, 7.3, 8, 8.2, 8.3)
