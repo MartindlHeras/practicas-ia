@@ -33,6 +33,7 @@ invierte([X | L], R) :-
 
 % Llama a invierte y esta devuelve True si es la misma lista invertida.
 palindromo([]).
+
 palindromo(L) :-
   invierte(L,L).
 
@@ -56,14 +57,15 @@ divide([X | L], N, L1, L2) :-
 % Va recorriendo los elementos de la lista y en caso de que el elemento sea una
 % lista la recorre a su vez, todo esto comparando con los elementos de la otra
 % lista.
-aplasta(L,[L]) :- \+ is_list(L)
+aplasta(L,[L]) :-
+  \+ is_list(L).
 
 aplasta([], []).
 
 aplasta([L|L1], LAplastado) :-
-    aplasta(L, NuevaL),
-    aplasta(L1, NuevaLs),
-    append(NuevaL, NuevaLs, LAplastado).
+  aplasta(L, NuevaL),
+  aplasta(L1, NuevaLs),
+  append(NuevaL, NuevaLs, LAplastado).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -162,7 +164,7 @@ contar([[X|RestX]|L], [[N,X]|L1]) :-
   contar(L, L1).
 
 % Funcion que llama a cod_all y a contar para que genere la lista de tuplas.
-run_lenght([],[]).
+run_length([],[]).
 
 run_length(L, L1):-
   cod_all(L, L2),
@@ -231,6 +233,15 @@ encode_list([X1|Resto], L2, T) :-
 %% EJERCICIO 8.3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Para poder implementar esta última
+% función, hemos tenido que implementar
+% una serie de funciones auxiliares.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Esta funcion, le pone guion a lo que devuelve run_length
 pone_guion([],[]) :- !.
 
 pone_guion([[X, Y|_] | Resto], [[Y-X]|L]) :-

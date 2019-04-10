@@ -457,7 +457,7 @@ contar([[X|RestX]|L], [[N,X]|L1]) :-
   contar(L, L1).
 
 % Funcion que llama a cod_all y a contar para que genere la lista de tuplas.
-run_lenght([],[]).
+run_length([],[]).
 
 run_length(L, L1):-
   cod_all(L, L2),
