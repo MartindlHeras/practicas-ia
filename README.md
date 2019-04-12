@@ -1,6 +1,6 @@
 # Prácticas de Inteligencia Artificial
 
-### Pareja 4 Grupo 2302
+### Pareja 3 Grupo 2302
 
 Santiago Valderrábano Zamorano | Martín de las Heras Moreno
 ------------------------------ | --------------------------
