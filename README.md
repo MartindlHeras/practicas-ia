@@ -17,6 +17,12 @@ santiago.valderrabano@estudiante.uam.es | martin.delasheras@estudiante.uam.es
   * ab29a
   * fc259
 
+##### Comandos P4:
+ * sbcl
+ * (load "P4_IA_2018_2019_conecta4.v0.cl")
+ * (load "P4_IA_2018_2019_jugadores.v0.cl")
+
+
 Enlace a [moodle](https://moodle.uam.es/course/view.php?id=62174).
 
 Correo de Jessica: jessica.lopez-hazas@inv.uam.es
