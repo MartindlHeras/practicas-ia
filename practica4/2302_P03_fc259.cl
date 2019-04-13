@@ -97,3 +97,28 @@
                            ((= arriba-izq 2) 100)
                            ((= arriba-izq 3) 1000))))))
         (- puntuacion-actual puntuacion-oponente)))))
+
+
+;;;; FUNCIONES AUXILIARES ;;;;
+
+; (defun contar-escalera-descendente (tablero ficha columna fila)
+;     (+ (if (or (not (dentro-del-tablero-p tablero columna fila))
+;     	  (not (eql (obtener-ficha tablero columna fila) ficha)))
+;          0
+;        (1))
+;      (if (or (not (dentro-del-tablero-p tablero columna (1 - fila)))
+;       (not (eql (obtener-ficha tablero columna (1 - fila)) ficha)))
+;        0
+;       (1))
+;      (if (or (not (dentro-del-tablero-p tablero (1 - columna) (1 - fila)))
+;       (not (eql (obtener-ficha tablero (1- columna) (1 - fila)) ficha)))
+;        0
+;       (1))))
+;
+; (defun contar-vertical (tablero ficha columna fila)
+;     (+
+;      (loop for filaN from fila to 0 do
+;       (if (or (not (dentro-del-tablero-p tablero columna filaN))
+;     	 (not (eql (obtener-ficha tablero columna filaN) ficha)))
+;         0
+;       (1)))))

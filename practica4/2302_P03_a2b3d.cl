@@ -10,7 +10,7 @@
   (:use :common-lisp :conecta4)  ; el paquete usa common-lisp y conecta4
   (:export :heuristica :*alias*)) ; exporta la función de evaluación y un alias
 (in-package 2302_P03_a2b3d)
-(defvar *alias* 'Neto&Gleto) ; alias que aparece en el ranking
+(defvar *alias* '-- Neto&Gleto -) ; alias que aparece en el ranking
 
 
 (defun heuristica (estado)
