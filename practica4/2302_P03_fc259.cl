@@ -33,12 +33,12 @@
                 (setf puntuacion-actual
                   (+ puntuacion-actual
                      (cond ((= vertical 0) 0)
-                           ((= vertical 1) 10)
-                           ((= vertical 2) 100)
+                           ((= vertical 1) 20)
+                           ((= vertical 2) 200)
                            ((= vertical 3) 1000))
                      (cond ((= diagonal-asc 0) 0)
-                           ((= diagonal-asc 1) 10)
-                           ((= diagonal-asc 2) 100)
+                           ((= diagonal-asc 1) 20)
+                           ((= diagonal-asc 2) 200)
                            ((= diagonal-asc 3) 1000)))))
               (let* ((altura (altura-columna tablero columna))
                      (fila (1- altura))
@@ -47,28 +47,28 @@
                 (setf puntuacion-oponente
                   (+ puntuacion-oponente
                      (cond ((= vertical 0) 0)
-                           ((= vertical 1) 10)
+                           ((= vertical 1) 20)
                            ((= vertical 2) 200)
                            ((= vertical 3) 1500))
                      (cond ((= diagonal-asc 0) 0)
-                           ((= diagonal-asc 1) 10)
+                           ((= diagonal-asc 1) 20)
                            ((= diagonal-asc 2) 200)
-                           ((= diagonal-asc 3) 1500))))))
+                           ((= diagonal-asc 3) 1000))))))
          (loop for fila from 0 below (tablero-alto tablero) do
                (let* ((columna 0)
                       (horizontal (contar-derecha tablero ficha-actual columna fila)))
                  (setf puntuacion-actual
                    (+ puntuacion-actual
                       (cond ((= horizontal 0) 0)
-                            ((= horizontal 1) 10)
-                            ((= horizontal 2) 100)
-                            ((= horizontal 3) 1000)))))
+                            ((= horizontal 1) 25)
+                            ((= horizontal 2) 200)
+                            ((= horizontal 3) 1500)))))
                (let* ((columna 0)
                       (horizontal (contar-derecha tablero ficha-oponente columna fila)))
                  (setf puntuacion-oponente
                    (+ puntuacion-oponente
                       (cond ((= horizontal 0) 0)
-                            ((= horizontal 1) 10)
+                            ((= horizontal 1) 25)
                             ((= horizontal 2) 200)
                             ((= horizontal 3) 1500))))))
         (- puntuacion-actual puntuacion-oponente)))))
