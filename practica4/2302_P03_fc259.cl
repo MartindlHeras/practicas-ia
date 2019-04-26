@@ -10,7 +10,7 @@
   (:use :common-lisp :conecta4)  ; el paquete usa common-lisp y conecta4
   (:export :heuristica :*alias*)) ; exporta la función de evaluación y un alias
 (in-package 2302_P03_fc259)
-(defvar *alias* 'Neto&GletoDue) ; alias que aparece en el ranking
+(defvar *alias* 'VotaVox) ; alias que aparece en el ranking
 
 
 (defun heuristica (estado)
@@ -35,11 +35,13 @@
                      (cond ((= vertical 0) 0)
                            ((= vertical 1) 20)
                            ((= vertical 2) 200)
-                           ((= vertical 3) 1000))
+                           ((= vertical 3) 1000)
+                           0)
                      (cond ((= diagonal-asc 0) 0)
                            ((= diagonal-asc 1) 20)
                            ((= diagonal-asc 2) 200)
-                           ((= diagonal-asc 3) 1000)))))
+                           ((= diagonal-asc 3) 1000)
+                           0))))
               (let* ((altura (altura-columna tablero columna))
                      (fila (1- altura))
                      (vertical (contar-abajo tablero ficha-oponente columna fila))
@@ -49,11 +51,13 @@
                      (cond ((= vertical 0) 0)
                            ((= vertical 1) 20)
                            ((= vertical 2) 200)
-                           ((= vertical 3) 1500))
+                           ((= vertical 3) 1500)
+                           0)
                      (cond ((= diagonal-asc 0) 0)
                            ((= diagonal-asc 1) 20)
                            ((= diagonal-asc 2) 200)
-                           ((= diagonal-asc 3) 1000))))))
+                           ((= diagonal-asc 3) 1000)
+                           0)))))
          (loop for fila from 0 below (tablero-alto tablero) do
                (let* ((columna 0)
                       (horizontal (contar-derecha tablero ficha-actual columna fila)))
@@ -62,7 +66,8 @@
                       (cond ((= horizontal 0) 0)
                             ((= horizontal 1) 25)
                             ((= horizontal 2) 200)
-                            ((= horizontal 3) 1500)))))
+                            ((= horizontal 3) 1500)
+                            0))))
                (let* ((columna 0)
                       (horizontal (contar-derecha tablero ficha-oponente columna fila)))
                  (setf puntuacion-oponente
@@ -70,7 +75,8 @@
                       (cond ((= horizontal 0) 0)
                             ((= horizontal 1) 25)
                             ((= horizontal 2) 200)
-                            ((= horizontal 3) 1500))))))
+                            ((= horizontal 3) 1500)
+                            0)))))
         (- puntuacion-actual puntuacion-oponente)))))
 
 
