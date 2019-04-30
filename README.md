@@ -19,7 +19,7 @@ santiago.valderrabano@estudiante.uam.es | martin.delasheras@estudiante.uam.es
 
 ##### Comandos P4:
  * sbcl
- * (load "P4_IA_2018_2019_conecta4.v0.cl")
+ * (load "P4_IA_2018_2019_conecta4.v1.cl")
  * (load "P4_IA_2018_2019_jugadores.v0.cl")
 
 ##### Connect4:
