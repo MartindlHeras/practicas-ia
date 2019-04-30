@@ -447,6 +447,13 @@
 ;(print (partida *jugador-humano* *jugador-bueno* 4))
 ;(print (partida *jugador-aleatorio* *jugador-humano*))
 ;(print (partida *jugador-aleatorio* *jugador-burro*))
-(print (partida *jugador-fc259* *jugador-bueno*))
+(print (partida *jugador-a2b3d* *jugador-bueno*))
+
+(loop for columna from 0 below 10 do
+  (let ((ganador (ganador estado)))
+    (cond ((eql ganador ficha-actual) 1)
+          (t 0))))
+
+
 
 ;;
