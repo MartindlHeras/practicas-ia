@@ -404,6 +404,42 @@
 
 
 
+(defun prueba1 (estado)
+  ; current player standpoint
+  (let* ((tablero (estado-tablero estado))
+         (ficha-actual (estado-turno estado))
+         (ficha-oponente (siguiente-jugador ficha-actual)))
+    (if (juego-terminado-p estado)
+        (let ((ganador (ganador estado)))
+          (cond ((not ganador) 0)
+                ((eql ganador ficha-actual) +val-max+)
+                (t +val-min+)))
+      (let ((puntuacion-actual 0))
+        (let* ((vertical-actual (contar-abajo tablero ficha-actual 3 0))
+               (vertical-oponente (contar-abajo tablero ficha-oponente 3 0))
+               (vertical (+ vertical-actual vertical-oponente))
+               (esquina1-actual (contar-abajo tablero ficha-actual 0 0))
+               (esquina1-oponente (contar-abajo tablero ficha-oponente 0 0))
+               (esquina1 (+ esquina1-actual esquina1-oponente))
+               (esquina2-actual  (contar-abajo tablero ficha-actual 6 0))
+               (esquina2-oponente  (contar-abajo tablero ficha-oponente 6 0))
+               (esquina2  (+ esquina2-actual esquina2-oponente)))
+          (setf puntuacion-actual
+            (cond ((< vertical 1)
+                   (cond ((> vertical-actual 1) +val-max+)
+                         (t 0)))
+                  (t (cond ((< esquina1 5)
+                            (cond ((> esquina1-actual 0) +val-max+)
+                                  (t 0)))
+                           ((< esquina2 5)
+                            (cond ((> esquina2-actual 0) +val-max+)
+                                  (t 0)))
+                           (t 0))))))
+        puntuacion-actual))))
+
+
+
+
 ;; -------------------------------------------------------------------------------
 ;; Jugadores
 ;; -------------------------------------------------------------------------------
@@ -420,23 +456,27 @@
                                        :f-jugador #'f-jugador-humano
                                        :f-eval  #'f-no-eval))
 
-(defvar *jugador-ab29a* (make-jugador :nombre 'Jugador-humano
+(defvar *jugador-ab29a* (make-jugador :nombre 'jugador-ab29a
                                       :f-jugador #'f-jugador-negamax
                                       :f-eval  #'f-eval-ab29a))
 
-(defvar *jugador-fc259* (make-jugador :nombre 'Jugador-humano
+(defvar *jugador-fc259* (make-jugador :nombre 'jugador-fc259
                                        :f-jugador #'f-jugador-negamax
                                        :f-eval  #'f-eval-fc259))
 
-(defvar *jugador-a2b3d* (make-jugador :nombre 'Jugador-humano
+(defvar *jugador-a2b3d* (make-jugador :nombre 'jugador-a2b3d
                                        :f-jugador #'f-jugador-negamax
                                        :f-eval  #'f-eval-a2b3d))
+
+(defvar *jugador-prueba1* (make-jugador :nombre 'prueba1
+                                      :f-jugador #'f-jugador-negamax
+                                      :f-eval  #'prueba1))
 
 ;; -------------------------------------------------------------------------------
 ;; Algunas partidas de ejemplo:
 ;; -------------------------------------------------------------------------------
 
-(setf *verbose* nil)
+(setf *verbose* t)
 
 ;(print (partida *jugador-aleatorio* *jugador-aleatorio*))
 ;(print (partida *jugador-aleatorio* *jugador-bueno* 4))
@@ -447,13 +487,4 @@
 ;(print (partida *jugador-humano* *jugador-bueno* 4))
 ;(print (partida *jugador-aleatorio* *jugador-humano*))
 ;(print (partida *jugador-aleatorio* *jugador-burro*))
-(print (partida *jugador-a2b3d* *jugador-bueno*))
-
-(loop for columna from 0 below 10 do
-  (let ((ganador (ganador estado)))
-    (cond ((eql ganador ficha-actual) 1)
-          (t 0))))
-
-
-
-;;
+(print (partida *jugador-prueba1* *jugador-a2b3d*))
