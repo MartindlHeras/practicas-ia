@@ -30,16 +30,24 @@
           (centro (contar-columna tablero ficha-actual ficha-oponente 3 0)))
     (loop for filaH from 0 below (tablero-alto tablero) do
       (loop for columnaH from 0 to 3 do
-        (+ horizontal (contar-grupo4-horizontal tablero ficha-actual ficha-oponente filaH columnaH))))
+        (setf horizontal
+              (+ horizontal
+                (contar-grupo4-horizontal tablero ficha-actual ficha-oponente filaH columnaH)))))
     (loop for columnaV from 0 below (tablero-ancho tablero) do
       (loop for filaV from 0 to 2 do
-       (+ vertical (contar-grupo4-vertical tablero ficha-actual ficha-oponente filaV columnaV))))
+       (setf vertical
+             (+ vertical
+                (contar-grupo4-vertical tablero ficha-actual ficha-oponente filaV columnaV)))))
     (loop for filaDD from 5 to 3 do
       (loop for columnaDD from 0 to 3 do
-        (+ diagonal-desc (contar-grupo4-diagonal-desc tablero ficha-actual ficha-oponente filaDD columnaDD))))
+        (setf diagonal-desc
+             (+ diagonal-desc
+                (contar-grupo4-diagonal-desc tablero ficha-actual ficha-oponente filaDD columnaDD)))))
     (loop for filaDA from 0 to 2 do
       (loop for columnaDA from 0 to 3 do
-        (+ diagonal-asc (contar-grupo4-diagonal-asc tablero ficha-actual ficha-oponente filaDA columnaDA))))
+        (setf diagonal-asc
+              (+ diagonal-asc
+                (contar-grupo4-diagonal-asc tablero ficha-actual ficha-oponente filaDA columnaDA)))))
     (setf puntuacion
       (+ puntuacion
          (* centro 3)
