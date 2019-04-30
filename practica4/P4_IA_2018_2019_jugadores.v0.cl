@@ -415,9 +415,7 @@
                 ((eql ganador ficha-actual) +val-max+)
                 (t +val-min+)))
       (let ((puntuacion-actual 0))
-        (let* ((vertical-actual (contar-abajo tablero ficha-actual 3 0))
-               (vertical-oponente (contar-abajo tablero ficha-oponente 3 0))
-               (vertical (+ vertical-actual vertical-oponente))
+        (let* ((vertical (contar-columna tablero ficha-actual ficha-oponente 3 0))
                (esquina1-actual (contar-abajo tablero ficha-actual 0 0))
                (esquina1-oponente (contar-abajo tablero ficha-oponente 0 0))
                (esquina1 (+ esquina1-actual esquina1-oponente))
@@ -425,19 +423,24 @@
                (esquina2-oponente  (contar-abajo tablero ficha-oponente 6 0))
                (esquina2  (+ esquina2-actual esquina2-oponente)))
           (setf puntuacion-actual
-            (cond ((< vertical 1)
-                   (cond ((> vertical-actual 1) +val-max+)
-                         (t 0)))
+            (cond ((< vertical 6)
+                   (+ vertical (/ +val-max+ 2)))
                   (t (cond ((< esquina1 5)
-                            (cond ((> esquina1-actual 0) +val-max+)
+                            (cond ((> esquina1-actual 0) (+ esquina1-actual (/ +val-max+ 4)))
                                   (t 0)))
                            ((< esquina2 5)
-                            (cond ((> esquina2-actual 0) +val-max+)
+                            (cond ((> esquina2-actual 0) (+ esquina2-actual (/ +val-max+ 4)))
                                   (t 0)))
                            (t 0))))))
         puntuacion-actual))))
 
 
+(defun contar-columna (tablero ficha-actual ficha-oponente columna fila)
+  (if (or (not (dentro-del-tablero-p tablero columna fila))
+	        (and (not (eql (obtener-ficha tablero columna fila) ficha-actual))
+               (not (eql (obtener-ficha tablero columna fila) ficha-oponente))))
+      0
+    (1+ (contar-columna tablero ficha-actual ficha-oponente columna (1+ fila)))))
 
 
 ;; -------------------------------------------------------------------------------

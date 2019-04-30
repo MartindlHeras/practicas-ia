@@ -10,9 +10,10 @@
   (:use :common-lisp :conecta4)  ; el paquete usa common-lisp y conecta4
   (:export :heuristica :*alias*)) ; exporta la función de evaluación y un alias
 (in-package 2302_P03_fc259)
-(defvar *alias* 'AVerSiVaDUE) ; alias que aparece en el ranking
+(defvar *alias* 'TePartoAlMedio) ; alias que aparece en el ranking
 
 (defun heuristica (estado)
+
   ; current player standpoint
   (let* ((tablero (estado-tablero estado))
          (ficha-actual (estado-turno estado))
@@ -22,83 +23,30 @@
           (cond ((not ganador) 0)
                 ((eql ganador ficha-actual) +val-max+)
                 (t +val-min+)))
-      (let ((puntuacion-actual 0)
-            (puntuacion-oponente 0))
-        (loop for columna from 0 below (tablero-ancho tablero) do
-              (let* ((altura (altura-columna tablero columna))
-                     (fila (1- altura))
-                     (vertical (contar-abajo tablero ficha-actual columna fila))
-                     (diagonal-asc (contar-arriba-derecha tablero ficha-actual columna fila)))
-                (setf puntuacion-actual
-                  (+ puntuacion-actual
-                     (cond ((= vertical 0) 0)
-                           ((= vertical 1) 20)
-                           ((= vertical 2) 200)
-                           ((= vertical 3) 1000)
-                           (t 0))
-                     (cond ((= diagonal-asc 0) 0)
-                           ((= diagonal-asc 1) 20)
-                           ((= diagonal-asc 2) 200)
-                           ((= diagonal-asc 3) 1000)
-                           (t 0)))))
-              (let* ((altura (altura-columna tablero columna))
-                     (fila (1- altura))
-                     (vertical (contar-abajo tablero ficha-oponente columna fila))
-                     (diagonal-asc (contar-arriba-derecha tablero ficha-oponente columna fila)))
-                (setf puntuacion-oponente
-                  (+ puntuacion-oponente
-                     (cond ((= vertical 0) 0)
-                           ((= vertical 1) 20)
-                           ((= vertical 2) 200)
-                           ((= vertical 3) 1500)
-                           (t 0))
-                     (cond ((= diagonal-asc 0) 0)
-                           ((= diagonal-asc 1) 20)
-                           ((= diagonal-asc 2) 200)
-                           ((= diagonal-asc 3) 1000)
+      (let ((puntuacion-actual 0))
+        (let* ((vertical (contar-columna tablero ficha-actual ficha-oponente 3 0))
+               (esquina1-actual (contar-abajo tablero ficha-actual 0 0))
+               (esquina1-oponente (contar-abajo tablero ficha-oponente 0 0))
+               (esquina1 (+ esquina1-actual esquina1-oponente))
+               (esquina2-actual  (contar-abajo tablero ficha-actual 6 0))
+               (esquina2-oponente  (contar-abajo tablero ficha-oponente 6 0))
+               (esquina2  (+ esquina2-actual esquina2-oponente)))
+          (setf puntuacion-actual
+            (cond ((< vertical 6)
+                   (+ vertical (/ +val-max+ 2)))
+                  (t (cond ((< esquina1 5)
+                            (cond ((> esquina1-actual 0) (+ esquina1-actual (/ +val-max+ 4)))
+                                  (t 0)))
+                           ((< esquina2 5)
+                            (cond ((> esquina2-actual 0) (+ esquina2-actual (/ +val-max+ 4)))
+                                  (t 0)))
                            (t 0))))))
-         (loop for fila from 0 below (tablero-alto tablero) do
-               (let* ((columna 0)
-                      (horizontal (contar-derecha tablero ficha-actual columna fila)))
-                 (setf puntuacion-actual
-                   (+ puntuacion-actual
-                      (cond ((= horizontal 0) 0)
-                            ((= horizontal 1) 25)
-                            ((= horizontal 2) 200)
-                            ((= horizontal 3) 1500)
-                            (t 0)))))
-               (let* ((columna 0)
-                      (horizontal (contar-derecha tablero ficha-oponente columna fila)))
-                 (setf puntuacion-oponente
-                   (+ puntuacion-oponente
-                      (cond ((= horizontal 0) 0)
-                            ((= horizontal 1) 25)
-                            ((= horizontal 2) 200)
-                            ((= horizontal 3) 1500)
-                            (t 0))))))
-        (- puntuacion-actual puntuacion-oponente)))))
+        puntuacion-actual))))
 
 
-;;;; FUNCIONES AUXILIARES ;;;;
-
-; (defun contar-escalera-descendente (tablero ficha columna fila)
-;     (+ (if (or (not (dentro-del-tablero-p tablero columna fila))
-;     	  (not (eql (obtener-ficha tablero columna fila) ficha)))
-;          0
-;        (1))
-;      (if (or (not (dentro-del-tablero-p tablero columna (1 - fila)))
-;       (not (eql (obtener-ficha tablero columna (1 - fila)) ficha)))
-;        0
-;       (1))
-;      (if (or (not (dentro-del-tablero-p tablero (1 - columna) (1 - fila)))
-;       (not (eql (obtener-ficha tablero (1- columna) (1 - fila)) ficha)))
-;        0
-;       (1))))
-;
-; (defun contar-vertical (tablero ficha columna fila)
-;     (+
-;      (loop for filaN from fila to 0 do
-;       (if (or (not (dentro-del-tablero-p tablero columna filaN))
-;     	 (not (eql (obtener-ficha tablero columna filaN) ficha)))
-;         0
-;       (1 + (contar-vertical tablero ficha columna (1 - fila)))))))
+(defun contar-columna (tablero ficha-actual ficha-oponente columna fila)
+  (if (or (not (dentro-del-tablero-p tablero columna fila))
+          (and (not (eql (obtener-ficha tablero columna fila) ficha-actual))
+               (not (eql (obtener-ficha tablero columna fila) ficha-oponente))))
+      0
+    (1+ (contar-columna tablero ficha-actual ficha-oponente columna (1+ fila)))))
