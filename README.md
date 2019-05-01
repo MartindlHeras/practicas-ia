@@ -18,7 +18,7 @@ santiago.valderrabano@estudiante.uam.es | martin.delasheras@estudiante.uam.es
   * fc259
 
 ##### Comandos P4:
- * sbcl
+ * rlwrap sbcl
  * (load "P4_IA_2018_2019_conecta4.v1.cl")
  * (load "P4_IA_2018_2019_jugadores.v0.cl")
 
@@ -31,6 +31,9 @@ santiago.valderrabano@estudiante.uam.es | martin.delasheras@estudiante.uam.es
  - [Connect4 con valores de jugada](https://connect4.gamesolver.org)
  - [No se muy bien si esto vale](https://towardsdatascience.com/creating-the-perfect-connect-four-ai-bot-c165115557b0)
  - [Heuristics for Connect4](https://file.scirp.org/Html/1-9601415_90972.htm)
+ - [Tensor Flow](https://www.tensorflow.org)
+ - [Connect4 Tensor Flow](https://github.com/marmelab/connect-four-tensorflow)
+ - [CLisp for Python](https://github.com/marcoheisig/cl4py)
 
 
 [Neural Network Lisp](https://github.com/nicolasavru/cl-nn)
