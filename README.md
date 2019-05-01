@@ -30,6 +30,7 @@ santiago.valderrabano@estudiante.uam.es | martin.delasheras@estudiante.uam.es
  - [MIT Connect4](http://web.mit.edu/sp.268/www/2010/connectFourSlides.pdf)
  - [Connect4 con valores de jugada](https://connect4.gamesolver.org)
  - [No se muy bien si esto vale](https://towardsdatascience.com/creating-the-perfect-connect-four-ai-bot-c165115557b0)
+ - [Heuristics for Connect4](https://file.scirp.org/Html/1-9601415_90972.htm)
 
 
 [Neural Network Lisp](https://github.com/nicolasavru/cl-nn)
