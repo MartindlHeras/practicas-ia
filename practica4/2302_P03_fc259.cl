@@ -136,11 +136,17 @@
            0)))
     (setf puntuacion
       (+ puntuacion
-         (cond ((= total-nuestra 4) 100)
-               ((and (= total-nuestra 3) (= total-vacias 1)) 5)
-               ((and (= total-nuestra 2) (= total-vacias 2)) 2)
-               (t 0))
-         (cond ((= total-oponente 4) -50)
-               ((and (= total-oponente 3) (= total-vacias 1)) -10)
-               (t 0))))
+         (* (* (/ total-oponente 4) (/ 100 0.75)) -1)
+         (* (* total-nuestra total-nuestra)(/ 100 0.75))
+         ))
     puntuacion))
+
+; (cond ((= total-nuestra 4) 100)
+;       ((and (= total-nuestra 3) (= total-vacias 1)) 5)
+;       ; ((and (= total-nuestra 2) (= total-vacias 2)) 2)
+;       (t 0))
+; (cond ;((= total-oponente 4) -50)
+;       ((and (= total-oponente 3) (= total-vacias 1)) -10)
+;       (t 0))
+goodFac = GOOD_FACTOR/((NumberToConnect ­ 1)/(NumberToConnect ­ 1));
+goodness= myTokensInTheLine*myTokensInTheLine*goodFac;
