@@ -34,6 +34,7 @@ santiago.valderrabano@estudiante.uam.es | martin.delasheras@estudiante.uam.es
  - [Tensor Flow](https://www.tensorflow.org)
  - [Connect4 Tensor Flow](https://github.com/marmelab/connect-four-tensorflow)
  - [CLisp for Python](https://github.com/marcoheisig/cl4py)
+ - [Odd-Even Srategy](https://www.youtube.com/watch?v=YqqcNjQMX18)
 
 
 [Neural Network Lisp](https://github.com/nicolasavru/cl-nn)
