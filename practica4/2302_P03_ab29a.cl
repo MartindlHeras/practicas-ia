@@ -23,7 +23,11 @@
                 ((eql ganador ficha-actual) +val-max+)
                 (t +val-min+)))
       (let ((puntuacion-actual 0)
-            (puntuacion-oponente 0))
+            (puntuacion-oponente 0)
+            (numero-fichas 0))
+        (loop for columna from 0 below (tablero-ancho tablero) do
+          (let* ((altura (altura-columna tablero columna))
+                 (+ numero-fichas altura))))
         (loop for columna from 0 below (tablero-ancho tablero) do
               (let* ((altura (altura-columna tablero columna))
                      (fila (1- altura))
@@ -38,21 +42,16 @@
                      (horizontal (+ der izq))
                      (vertical (+ abajo arriba))
                      (diag-des (+ abajo-izq arriba-der))
-                     (diag-asc (+ abajo-der arriba-izq)))
+                     (diag-asc (+ abajo-der arriba-izq))
+                     (vector-par '(0 1 0 1))
+                     (vector-impar '(1 0 1 0)))
                 (setf puntuacion-actual
                   (+ puntuacion-actual
-                    (if (= vertical 3)
-                      3000
-                      0)
-                    (if (= horizontal 3)
-                      3000
-                      0)
-                    (if (= diag-des 3)
-                      3000
-                      0)
-                    (if (= diag-asc 3)
-                      3000
-                      0))))
+                    (if ((= (mod numero-fichas 2) 0)) ;; Hemos empezado nosotros -> nos interesan las filas pares (la 0 no) y semos el 0
+                      ()
+                      ;; No hemos empezado nosotros -> nos interesan las filas impares y semos el 1
+                      (0)
+                      ))))
               (let* ((altura (altura-columna tablero columna))
                      (fila (1- altura))
                      (abajo (contar-abajo tablero ficha-oponente columna fila))
