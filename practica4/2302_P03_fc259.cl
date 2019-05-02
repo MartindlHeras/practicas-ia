@@ -22,19 +22,12 @@
                 ((eql ganador ficha-actual) +val-max+)
                 (t +val-min+)))
       (let ((puntuacion 0))
-
-        ; MIRAMOS CUANTAS FICHAS TENEMOS EN EL LA COLUMNA CENTRAL.
-        ; POR CADA FICHA NUESTRA, SUMAMOS 3PTS A LA PUNTUACION.
         (loop for filaCentro from 0 below (1- (tablero-alto tablero)) do
               (setf puntuacion
                 (+ puntuacion
                    (if (eql (obtener-ficha tablero 3 filaCentro) ficha-actual)
                        3
                      0))))
-
-        ; FORMAMOS GRUPOS DE 4 FICHAS POR CADA COLUMNA.
-        ; EN TOTAL SE FORMAN 3 GRUPOS DE 4 POR COLUMNA.
-        ; A CONTINUACION LOS MANDAMOS A EVALUAR A puntuacion-grupos
         (loop for columnaV from 0 below (1- (tablero-ancho tablero)) do
               (loop for filaV from 0 to 2 do
                     (let* ((grupo1 (obtener-ficha tablero columnaV filaV))
@@ -45,10 +38,6 @@
                         (+ puntuacion
                            (puntuacion-grupos
                             grupo1 grupo2 grupo3 grupo4 ficha-actual ficha-oponente))))))
-
-        ; FORMAMOS GRUPOS DE 4 FICHAS POR CADA FILA.
-        ; EN TOTAL SE FORMAN 4 GRUPOS DE 4 POR FILA.
-        ; A CONTINUACION LOS MANDAMOS A EVALUAR A puntuacion-grupos
         (loop for filaH from 0 below (1- (tablero-alto tablero)) do
               (loop for columnaH from 0 to 3 do
                     (let* ((grupo1 (obtener-ficha tablero columnaH filaH))
@@ -59,22 +48,16 @@
                         (+ puntuacion
                            (puntuacion-grupos
                             grupo1 grupo2 grupo3 grupo4 ficha-actual ficha-oponente))))))
-
-        ; FORMAMOS TODOS LOS POSBILES GRUPOS DE 4 EN DIAGONAL DESCENDENTE
-        ; LOS MANDAMOS A EVALUAR A puntuacion-grupos
         (loop for filaDD from 3 to 5 do
-          (loop for columnaDD from 0 to 3 do
-            (let* ((grupo1 (obtener-ficha tablero columnaDD filaDD))
-                   (grupo2 (obtener-ficha tablero (+ 1 columnaDD) (- filaDD 1)))
-                   (grupo3 (obtener-ficha tablero (+ 2 columnaDD) (- filaDD 2)))
-                   (grupo4 (obtener-ficha tablero (+ 3 columnaDD) (- filaDD 3))))
-              (setf puntuacion
-                    (+ puntuacion
-                       (puntuacion-grupos
-                        grupo1 grupo2 grupo3 grupo4 ficha-actual ficha-oponente))))))
-
-        ; FORMAMOS TODOS LOS POSBILES GRUPOS DE 4 EN DIAGONAL ASCENDENTE
-        ; LOS MANDAMOS A EVALUAR A puntuacion-grupos
+              (loop for columnaDD from 0 to 3 do
+                    (let* ((grupo1 (obtener-ficha tablero columnaDD filaDD))
+                           (grupo2 (obtener-ficha tablero (+ 1 columnaDD) (- filaDD 1)))
+                           (grupo3 (obtener-ficha tablero (+ 2 columnaDD) (- filaDD 2)))
+                           (grupo4 (obtener-ficha tablero (+ 3 columnaDD) (- filaDD 3))))
+                      (setf puntuacion
+                        (+ puntuacion
+                           (puntuacion-grupos
+                            grupo1 grupo2 grupo3 grupo4 ficha-actual ficha-oponente))))))
         (loop for filaDA from 0 to 2 do
               (loop for columnaDA from 0 to 3 do
                     (let* ((grupo1 (obtener-ficha tablero columnaDA filaDA))
@@ -93,60 +76,56 @@
         (total-oponente 0)
         (total-vacias 0))
     (setf total-nuestra
-      (+ total-nuestra
-         (if (eql ficha-nuestra grupo1)
-             1
-           0)
-         (if (eql ficha-nuestra grupo2)
-             1
-           0)
-         (if (eql ficha-nuestra grupo3)
-             1
-           0)
-         (if (eql ficha-nuestra grupo4)
-             1
-           0)))
+          (+ total-nuestra
+             (if (eql ficha-nuestra grupo1)
+               1
+               0)
+             (if (eql ficha-nuestra grupo2)
+               1
+               0)
+             (if (eql ficha-nuestra grupo3)
+               1
+               0)
+             (if (eql ficha-nuestra grupo4)
+               1
+               0)))
     (setf total-oponente
-      (+ total-oponente
-         (if (eql ficha-op grupo1)
-             1
-           0)
-         (if (eql ficha-op grupo2)
-             1
-           0)
-         (if (eql ficha-op grupo3)
-             1
-           0)
-         (if (eql ficha-op grupo4)
-             1
-           0)))
+          (+ total-oponente
+             (if (eql ficha-op grupo1)
+               1
+               0)
+             (if (eql ficha-op grupo2)
+               1
+               0)
+             (if (eql ficha-op grupo3)
+               1
+               0)
+             (if (eql ficha-op grupo4)
+               1
+               0)))
     (setf total-vacias
-      (+ total-vacias
-         (if (null grupo1)
-             1
-           0)
-         (if (null grupo2)
-             1
-           0)
-         (if (null grupo3)
-             1
-           0)
-         (if (null grupo4)
-             1
-           0)))
+          (+ total-vacias
+             (if (null grupo1)
+               1
+               0)
+             (if (null grupo2)
+               1
+               0)
+             (if (null grupo3)
+               1
+               0)
+             (if (null grupo4)
+               1
+               0)))
     (setf puntuacion
-      (+ puntuacion
-         (* (* (/ total-oponente 4) (/ 100 0.75)) -1)
-         (* (* total-nuestra total-nuestra)(/ 100 0.75))
-         ))
+          (+ puntuacion
+             (if (and (> total-nuestra 0) (> total-oponente 0))
+               (if (and (= total-nuestra 2) (= total-oponente 2))
+                 6
+                 11)
+               (if (> total-nuestra 0)
+                 (* (* total-nuestra total-nuestra)(/ 50 0.75))
+                 (if (> total-oponente 0)
+                   (* (* (/ total-oponente 4) (/ 100 0.75)) -1)
+                   0)))))
     puntuacion))
-
-; (cond ((= total-nuestra 4) 100)
-;       ((and (= total-nuestra 3) (= total-vacias 1)) 5)
-;       ; ((and (= total-nuestra 2) (= total-vacias 2)) 2)
-;       (t 0))
-; (cond ;((= total-oponente 4) -50)
-;       ((and (= total-oponente 3) (= total-vacias 1)) -10)
-;       (t 0))
-goodFac = GOOD_FACTOR/((NumberToConnect ­ 1)/(NumberToConnect ­ 1));
-goodness= myTokensInTheLine*myTokensInTheLine*goodFac;

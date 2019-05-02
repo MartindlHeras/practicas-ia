@@ -5,12 +5,11 @@
 ;; Grupo 2302
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defpackage :2302_P03_a2b3d ; se declara un paquete con el grupo, la pareja y
-  ; el código
-  (:use :common-lisp :conecta4)  ; el paquete usa common-lisp y conecta4
-  (:export :heuristica :*alias*)) ; exporta la función de evaluación y un alias
+(defpackage :2302_P03_a2b3d
+  (:use :common-lisp :conecta4)
+  (:export :heuristica :*alias*))
 (in-package 2302_P03_a2b3d)
-(defvar *alias* 'LosYerbajosDelJavide) ; alias que aparece en el ranking
+(defvar *alias* 'LosYerbajosDelJavide)
 
 
 ; MIRAMOS CUANTAS FICHAS TENEMOS EN EL LA COLUMNA CENTRAL.

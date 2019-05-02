@@ -227,15 +227,15 @@
         ; FORMAMOS TODOS LOS POSBILES GRUPOS DE 4 EN DIAGONAL DESCENDENTE
         ; LOS MANDAMOS A EVALUAR A puntuacion-grupos
         (loop for filaDD from 3 to 5 do
-          (loop for columnaDD from 0 to 3 do
-            (let* ((grupo1 (obtener-ficha tablero columnaDD filaDD))
-                   (grupo2 (obtener-ficha tablero (+ 1 columnaDD) (- filaDD 1)))
-                   (grupo3 (obtener-ficha tablero (+ 2 columnaDD) (- filaDD 2)))
-                   (grupo4 (obtener-ficha tablero (+ 3 columnaDD) (- filaDD 3))))
-              (setf puntuacion
-                    (+ puntuacion
-                       (puntuacion-grupos
-                        grupo1 grupo2 grupo3 grupo4 ficha-actual ficha-oponente))))))
+              (loop for columnaDD from 0 to 3 do
+                    (let* ((grupo1 (obtener-ficha tablero columnaDD filaDD))
+                           (grupo2 (obtener-ficha tablero (+ 1 columnaDD) (- filaDD 1)))
+                           (grupo3 (obtener-ficha tablero (+ 2 columnaDD) (- filaDD 2)))
+                           (grupo4 (obtener-ficha tablero (+ 3 columnaDD) (- filaDD 3))))
+                      (setf puntuacion
+                        (+ puntuacion
+                           (puntuacion-grupos
+                            grupo1 grupo2 grupo3 grupo4 ficha-actual ficha-oponente))))))
 
         ; FORMAMOS TODOS LOS POSBILES GRUPOS DE 4 EN DIAGONAL ASCENDENTE
         ; LOS MANDAMOS A EVALUAR A puntuacion-grupos
@@ -300,14 +300,15 @@
                0)))
     (setf puntuacion
           (+ puntuacion
-             (cond ((= total-nuestra 4) 100)
-               ((and (= total-nuestra 3) (= total-vacias 1)) 5)
-               ((and (= total-nuestra 2) (= total-vacias 2)) 2)
-               (t 0))
-             (cond ((= total-oponente 4) -100)
-               ((and (= total-oponente 3) (= total-vacias 1)) -50)
-               ((and (= total-oponente 2) (= total-vacias 2)) -20)
-               (t 0))))
+             (if (and (> total-nuestra 0) (> total-oponente 0))
+               (if (and (= total-nuestra 2) (= total-oponente 2))
+                 6
+                 11)
+               (if (> total-nuestra 0)
+                 (* (* total-nuestra total-nuestra)(/ 50 0.75))
+                 (if (> total-oponente 0)
+                   (* (* (/ total-oponente 4) (/ 100 0.75)) -1)
+                   0)))))
     puntuacion))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -649,7 +650,7 @@
 ;; Algunas partidas de ejemplo:
 ;; -------------------------------------------------------------------------------
 
-(setf *verbose* t)
+(setf *verbose* nil)
 ;
 ;(print (partida *jugador-aleatorio* *jugador-aleatorio*))
 ;(print (partida *jugador-aleatorio* *jugador-bueno* 4))
@@ -659,4 +660,27 @@
 ;(print (partida *jugador-humano* *jugador-aleatorio* 4))
 ;(print (partida *jugador-humano* *jugador-bueno* 4))
 ;(print (partida *jugador-aleatorio* *jugador-humano*))
+
+(print 'Buenovsfc259)
+(print (partida *jugador-bueno* *jugador-fc259*))
+
+(print 'Sortovsfc259)
+(print (partida *jugador-sorto* *jugador-fc259*))
+
+(print 'a2b3dvsfc259)
+(print (partida *jugador-a2b3d* *jugador-fc259*))
+
+(print 'ab29avsfc259)
 (print (partida *jugador-ab29a* *jugador-fc259*))
+
+(print 'fc259vsbueno)
+(print (partida *jugador-fc259* *jugador-bueno*))
+
+(print 'fc259vssorto)
+(print (partida *jugador-fc259* *jugador-sorto*))
+
+(print 'fc259vsa2b3d)
+(print (partida *jugador-fc259* *jugador-a2b3d*))
+
+(print 'fc259vsab29a)
+(print (partida *jugador-fc259* *jugador-ab29a*))
