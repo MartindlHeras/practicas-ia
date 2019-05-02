@@ -94,40 +94,53 @@
         (total-vacias 0))
     (setf total-nuestra
       (+ total-nuestra
-         (cond ((eql ficha-nuestra grupo1) 1)
-               (t 0))
-         (cond ((eql ficha-nuestra grupo2) 1)
-               (t 0))
-         (cond ((eql ficha-nuestra grupo3) 1)
-               (t 0))
-         (cond ((eql ficha-nuestra grupo4) 1)
-               (t 0))))
+         (if (eql ficha-nuestra grupo1)
+             1
+           0)
+         (if (eql ficha-nuestra grupo2)
+             1
+           0)
+         (if (eql ficha-nuestra grupo3)
+             1
+           0)
+         (if (eql ficha-nuestra grupo4)
+             1
+           0)))
     (setf total-oponente
       (+ total-oponente
-         (cond ((eql ficha-op grupo1) 1)
-               (t 0))
-         (cond ((eql ficha-op grupo2) 1)
-               (t 0))
-         (cond ((eql ficha-op grupo3) 1)
-               (t 0))
-         (cond ((eql ficha-op grupo4) 1)
-               (t 0))))
+         (if (eql ficha-op grupo1)
+             1
+           0)
+         (if (eql ficha-op grupo2)
+             1
+           0)
+         (if (eql ficha-op grupo3)
+             1
+           0)
+         (if (eql ficha-op grupo4)
+             1
+           0)))
     (setf total-vacias
       (+ total-vacias
-         (cond ((null grupo1) 1)
-               (t 0))
-         (cond ((null grupo2) 1)
-               (t 0))
-         (cond ((null grupo3) 1)
-               (t 0))
-         (cond ((null grupo4) 1)
-               (t 0))))
+         (if (null grupo1)
+             1
+           0)
+         (if (null grupo2)
+             1
+           0)
+         (if (null grupo3)
+             1
+           0)
+         (if (null grupo4)
+             1
+           0)))
     (setf puntuacion
       (+ puntuacion
          (cond ((= total-nuestra 4) 100)
-               ((and (= total-nuestra 3) (= total-vacias 1)) 50)
-               ((and (= total-nuestra 2) (= total-vacias 2)) 50)
+               ((and (= total-nuestra 3) (= total-vacias 1)) 5)
+               ((and (= total-nuestra 2) (= total-vacias 2)) 2)
                (t 0))
-         (if (and (= total-oponente 3) (= total-vacias 1))
-             -4 0)))
+         (cond ((= total-oponente 4) -50)
+               ((and (= total-oponente 3) (= total-vacias 1)) -10)
+               (t 0))))
     puntuacion))

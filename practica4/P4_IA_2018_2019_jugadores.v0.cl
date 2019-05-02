@@ -258,42 +258,56 @@
         (total-vacias 0))
     (setf total-nuestra
           (+ total-nuestra
-             (cond ((eql ficha-nuestra grupo1) 1)
-               (t 0))
-             (cond ((eql ficha-nuestra grupo2) 1)
-               (t 0))
-             (cond ((eql ficha-nuestra grupo3) 1)
-               (t 0))
-             (cond ((eql ficha-nuestra grupo4) 1)
-               (t 0))))
+             (if (eql ficha-nuestra grupo1)
+               1
+               0)
+             (if (eql ficha-nuestra grupo2)
+               1
+               0)
+             (if (eql ficha-nuestra grupo3)
+               1
+               0)
+             (if (eql ficha-nuestra grupo4)
+               1
+               0)))
     (setf total-oponente
           (+ total-oponente
-             (cond ((eql ficha-op grupo1) 1)
-               (t 0))
-             (cond ((eql ficha-op grupo2) 1)
-               (t 0))
-             (cond ((eql ficha-op grupo3) 1)
-               (t 0))
-             (cond ((eql ficha-op grupo4) 1)
-               (t 0))))
+             (if (eql ficha-op grupo1)
+               1
+               0)
+             (if (eql ficha-op grupo2)
+               1
+               0)
+             (if (eql ficha-op grupo3)
+               1
+               0)
+             (if (eql ficha-op grupo4)
+               1
+               0)))
     (setf total-vacias
           (+ total-vacias
-             (cond ((null grupo1) 1)
-               (t 0))
-             (cond ((null grupo2) 1)
-               (t 0))
-             (cond ((null grupo3) 1)
-               (t 0))
-             (cond ((null grupo4) 1)
-               (t 0))))
+             (if (null grupo1)
+               1
+               0)
+             (if (null grupo2)
+               1
+               0)
+             (if (null grupo3)
+               1
+               0)
+             (if (null grupo4)
+               1
+               0)))
     (setf puntuacion
           (+ puntuacion
              (cond ((= total-nuestra 4) 100)
-               ((and (= total-nuestra 3) (= total-vacias 1)) 50)
-               ((and (= total-nuestra 2) (= total-vacias 2)) 50)
+               ((and (= total-nuestra 3) (= total-vacias 1)) 5)
+               ((and (= total-nuestra 2) (= total-vacias 2)) 2)
                (t 0))
-             (if (and (= total-oponente 3) (= total-vacias 1))
-               -4 0)))
+             (cond ((= total-oponente 4) -100)
+               ((and (= total-oponente 3) (= total-vacias 1)) -50)
+               ((and (= total-oponente 2) (= total-vacias 2)) -20)
+               (t 0))))
     puntuacion))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -645,38 +659,4 @@
 ;(print (partida *jugador-humano* *jugador-aleatorio* 4))
 ;(print (partida *jugador-humano* *jugador-bueno* 4))
 ;(print (partida *jugador-aleatorio* *jugador-humano*))
-;(print (partida *jugador-aleatorio* *jugador-burro*))
-(print (partida *jugador-YerbajosJavide* *jugador-yerbajos*))
-;
-; (defun entrenador (jugador1 jugador2 victorias derrotas empates)
-;   (let (x (ganador (partida jugador1 jugador2)))
-;     (cond ((not ganadorP) (1+ empates))
-;       ((eql ganadorP 0) (1+ victorias))
-;       (t (1+ derrotas)))
-;     (setf resultado (make-array '(3)))
-;     (setf (aref resultado 0) victorias)
-;     (setf (aref resultado 1) derrotas)
-;     (setf (aref resultado 2) empates))
-;   reultado)
-;
-; (print (entrenador *jugador-sorto* *jugador-sorto* 0 0 0))
-;
-;
-;
-; (defun entrenador (jugador1 jugador2 total)
-;   (let ((ganador (partida jugador1 jugador2)))
-;     (setf total
-;           (+ total
-;              (cond ((eql ganador 0) 1)
-;                    (t 0)))))
-;   total)
-;
-; (defun entrenar (total)
-;     (loop for i from 0 to 100 do
-;     (setf total
-;        (+ total
-;           (entrenador *jugador-sorto* *jugador-yerbajos* 0))))
-;   total)
-;
-; (print (entenar 0))
-;(print (estado-turno (partida *jugador-sorto* *jugador-yerbajos*)))
+(print (partida *jugador-ab29a* *jugador-fc259*))
