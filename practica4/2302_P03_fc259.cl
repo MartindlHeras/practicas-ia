@@ -1,16 +1,37 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Santiago Valderrabano Zamorano santiago.valderrabano@estudiante.uam.es
-;; Martin de las Heras Moreno martin.delasheras@estudiante.uam.es
-;; Pareja 3
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PRACTICA 4 INTELIGENCIA ARTIFICIAL
+;;
+;; AUTORES:
+;; Santiago Valderrabano Zamorano --> santiago.valderrabano@estudiante.uam.es
+;; Martin de las Heras Moreno     --> martin.delasheras@estudiante.uam.es
+;;
 ;; Grupo 2302
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Pareja 3
+;;
+;; Codigo heuristica: FC259
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defpackage :2302_P03_fc259 ; se declara un paquete con el grupo, la pareja y
-  ; el código
-  (:use :common-lisp :conecta4)  ; el paquete usa common-lisp y conecta4
-  (:export :heuristica :*alias*)) ; exporta la función de evaluación y un alias
+(defpackage :2302_P03_fc259
+  (:use :common-lisp :conecta4)
+  (:export :heuristica :*alias*))
 (in-package 2302_P03_fc259)
-(defvar *alias* 'ComoLaYerbaHastaQueReviento) ; alias que aparece en el ranking
+(defvar *alias* 'ComoLaYerbaHastaQueReviento)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; Para esta heuristica, nos hemos basado en el funcionamiento basico del juego.
+;; Para ello, hemos ido cogiendo grupos de 4 fichas seguidas en horizontal,
+;; vertical, diagonal ascendente y diagonal descendente y guardandolos en
+;; 4 variables, una por ficha. Para coger estos grupos hemos practicamente
+;; el mismo metodo para todos cambiando los limites de los bucles
+;;
+;; Para esta segunda parte hemos hecho uso de una
+;; funcion auxiliar llamada puntuacion-grupo-4.
+;;
+;;
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun heuristica (estado)
   (let* ((tablero (estado-tablero estado))

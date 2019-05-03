@@ -1,16 +1,22 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Santiago Valderrabano Zamorano santiago.valderrabano@estudiante.uam.es
-;; Martin de las Heras Moreno martin.delasheras@estudiante.uam.es
-;; Pareja 3
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PRACTICA 4 INTELIGENCIA ARTIFICIAL
+;;
+;; AUTORES:
+;; Santiago Valderrabano Zamorano --> santiago.valderrabano@estudiante.uam.es
+;; Martin de las Heras Moreno     --> martin.delasheras@estudiante.uam.es
+;;
 ;; Grupo 2302
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Pareja 3
+;;
+;; Codigo heuristica: A2B3D
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defpackage :2302_P03_a2b3d
   (:use :common-lisp :conecta4)
   (:export :heuristica :*alias*))
 (in-package 2302_P03_a2b3d)
 (defvar *alias* 'LosYerbajosDelJavide)
-
 
 ; MIRAMOS CUANTAS FICHAS TENEMOS EN EL LA COLUMNA CENTRAL.
 ; POR CADA FICHA NUESTRA, SUMAMOS 3PTS A LA PUNTUACION.
