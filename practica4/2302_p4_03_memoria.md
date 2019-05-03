@@ -25,6 +25,7 @@ santiago.valderrabano@estudiante.uam.es | martin.delasheras@estudiante.uam.es
 En esta heuristica, hemos optado por una version simple de la inicial centrada fundamentalmente en la defensa, como en todas las heuristicas, empieza por comprobar si hay ganador, dando la maxima puntuacion en caso de ganemos nosotros y la minima si gana el oponente. Despues, para el jugador comprueba si tiene 3 fichas seguidas en algun lado suma 3000, en caso contrario no suma nada. En cambio para el oponente se computa que tenga 1, 2 o 3 fichas seguidas, para luego restar las puntuaciones.
 
 ```lisp
+
 (defun heuristica (estado)
   ; current player standpoint
   (let* ((tablero (estado-tablero estado))
@@ -40,18 +41,38 @@ En esta heuristica, hemos optado por una version simple de la inicial centrada f
         (loop for columna from 0 below (tablero-ancho tablero) do
               (let* ((altura (altura-columna tablero columna))
                      (fila (1- altura))
-                     (abajo (contar-abajo tablero ficha-actual columna fila))
-                     (arriba (contar-arriba tablero ficha-actual columna fila))
-                     (der (contar-derecha tablero ficha-actual columna fila))
-                     (izq (contar-izquierda tablero ficha-actual columna fila))
-                     (abajo-der (contar-abajo-derecha tablero ficha-actual columna fila))
-                     (arriba-izq (contar-arriba-izquierda tablero ficha-actual columna fila))
-                     (abajo-izq (contar-abajo-izquierda tablero ficha-actual columna fila))
-                     (arriba-der (contar-arriba-derecha tablero ficha-actual columna fila))
-                     (horizontal (+ der izq))
-                     (vertical (+ abajo arriba))
-                     (diag-des (+ abajo-izq arriba-der))
-                     (diag-asc (+ abajo-der arriba-izq)))
+                     (abajo
+                      (contar-abajo
+                       tablero ficha-actual columna fila))
+                     (arriba
+                      (contar-arriba
+                       tablero ficha-actual columna fila))
+                     (der
+                      (contar-derecha
+                       tablero ficha-actual columna fila))
+                     (izq
+                      (contar-izquierda
+                       tablero ficha-actual columna fila))
+                     (abajo-der
+                      (contar-abajo-derecha
+                       tablero ficha-actual columna fila))
+                     (arriba-izq
+                      (contar-arriba-izquierda
+                       tablero ficha-actual columna fila))
+                     (abajo-izq
+                      (contar-abajo-izquierda
+                       tablero ficha-actual columna fila))
+                     (arriba-der
+                      (contar-arriba-derecha
+                       tablero ficha-actual columna fila))
+                     (horizontal
+                      (+ der izq))
+                     (vertical
+                      (+ abajo arriba))
+                     (diag-des
+                      (+ abajo-izq arriba-der))
+                     (diag-asc
+                      (+ abajo-der arriba-izq)))
                 (setf puntuacion-actual
                   (+ puntuacion-actual
                     (if (= vertical 3)
@@ -68,18 +89,38 @@ En esta heuristica, hemos optado por una version simple de la inicial centrada f
                       0))))
               (let* ((altura (altura-columna tablero columna))
                      (fila (1- altura))
-                     (abajo (contar-abajo tablero ficha-oponente columna fila))
-                     (arriba (contar-arriba tablero ficha-actual columna fila))
-                     (der (contar-derecha tablero ficha-oponente columna fila))
-                     (izq (contar-izquierda tablero ficha-oponente columna fila))
-                     (abajo-der (contar-abajo-derecha tablero ficha-oponente columna fila))
-                     (arriba-izq (contar-arriba-izquierda tablero ficha-oponente columna fila))
-                     (abajo-izq (contar-abajo-izquierda tablero ficha-oponente columna fila))
-                     (arriba-der (contar-arriba-derecha tablero ficha-oponente columna fila))
-                     (horizontal (+ der izq))
-                     (vertical (+ abajo arriba))
-                     (diag-des (+ abajo-izq arriba-der))
-                     (diag-asc (+ abajo-der arriba-izq)))
+                     (abajo
+                      (contar-abajo
+                       tablero ficha-oponente columna fila))
+                     (arriba
+                      (contar-arriba
+                       tablero ficha-actual columna fila))
+                     (der
+                      (contar-derecha
+                       tablero ficha-oponente columna fila))
+                     (izq
+                      (contar-izquierda
+                       tablero ficha-oponente columna fila))
+                     (abajo-der
+                      (contar-abajo-derecha
+                       tablero ficha-oponente columna fila))
+                     (arriba-izq
+                      (contar-arriba-izquierda
+                       tablero ficha-oponente columna fila))
+                     (abajo-izq
+                      (contar-abajo-izquierda
+                       tablero ficha-oponente columna fila))
+                     (arriba-der
+                      (contar-arriba-derecha
+                       tablero ficha-oponente columna fila))
+                     (horizontal
+                      (+ der izq))
+                     (vertical
+                      (+ abajo arriba))
+                     (diag-des
+                      (+ abajo-izq arriba-der))
+                     (diag-asc
+                      (+ abajo-der arriba-izq)))
                 (setf puntuacion-oponente
                   (+ puntuacion-oponente
                     (cond ((= vertical 0) 0)
@@ -103,6 +144,7 @@ En esta heuristica, hemos optado por una version simple de la inicial centrada f
                           ((= diag-asc 3) 7000)
                           (t 0))))))
         (- puntuacion-actual puntuacion-oponente)))))
+
 ```
 
 ### 2. a2b3d
@@ -235,7 +277,8 @@ Consideramos despues los siguientes 4 casos:
 Se puede observar que el fc259 y este son variaciones de la forma de valorar los bloques aunque la base es practicamente la misma.
 
 ```lisp
-(defun puntuacion-grupo-4 (ficha1 ficha2 ficha3 ficha4 ficha-nuestra ficha-oponente)
+(defun puntuacion-grupo-4
+  (ficha1 ficha2 ficha3 ficha4 ficha-nuestra ficha-oponente)
   (let ((puntuacion 0)
         (total-vacias 0)
         (total-nuestra 0)
@@ -440,7 +483,8 @@ Por ultimo, si solo hay fichas del contrario en el bloque calculamos la puntuaci
 El que el factorBuenaPos y factorMalaPos se diferencien en la constante que dividimos es debido a que creemos que tiene que primar la defensa sobre el ataque aunque luego lo compensemos un poco al multiplicar 2 veces el # de fichas nuestas.
 
 ```lisp
-(defun puntuacion-grupo-4 (ficha1 ficha2 ficha3 ficha4 ficha-nuestra ficha-oponente)
+(defun puntuacion-grupo-4
+  (ficha1 ficha2 ficha3 ficha4 ficha-nuestra ficha-oponente)
   (let ((puntuacion 0)
         (total-nuestra 0)
         (total-oponente 0)

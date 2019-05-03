@@ -46,18 +46,38 @@
         (loop for columna from 0 below (tablero-ancho tablero) do
               (let* ((altura (altura-columna tablero columna))
                      (fila (1- altura))
-                     (abajo (contar-abajo tablero ficha-actual columna fila))
-                     (arriba (contar-arriba tablero ficha-actual columna fila))
-                     (der (contar-derecha tablero ficha-actual columna fila))
-                     (izq (contar-izquierda tablero ficha-actual columna fila))
-                     (abajo-der (contar-abajo-derecha tablero ficha-actual columna fila))
-                     (arriba-izq (contar-arriba-izquierda tablero ficha-actual columna fila))
-                     (abajo-izq (contar-abajo-izquierda tablero ficha-actual columna fila))
-                     (arriba-der (contar-arriba-derecha tablero ficha-actual columna fila))
-                     (horizontal (+ der izq))
-                     (vertical (+ abajo arriba))
-                     (diag-des (+ abajo-izq arriba-der))
-                     (diag-asc (+ abajo-der arriba-izq)))
+                     (abajo
+                      (contar-abajo
+                       tablero ficha-actual columna fila))
+                     (arriba
+                      (contar-arriba
+                       tablero ficha-actual columna fila))
+                     (der
+                      (contar-derecha
+                       tablero ficha-actual columna fila))
+                     (izq
+                      (contar-izquierda
+                       tablero ficha-actual columna fila))
+                     (abajo-der
+                      (contar-abajo-derecha
+                       tablero ficha-actual columna fila))
+                     (arriba-izq
+                      (contar-arriba-izquierda
+                       tablero ficha-actual columna fila))
+                     (abajo-izq
+                      (contar-abajo-izquierda
+                       tablero ficha-actual columna fila))
+                     (arriba-der
+                      (contar-arriba-derecha
+                       tablero ficha-actual columna fila))
+                     (horizontal
+                      (+ der izq))
+                     (vertical
+                      (+ abajo arriba))
+                     (diag-des
+                      (+ abajo-izq arriba-der))
+                     (diag-asc
+                      (+ abajo-der arriba-izq)))
                 (setf puntuacion-actual
                   (+ puntuacion-actual
                     (if (= vertical 3)
@@ -74,18 +94,38 @@
                       0))))
               (let* ((altura (altura-columna tablero columna))
                      (fila (1- altura))
-                     (abajo (contar-abajo tablero ficha-oponente columna fila))
-                     (arriba (contar-arriba tablero ficha-actual columna fila))
-                     (der (contar-derecha tablero ficha-oponente columna fila))
-                     (izq (contar-izquierda tablero ficha-oponente columna fila))
-                     (abajo-der (contar-abajo-derecha tablero ficha-oponente columna fila))
-                     (arriba-izq (contar-arriba-izquierda tablero ficha-oponente columna fila))
-                     (abajo-izq (contar-abajo-izquierda tablero ficha-oponente columna fila))
-                     (arriba-der (contar-arriba-derecha tablero ficha-oponente columna fila))
-                     (horizontal (+ der izq))
-                     (vertical (+ abajo arriba))
-                     (diag-des (+ abajo-izq arriba-der))
-                     (diag-asc (+ abajo-der arriba-izq)))
+                     (abajo
+                      (contar-abajo
+                       tablero ficha-oponente columna fila))
+                     (arriba
+                      (contar-arriba
+                       tablero ficha-actual columna fila))
+                     (der
+                      (contar-derecha
+                       tablero ficha-oponente columna fila))
+                     (izq
+                      (contar-izquierda
+                       tablero ficha-oponente columna fila))
+                     (abajo-der
+                      (contar-abajo-derecha
+                       tablero ficha-oponente columna fila))
+                     (arriba-izq
+                      (contar-arriba-izquierda
+                       tablero ficha-oponente columna fila))
+                     (abajo-izq
+                      (contar-abajo-izquierda
+                       tablero ficha-oponente columna fila))
+                     (arriba-der
+                      (contar-arriba-derecha
+                       tablero ficha-oponente columna fila))
+                     (horizontal
+                      (+ der izq))
+                     (vertical
+                      (+ abajo arriba))
+                     (diag-des
+                      (+ abajo-izq arriba-der))
+                     (diag-asc
+                      (+ abajo-der arriba-izq)))
                 (setf puntuacion-oponente
                   (+ puntuacion-oponente
                     (cond ((= vertical 0) 0)
