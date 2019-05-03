@@ -86,6 +86,18 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; FICHERO ab29a ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; En esta heuristica, hemos optado por una version simple de la inicial
+;; centrada fundamentalmente en la defensa, como en todas las heuristicas,
+;; empieza por comprobar si hay ganador, dando la maxima puntuacion en caso de
+;; ganemos nosotros y la minima si gana el oponente. Despues, para el jugador
+;; comprueba si tiene 3 fichas seguidas en algun lado suma 3000, en caso
+;; contrario no suma nada. En cambio para el oponente se computa que tenga 1, 2
+;; o 3 fichas seguidas, para luego restar las puntuaciones.
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defun f-eval-ab29a (estado)
   ; current player standpoint
   (let* ((tablero (estado-tablero estado))
@@ -115,26 +127,18 @@
                      (diag-asc (+ abajo-der arriba-izq)))
                 (setf puntuacion-actual
                   (+ puntuacion-actual
-                    (cond ((= vertical 0) 0)
-                          ((= vertical 1) 100)
-                          ((= vertical 2) 1000)
-                          ((= vertical 3) 2000)
-                          (t 0))
-                    (cond ((= horizontal 0) 0)
-                          ((= horizontal 1) 100)
-                          ((= horizontal 2) 1000)
-                          ((= horizontal 3) 2000)
-                          (t 0))
-                    (cond ((= diag-des 0) 0)
-                          ((= diag-des 1) 100)
-                          ((= diag-des 2) 1000)
-                          ((= diag-des 3) 3000)
-                          (t 0))
-                    (cond ((= diag-asc 0) 0)
-                          ((= diag-asc 1) 100)
-                          ((= diag-asc 2) 1000)
-                          ((= diag-asc 3) 3000)
-                          (t 0)))))
+                    (if (= vertical 3)
+                      3000
+                      0)
+                    (if (= horizontal 3)
+                      3000
+                      0)
+                    (if (= diag-des 3)
+                      3000
+                      0)
+                    (if (= diag-asc 3)
+                      3000
+                      0))))
               (let* ((altura (altura-columna tablero columna))
                      (fila (1- altura))
                      (abajo (contar-abajo tablero ficha-oponente columna fila))
@@ -172,6 +176,7 @@
                           ((= diag-asc 3) 7000)
                           (t 0))))))
         (- puntuacion-actual puntuacion-oponente)))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; FICHERO fc259 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -661,26 +666,26 @@
 ;(print (partida *jugador-humano* *jugador-bueno* 4))
 ;(print (partida *jugador-aleatorio* *jugador-humano*))
 
-(print 'Buenovsfc259)
-(print (partida *jugador-bueno* *jugador-fc259*))
-
-(print 'Sortovsfc259)
-(print (partida *jugador-sorto* *jugador-fc259*))
-
-(print 'a2b3dvsfc259)
-(print (partida *jugador-a2b3d* *jugador-fc259*))
-
-(print 'ab29avsfc259)
-(print (partida *jugador-ab29a* *jugador-fc259*))
-
-(print 'fc259vsbueno)
-(print (partida *jugador-fc259* *jugador-bueno*))
-
-(print 'fc259vssorto)
-(print (partida *jugador-fc259* *jugador-sorto*))
-
-(print 'fc259vsa2b3d)
-(print (partida *jugador-fc259* *jugador-a2b3d*))
+; (print 'Buenovsfc259)
+; (print (partida *jugador-bueno* *jugador-fc259*))
+;
+; (print 'Sortovsfc259)
+; (print (partida *jugador-sorto* *jugador-fc259*))
+;
+; (print 'a2b3dvsfc259)
+; (print (partida *jugador-a2b3d* *jugador-fc259*))
+;
+; (print 'ab29avsfc259)
+; (print (partida *jugador-ab29a* *jugador-fc259*))
+;
+; (print 'fc259vsbueno)
+; (print (partida *jugador-fc259* *jugador-bueno*))
+;
+; (print 'fc259vssorto)
+; (print (partida *jugador-fc259* *jugador-sorto*))
+;
+; (print 'fc259vsa2b3d)
+; (print (partida *jugador-fc259* *jugador-a2b3d*))
 
 (print 'fc259vsab29a)
 (print (partida *jugador-fc259* *jugador-ab29a*))

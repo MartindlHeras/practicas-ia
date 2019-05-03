@@ -1,36 +1,30 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; PRACTICA 4 INTELIGENCIA ARTIFICIAL
-;;
-;; AUTORES:
-;; Santiago Valderrabano Zamorano --> santiago.valderrabano@estudiante.uam.es
-;; Martin de las Heras Moreno     --> martin.delasheras@estudiante.uam.es
-;;
-;; Grupo 2302
-;; Pareja 3
-;;
-;; Codigo heuristica: FC259
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+# Memoria Práctica 3
 
-(defpackage :2302_P03_ab29a ; se declara un paquete con el grupo, la pareja y
-  ; el código
-  (:use :common-lisp :conecta4)  ; el paquete usa common-lisp y conecta4
-  (:export :heuristica :*alias*)) ; exporta la función de evaluación y un alias
-(in-package 2302_P03_ab29a)
-(defvar *alias* 'DefensaNumantina) ; alias que aparece en el ranking
+### Pareja 4 Grupo 2302
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; En esta heuristica, hemos optado por una version simple de la inicial
-;; centrada fundamentalmente en la defensa, como en todas las heuristicas,
-;; empieza por comprobar si hay ganador, dando la maxima puntuacion en caso de
-;; ganemos nosotros y la minima si gana el oponente. Despues, para el jugador
-;; comprueba si tiene 3 fichas seguidas en algun lado suma 3000, en caso
-;; contrario no suma nada. En cambio para el oponente se computa que tenga 1, 2
-;; o 3 fichas seguidas, para luego restar las puntuaciones.
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Santiago Valderrábano Zamorano | Martín de las Heras Moreno
+------------------------------ | --------------------------
+santiago.valderrabano@estudiante.uam.es | martin.delasheras@estudiante.uam.es
 
+
+<br>
+<hr>
+
+## Índice
+
+  1. **ab29a**
+
+  2. **a2b3d**
+
+  3. **fc259**
+
+  <hr>
+
+### 1. ab29a
+
+En esta heuristica, hemos optado por una version simple de la inicial centrada fundamentalmente en la defensa, como en todas las heuristicas, empieza por comprobar si hay ganador, dando la maxima puntuacion en caso de ganemos nosotros y la minima si gana el oponente. Despues, para el jugador comprueba si tiene 3 fichas seguidas en algun lado suma 3000, en caso contrario no suma nada. En cambio para el oponente se computa que tenga 1, 2 o 3 fichas seguidas, para luego restar las puntuaciones.
+
+```lisp
 (defun heuristica (estado)
   ; current player standpoint
   (let* ((tablero (estado-tablero estado))
@@ -109,3 +103,14 @@
                           ((= diag-asc 3) 7000)
                           (t 0))))))
         (- puntuacion-actual puntuacion-oponente)))))
+```
+
+### 2. a2b3d
+
+```lisp
+```
+
+### 3. fc259
+
+```lisp
+```
