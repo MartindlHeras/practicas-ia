@@ -167,19 +167,19 @@
         (total-nuestra 0)
         (total-oponente 0))
     (setf total-vacias
-    (+ total-vacias
-    (cond ((null ficha1)
-         1)
-        (t 0))
-    (cond ((null ficha2)
-         1)
-        (t 0))
-    (cond ((null ficha3)
-         1)
-        (t 0))
-    (cond ((null ficha4)
-         1)
-        (t 0))))
+      (+ total-vacias
+         (cond ((null ficha1)
+                1)
+               (t 0))
+         (cond ((null ficha2)
+                1)
+               (t 0))
+         (cond ((null ficha3)
+                1)
+               (t 0))
+         (cond ((null ficha4)
+                1)
+               (t 0))))
     (setf total-nuestra
       (+ total-nuestra
          (cond ((eql
