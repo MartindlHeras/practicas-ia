@@ -18,23 +18,19 @@
 (in-package 2302_P03_a2b3d)
 (defvar *alias* 'LosYerbajosDelJavide)
 
-; MIRAMOS CUANTAS FICHAS TENEMOS EN EL LA COLUMNA CENTRAL.
-; POR CADA FICHA NUESTRA, SUMAMOS 3PTS A LA PUNTUACION.
-
-; FORMAMOS GRUPOS DE 4 FICHAS POR CADA COLUMNA.
-; EN TOTAL SE FORMAN 3 GRUPOS DE 4 POR COLUMNA.
-; A CONTINUACION LOS MANDAMOS A EVALUAR A puntuacion-grupo-4
-
-; FORMAMOS GRUPOS DE 4 FICHAS POR CADA FILA.
-; EN TOTAL SE FORMAN 4 GRUPOS DE 4 POR FILA.
-; A CONTINUACION LOS MANDAMOS A EVALUAR A puntuacion-grupo-4
-
-
-; FORMAMOS TODOS LOS POSBILES GRUPOS DE 4 EN DIAGONAL DESCENDENTE
-; LOS MANDAMOS A EVALUAR A puntuacion-grupo-4
-
-; FORMAMOS TODOS LOS POSBILES GRUPOS DE 4 EN DIAGONAL ASCENDENTE
-; LOS MANDAMOS A EVALUAR A puntuacion-grupo-4
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; Para esta heuristica, nos hemos basado en el funcionamiento basico del juego.
+;; Para ello, hemos ido cogiendo grupos de 4 fichas seguidas en horizontal,
+;; vertical, diagonal ascendente y diagonal descendente y guardandolos en
+;; 4 variables, una por ficha. Para coger estos grupos hemos practicamente
+;; el mismo metodo para todos cambiando los limites de los bucles. Y cada vez
+;; que obtenemos un grupo de 4 fichas lo mandamos a evaluar a la funcion
+;; secundaria puntuacion-grupo-4.
+;;
+;; Esta primera funcion es igual para el fichero con codigo FC259.
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun heuristica (estado)
   (let* ((tablero (estado-tablero estado))
