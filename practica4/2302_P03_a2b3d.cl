@@ -143,11 +143,43 @@
                             ficha-oponente))))))
         puntuacion))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; Esta funcion se encarga de analizar los grupos de 4 fichas le que pasa la
+;; funcion principal. La idea es dependiendo de la posicion de las fichas
+;; calcular cuan bueno o malo es ese movimiento. Para ello, contamos primero
+;; cuantas fichas de cada tipo hay (nuestras, oponente, vacias).
+;;
+;; Consideramos despues los siguientes 4 casos:
+;; 1) Que haya 4 fichas nuestras -> Sumamos 100
+;; 2) Que haya 3 fichas nuestras y 1 vacia -> Sumamos 5
+;; 3) Que haya 2 fichas nuestras y 2 vacia -> Sumamos 2
+;; 4) Que haya 3 fichas del oponente y 1 vacia -> Restamos 4
+;;
+;; Se puede observar que el fc259 y este son variaciones de la forma de valorar
+;; los bloques aunque la base es practicamente la misma.
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defun puntuacion-grupo-4 (ficha1 ficha2 ficha3 ficha4 ficha-nuestra ficha-oponente)
   (let ((puntuacion 0)
+        (total-vacias 0)
         (total-nuestra 0)
-        (total-oponente 0)
-        (total-vacias 0))
+        (total-oponente 0))
+    (setf total-vacias
+    (+ total-vacias
+    (cond ((null ficha1)
+         1)
+        (t 0))
+    (cond ((null ficha2)
+         1)
+        (t 0))
+    (cond ((null ficha3)
+         1)
+        (t 0))
+    (cond ((null ficha4)
+         1)
+        (t 0))))
     (setf total-nuestra
       (+ total-nuestra
          (cond ((eql
@@ -182,20 +214,6 @@
                (t 0))
          (cond ((eql
                  ficha-oponente ficha4)
-                1)
-               (t 0))))
-    (setf total-vacias
-      (+ total-vacias
-         (cond ((null ficha1)
-                1)
-               (t 0))
-         (cond ((null ficha2)
-                1)
-               (t 0))
-         (cond ((null ficha3)
-                1)
-               (t 0))
-         (cond ((null ficha4)
                 1)
                (t 0))))
     (setf puntuacion
